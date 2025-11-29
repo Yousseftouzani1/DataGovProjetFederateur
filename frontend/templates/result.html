@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cleaning Result</title>
+</head>
+<body>
+    <h2>File Preview (first 5 rows)</h2>
+    <pre>{{ preview }}</pre>
+
+    {% if clean_file_path %}
+    <h3>Cleaned file saved locally:</h3>
+    <p>{{ clean_file_path }}</p>
+    <h3>MongoDB file ID:</h3>
+    <p>{{ file_id }}</p>
+    {% else %}
+    <p>Cleaning/upload failed.</p>
+    {% endif %}
+</body>
+</html>
