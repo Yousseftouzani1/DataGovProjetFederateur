@@ -1,88 +1,156 @@
-# 🏛️ DataGov - Plateforme de Gouvernance des Données
+# DataGov - Plateforme de Gouvernance des Données
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.124+-green.svg)](https://fastapi.tiangolo.com)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-brightgreen.svg)](https://mongodb.com)
+[![Presidio](https://img.shields.io/badge/Microsoft_Presidio-Enabled-blueviolet)](https://microsoft.github.io/presidio/)
 [![License](https://img.shields.io/badge/License-ENSIAS-orange.svg)]()
 
 > **Projet Fédérateur ENSIAS 2024-2025**  
-> Plateforme de détection automatique des données sensibles (PII/SPI) et gouvernance des métadonnées avec Apache Atlas & Apache Ranger.
+> Plateforme de détection automatique des données sensibles (PII/SPI) avec moteur hybride: Taxonomie Marocaine + Microsoft Presidio NER + Support Arabe.
 
 ---
 
-## 📋 Table des Matières
+## Table des Matières
 
-- [Objectif du Projet](#-objectif-du-projet)
-- [Architecture](#️-architecture)
-- [Taxonomie des Données](#-taxonomie-des-données)
-- [Installation](#-installation)
-- [Utilisation](#-utilisation)
-- [Structure du Projet](#-structure-du-projet)
-- [Prochaines Étapes](#-prochaines-étapes)
-- [Équipe](#-équipe)
+- [Objectif du Projet](#objectif-du-projet)
+- [Démo Live](#démo-live)
+- [Architecture](#architecture)
+- [Moteur de Détection Hybride](#moteur-de-détection-hybride)
+- [Taxonomie des Données](#taxonomie-des-données)
+- [Installation](#installation)
+- [Utilisation](#utilisation)
+- [Structure du Projet](#structure-du-projet)
+- [Prochaines Étapes](#prochaines-étapes)
+- [Équipe](#équipe)
 
 ---
 
-## 🎯 Objectif du Projet
+## Objectif du Projet
 
 Ce projet vise à développer une **plateforme de gouvernance des données** capable de :
 
-1. **Détecter automatiquement** les données personnelles (PII) et sensibles (SPI) dans les fichiers
-2. **Classifier** les données selon une taxonomie marocaine complète
+1. **Détecter automatiquement** les données personnelles (PII) et sensibles (SPI)
+2. **Classifier** les données via 3 méthodes: Patterns Marocains, Détection Arabe, et IA (Presidio NER)
 3. **Intégrer avec Apache Atlas** pour la gestion des métadonnées
 4. **Appliquer des politiques de sécurité** via Apache Ranger
 
 ---
 
-## 🏗️ Architecture
+## Démo Live
+
+### Dashboard de Test
+
+Ouvrez `frontend/test_classifier.html` dans votre navigateur:
+### Enregistrement Video
+
+![Demo Recording](docs/PF_PII.mp4)
+
+#### 1. Page d'accueil - Dashboard chargé
+![Dashboard](docs/screenshot_01_dashboard.png)
+*Interface avec indicateur API "Connected", domaines chargés, et pipeline de traitement*
+
+#### 2. Analyse Identity - Résultats
+![Identity Results](docs/screenshot_02_identity_results.png)
+*Détection: CIN AB123456, Passeport AA1234567, Date de naissance - Pipeline montre "Moroccan Patterns" et "Presidio NER" actifs*
+
+#### 3. Texte Anonymisé
+![Anonymized](docs/screenshot_03_anonymized.png)
+*Le texte avec toutes les données sensibles remplacées par des placeholders [CIN], [PASSPORT], etc.*
+
+#### 4. Analyse Arabic - Détection multilingue
+![Arabic Results](docs/screenshot_04_arabic_results.png)
+*Détection en arabe: الرقم الوطني، رقم الهاتف، البريد الإلكتروني - Pipeline montre "Arabic Detection" actif*
+
+#### 5. Résumé par catégorie et source
+![Summary](docs/screenshot_05_summary.png)
+*Statistiques: détections par catégorie (IDENTITE, CONTACT, FINANCIER) et par source (custom, presidio, arabic)*
+
+> **Instructions pour les screenshots:**
+> 1. Lancez `python backend/taxonomie/classifier_hybrid.py`
+> 2. Ouvrez `frontend/test_classifier.html`
+> 3. Prenez des screenshots avec Win+Shift+S
+> 4. Sauvegardez dans le dossier `docs/` avec les noms ci-dessus
+
+---
+
+## Architecture
 
 ```mermaid
 flowchart TB
-    subgraph Frontend["🖥️ Frontend"]
-        UI[Interface Web]
+    subgraph Frontend["Frontend - Dashboard de Test"]
+        UI[test_classifier.html]
     end
     
-    subgraph Backend["⚙️ Backend FastAPI"]
-        API[API REST]
-        AUTH[Authentication]
-        CLASSIFIER[Classification Engine v3.0]
+    subgraph Backend["Backend FastAPI"]
+        API[API REST :8001]
+        subgraph Hybrid["Moteur Hybride v4.0"]
+            CUSTOM[Patterns Marocains<br/>81 patterns]
+            ARABIC[Patterns Arabes<br/>10 entités]
+            PRESIDIO[Presidio NER<br/>spaCy FR/EN]
+        end
+        MERGE[Fusion & Déduplication]
     end
     
-    subgraph Database["💾 MongoDB Atlas"]
-        TAX[Taxonomies]
-        ENT[Entities]
-        DOM[Domains]
-        USERS[Users]
-    end
-    
-    subgraph Taxonomy["📚 Taxonomie par Domaine"]
-        ID[Identité]
-        FIN[Financier]
-        MED[Médical]
-        PRO[Professionnel]
-        EDU[Éducation]
-        BIO[Biométrique]
-        JUR[Juridique]
-        VEH[Véhicules]
-        CON[Contact]
+    subgraph Database["MongoDB Atlas"]
+        TAX[(taxonomies)]
+        ENT[(entities)]
+        DOM[(domains)]
     end
     
     UI --> API
-    API --> AUTH
-    API --> CLASSIFIER
-    CLASSIFIER --> TAX
-    CLASSIFIER --> ENT
-    CLASSIFIER --> DOM
-    Taxonomy --> Database
+    API --> CUSTOM & ARABIC & PRESIDIO
+    CUSTOM & ARABIC & PRESIDIO --> MERGE
+    MERGE --> API
+    
+    subgraph Domains["9 Domaines JSON"]
+        D1[identite.json]
+        D2[contact.json]
+        D3[financier.json]
+        D4[professionnel.json]
+        D5[medical.json]
+        D6[education.json]
+        D7[biometrique.json]
+        D8[juridique.json]
+        D9[vehicule.json]
+    end
+    
+    Domains --> TAX & ENT & DOM
 ```
 
 ---
 
-## 📊 Taxonomie des Données
+## Moteur de Détection Hybride
+
+Le classifieur hybrid (`classifier_hybrid.py`) combine **3 sources de détection**:
+
+| Source | Description | Entités | Précision |
+|--------|-------------|---------|-----------|
+| **Custom** | Patterns regex marocains (CIN, CNSS, Massar, IBAN MA) | 81 patterns | 90% |
+| **Arabic** | Patterns pour texte arabe (الرقم الوطني، رقم الهاتف) | 10 entités | 85% |
+| **Presidio** | NER Microsoft (noms, emails, téléphones génériques) | 15+ types | Variable |
+
+### Pipeline de Traitement
+
+```
+Texte → [Patterns Marocains] → Détections
+     → [Patterns Arabes]    → Détections  → Fusion → Résultats
+     → [Presidio NER]       → Détections
+```
+
+### Priorité
+
+1. **Custom** (Marocain) - Priorité maximale
+2. **Arabic** - Haute priorité
+3. **Presidio** - Complément IA
+
+---
+
+## Taxonomie des Données
 
 ### Vue d'Ensemble
 
-Notre taxonomie couvre **9 domaines** avec **114 entités** de données sensibles, spécifiquement adaptée au contexte **marocain**.
+**9 domaines** | **114 entités** | Contexte **marocain**
 
 ```mermaid
 pie title Répartition des Entités par Domaine
@@ -99,154 +167,127 @@ pie title Répartition des Entités par Domaine
 
 ### Domaines de Données
 
-| Domaine | Fichier | Entités | Type Principal | Exemples |
-|---------|---------|---------|----------------|----------|
-| 🏥 **Médical** | `medical.json` | 37 | SPI | Dossier médical, Diagnostic, Tests sérologiques |
-| 💼 **Professionnel** | `professionnel.json` | 34 | PII/SPI | CNSS, Salaire, Évaluations, Sanctions |
-| 🎓 **Éducation** | `education.json` | 8 | PII | Code Massar, CNE, Relevés de notes |
-| 🪪 **Identité** | `identite.json` | 7 | SPI | CIN, Passeport, Date de naissance |
-| 💳 **Financier** | `financier.json` | 7 | SPI | IBAN, Carte bancaire, CVV |
-| 🔐 **Biométrique** | `biometrique.json` | 6 | SPI | Empreintes, Reconnaissance faciale, ADN |
-| ⚖️ **Juridique** | `juridique.json` | 6 | SPI | Casier judiciaire, Jugements |
-| 🚗 **Véhicules** | `vehicule.json` | 5 | PII | Immatriculation, Permis, VIN |
-| 📞 **Contact** | `contact.json` | 4 | PII | Téléphone, Email, Adresse |
+| Domaine | Fichier | Entités | Type | Exemples |
+|---------|---------|---------|------|----------|
+| **Médical** | `medical.json` | 37 | SPI | Dossier médical, Diagnostic, Tests |
+| **Professionnel** | `professionnel.json` | 34 | PII/SPI | CNSS, Salaire, Évaluations |
+| **Éducation** | `education.json` | 8 | PII | Code Massar, CNE, Notes |
+| **Identité** | `identite.json` | 7 | SPI | CIN, Passeport, DOB |
+| **Financier** | `financier.json` | 7 | SPI | IBAN, Carte bancaire |
+| **Biométrique** | `biometrique.json` | 6 | SPI | Empreintes, ADN |
+| **Juridique** | `juridique.json` | 6 | SPI | Casier judiciaire |
+| **Véhicules** | `vehicule.json` | 5 | PII | Immatriculation, VIN |
+| **Contact** | `contact.json` | 4 | PII | Téléphone, Email |
 
 ### Niveaux de Sensibilité
 
-```mermaid
-flowchart LR
-    subgraph Levels["Niveaux de Sensibilité"]
-        CRITICAL["🔴 Critical<br/>Ex: CIN, IBAN, Dossier Médical"]
-        HIGH["🟠 High<br/>Ex: Téléphone, Salaire"]
-        MEDIUM["🟡 Medium<br/>Ex: Adresse, Diplôme"]
-        LOW["🟢 Low<br/>Ex: Poste, Département"]
-    end
-    
-    CRITICAL --> HIGH --> MEDIUM --> LOW
-```
+| Niveau | Couleur | Exemples |
+|--------|---------|----------|
+| **Critical** | Rouge | CIN, IBAN, Dossier Médical |
+| **High** | Orange | Téléphone, Salaire, Email |
+| **Medium** | Jaune | Adresse, Diplôme |
+| **Low** | Vert | Poste, Département |
 
 ### Réglementations Supportées
 
-- 🇲🇦 **Loi 09-08** (Protection des données personnelles - Maroc)
-- 🇪🇺 **RGPD** (Règlement européen)
-- 🏥 **HIPAA** (Données de santé)
-- 💳 **PCI-DSS** (Données bancaires)
-- 🏦 **Bank Al-Maghrib** (Réglementations bancaires)
+- **Loi 09-08** (Protection des données personnelles - Maroc)
+- **RGPD** (Règlement européen)
+- **HIPAA** (Données de santé)
+- **PCI-DSS** (Données bancaires)
+- **Bank Al-Maghrib** (Réglementations bancaires)
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Prérequis
 
 - Python 3.11+
-- MongoDB Atlas (ou MongoDB local)
+- MongoDB Atlas (ou local)
 - Git
 
-### Étapes d'Installation
+### Étapes
 
 ```bash
 # 1. Cloner le repository
 git clone https://github.com/Yousseftouzani1/DataGovProjetFederateur.git
 cd DataGovProjetFederateur
 
-# 2. Changer vers la branche youssef_nisrine
+# 2. Branche youssef_nisrine
 git checkout youssef_nisrine
 
-# 3. Créer et activer l'environnement virtuel
+# 3. Environnement virtuel
 python -m venv venv
 .\venv\Scripts\Activate.ps1  # Windows
 # source venv/bin/activate   # Linux/Mac
 
-# 4. Installer les dépendances
-pip install -r requirements.txt
+# 4. Dépendances
 pip install pymongo motor pydantic dnspython fastapi uvicorn
+pip install presidio-analyzer presidio-anonymizer spacy
 
-# 5. Configurer les variables d'environnement
-# Créer un fichier .env avec:
+# 5. Modèles de langue (pour Presidio)
+python -m spacy download en_core_web_sm
+python -m spacy download fr_core_news_sm
+
+# 6. Configuration .env
 # MONGODB_URI=mongodb+srv://...
 # DATABASE_NAME=DataGovDB
 
-# 6. Charger les taxonomies dans MongoDB
+# 7. Charger taxonomies dans MongoDB
 python backend/database/taxonomy_loader.py
 
-# 7. Lancer le serveur
-python backend/taxonomie/classifier_v3.py
+# 8. Lancer le serveur hybride
+python backend/taxonomie/classifier_hybrid.py
 ```
 
 ---
 
-## 💻 Utilisation
+## Utilisation
 
 ### API Endpoints
 
 | Endpoint | Méthode | Description |
 |----------|---------|-------------|
-| `/analyze` | POST | Analyser un texte pour détecter les données sensibles |
-| `/health` | GET | Vérifier l'état du service |
-| `/domains` | GET | Lister les domaines disponibles |
-| `/categories` | GET | Lister les catégories de données |
-| `/statistics` | GET | Obtenir les statistiques du moteur |
+| `/analyze` | POST | Analyser texte (supporte `use_presidio`, `language`) |
+| `/health` | GET | État du service + Presidio ON/OFF |
+| `/domains` | GET | Liste des domaines |
+| `/statistics` | GET | Statistiques du moteur |
 
 ### Exemple d'Analyse
 
 ```bash
-# Requête
 curl -X POST http://127.0.0.1:8001/analyze \
   -H "Content-Type: application/json" \
   -d '{
-    "text": "Mon CIN est AB123456, email: contact@gmail.com, tel: 0612345678",
+    "text": "Mon CIN est AB123456, email: test@gmail.com",
+    "language": "fr",
     "anonymize": true,
-    "domains": ["identite", "contact"]
+    "use_presidio": true
   }'
 ```
 
-```json
-// Réponse
-{
-  "success": true,
-  "detections_count": 3,
-  "detections": [
-    {
-      "entity_type": "CIN - Carte d'Identité Nationale",
-      "category": "IDENTITE_PERSONNELLE",
-      "domain": "IDENTITE_DOCUMENTS_OFFICIELS",
-      "value": "AB123456",
-      "sensitivity_level": "critical"
-    },
-    {
-      "entity_type": "Adresse email",
-      "value": "contact@gmail.com",
-      "sensitivity_level": "high"
-    },
-    {
-      "entity_type": "Numéro de téléphone",
-      "value": "0612345678",
-      "sensitivity_level": "high"
-    }
-  ],
-  "anonymized_text": "Mon CIN est [CIN_CARTE_D'IDENTITÉ_NATIONALE], email: [ADRESSE_EMAIL], tel: [NUMÉRO_DE_TÉLÉPHONE]"
-}
+### Dashboard de Test
+
+Ouvrir dans le navigateur:
+```
+frontend/test_classifier.html
 ```
 
-### Documentation Interactive
-
-Accédez à la documentation Swagger UI : **http://127.0.0.1:8001/docs**
+Documentation Swagger: **http://127.0.0.1:8001/docs**
 
 ---
 
-## 📁 Structure du Projet
+## Structure du Projet
 
 ```
 DataGovProjetFederateur/
-├── 📂 backend/
-│   ├── 📂 auth/                    # Authentification
-│   ├── 📂 database/
+├── backend/
+│   ├── database/
 │   │   ├── mongodb.py              # Connexion MongoDB Atlas
 │   │   ├── taxonomy_schema.py      # Schémas Pydantic
-│   │   └── taxonomy_loader.py      # Chargeur de taxonomies
-│   ├── 📂 taxonomie/
-│   │   ├── 📂 domains/             # ✨ NOUVEAU - Taxonomies par domaine
+│   │   └── taxonomy_loader.py      # Chargeur MongoDB
+│   ├── taxonomie/
+│   │   ├── domains/                # 9 fichiers JSON
 │   │   │   ├── identite.json
 │   │   │   ├── contact.json
 │   │   │   ├── financier.json
@@ -256,58 +297,54 @@ DataGovProjetFederateur/
 │   │   │   ├── biometrique.json
 │   │   │   ├── juridique.json
 │   │   │   └── vehicule.json
-│   │   ├── classifier.py           # Classifieur original (Manal)
-│   │   ├── classifier_v3.py        # ✨ NOUVEAU - Classifieur v3 par domaine
-│   │   └── taxonomie.json          # Taxonomie originale (Manal)
-│   ├── 📂 users/                   # Gestion utilisateurs
-│   └── 📂 data_ingestion/          # Ingestion de données
-├── 📂 frontend/                    # Interface utilisateur
-├── 📂 Taxonomy/                    # Fichiers de référence (CSV, PDF)
+│   │   ├── classifier.py           # Original (Manal)
+│   │   ├── classifier_v3.py        # Domain-based
+│   │   └── classifier_hybrid.py    # HYBRIDE v4 (Presidio + Arabe)
+│   └── auth/, users/, data_ingestion/
+├── frontend/
+│   └── test_classifier.html        # Dashboard de Test
+├── docs/
+│   └── demo_recording.webp         # Vidéo démo
+├── Taxonomy/                       # Fichiers source (CSV)
 ├── .env                            # Variables d'environnement
 ├── .gitignore
-├── main.py                         # Point d'entrée FastAPI
-├── requirements.txt
+├── main.py
 └── README.md
 ```
 
 ---
 
-## 🔮 Prochaines Étapes
+## Prochaines Étapes
 
-### Phase 1 : Amélioration du Classifieur ⏳
-- [ ] Ajouter la détection par Machine Learning (NER)
-- [ ] Supporter les fichiers CSV, Excel, PDF
-- [ ] Améliorer la précision avec plus de patterns regex
+### Phase 1: Amélioration du Classifieur
+- [ ] Support fichiers CSV, Excel, PDF
+- [ ] Améliorer patterns regex
 
-### Phase 2 : Intégration Apache Atlas 📊
-- [ ] Connecter à Apache Atlas pour la gestion des métadonnées
-- [ ] Synchroniser les taxonomies avec le glossaire Atlas
-- [ ] Créer des classifications automatiques
+### Phase 2: Apache Atlas
+- [ ] Connexion Apollo Atlas
+- [ ] Synchroniser taxonomies
 
-### Phase 3 : Politiques de Sécurité ⛑️
-- [ ] Intégrer Apache Ranger pour les politiques d'accès
-- [ ] Définir des règles de masquage par niveau de sensibilité
-- [ ] Implémenter l'audit trail complet
+### Phase 3: Sécurité
+- [ ] Apache Ranger
+- [ ] Audit trail
 
-### Phase 4 : Interface Utilisateur 🖥️
-- [ ] Dashboard de visualisation des données sensibles
-- [ ] Interface d'administration des taxonomies
-- [ ] Rapports et exports
+### Phase 4: UI
+- [ ] Dashboard admin
+- [ ] Rapports
 
-### Phase 5 : DevSecOps 🔒
-- [ ] Pipeline CI/CD avec tests de sécurité
-- [ ] Analyse statique du code (Bandit, Safety)
-- [ ] Déploiement containerisé (Docker)
+### Phase 5: DevSecOps
+- [ ] CI/CD
+- [ ] Docker
 
 ---
 
-## 👥 Équipe
+## Équipe
 
 | Nom | Rôle |
 |-----|------|
 | **BAZZAOUI Younes** | Développeur |
-| **ELGARCH Youssef** | Développeur (Taxonomie & MongoDB) |
-| **IBNOU-KADY Nisrine** | Développeur (Taxonomie & MongoDB) |
+| **ELGARCH Youssef** | Développeur (Taxonomie, MongoDB, Hybride) |
+| **IBNOU-KADY Nisrine** | Développeur (Taxonomie, MongoDB, Hybride) |
 | **TOUZANI Yousef** | Développeur |
 
 ### Encadrement
@@ -316,12 +353,12 @@ DataGovProjetFederateur/
 
 ---
 
-## 📜 Licence
+## Licence
 
 Projet académique - ENSIAS, Université Mohammed V de Rabat
 
 ---
 
 <p align="center">
-  Made with ❤️ at ENSIAS 2024-2025
+  Made with care at ENSIAS 2024-2025
 </p>

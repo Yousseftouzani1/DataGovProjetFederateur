@@ -445,6 +445,16 @@ app = FastAPI(
     version="3.0.0"
 )
 
+# Enable CORS for frontend
+from fastapi.middleware.cors import CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for testing
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.post("/analyze", response_model=AnalyzeResponse)
 async def analyze_text(request: AnalyzeRequest):
     """Analyze text and detect sensitive data"""
