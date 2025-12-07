@@ -1,0 +1,1076 @@
+{
+    "metadata": {
+        "domain_id": "DOM-005",
+        "domain_name": "DONNEES_MEDICALES",
+        "domain_name_en": "MEDICAL_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données de santé protégées par le secret médical absolu - Source: Taxonomie_Domaine_Medical.csv (79 entries)",
+        "total_entities": 45
+    },
+    "categories": [
+        {
+            "class": "IDENTIFICATION_PATIENT",
+            "class_en": "PATIENT_IDENTIFICATION",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Numéro de Dossier Médical (NDM)",
+                    "name_en": "Medical Record Number",
+                    "synonyms_fr": [
+                        "dossier médical",
+                        "NDM",
+                        "identifiant patient",
+                        "dossier patient"
+                    ],
+                    "synonyms_en": [
+                        "MRN",
+                        "medical record",
+                        "patient ID"
+                    ],
+                    "acronyms_fr": [
+                        "NDM",
+                        "DM"
+                    ],
+                    "acronyms_en": [
+                        "MRN"
+                    ],
+                    "regex_patterns": [
+                        "\\bMED-?\\d{4,}-?\\d{3,}\\b",
+                        "\\bDM-?\\d{6,}\\b",
+                        "\\bNDM[:\\s]*\\d+\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA",
+                        "Loi 09-08",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Numéro d'Assurance Maladie",
+                    "name_en": "Health Insurance Number",
+                    "synonyms_fr": [
+                        "AMO",
+                        "assurance maladie",
+                        "carte vitale",
+                        "numéro CNOPS"
+                    ],
+                    "synonyms_en": [
+                        "health insurance ID",
+                        "insurance number"
+                    ],
+                    "acronyms_fr": [
+                        "AMO",
+                        "CNOPS",
+                        "RAMED"
+                    ],
+                    "acronyms_en": [
+                        "HIN"
+                    ],
+                    "regex_patterns": [
+                        "\\b[A-Z]{2}\\d{8,10}\\b",
+                        "\\bAMO[:\\s]*\\d+\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA",
+                        "Loi 65-00",
+                        "CNSS Maroc"
+                    ]
+                },
+                {
+                    "name": "Identifiant Biométrique Patient",
+                    "name_en": "Patient Biometric ID",
+                    "synonyms_fr": [
+                        "empreinte patient",
+                        "biométrie médicale"
+                    ],
+                    "synonyms_en": [
+                        "patient fingerprint",
+                        "medical biometrics"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ANTECEDENTS_MEDICAUX",
+            "class_en": "MEDICAL_HISTORY",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Antécédents Personnels",
+                    "name_en": "Personal medical history",
+                    "synonyms_fr": [
+                        "historique médical",
+                        "maladies passées",
+                        "pathologies antérieures"
+                    ],
+                    "synonyms_en": [
+                        "past medical history",
+                        "previous conditions"
+                    ],
+                    "acronyms_fr": [
+                        "ATCD"
+                    ],
+                    "acronyms_en": [
+                        "PMH"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Antécédents Familiaux",
+                    "name_en": "Family medical history",
+                    "synonyms_fr": [
+                        "historique familial",
+                        "maladies héréditaires",
+                        "prédispositions génétiques"
+                    ],
+                    "synonyms_en": [
+                        "family history",
+                        "hereditary conditions"
+                    ],
+                    "acronyms_fr": [
+                        "ATCD FAM"
+                    ],
+                    "acronyms_en": [
+                        "FMH"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Allergies",
+                    "name_en": "Allergies",
+                    "synonyms_fr": [
+                        "allergie médicamenteuse",
+                        "allergie alimentaire",
+                        "substances allergènes"
+                    ],
+                    "synonyms_en": [
+                        "drug allergy",
+                        "food allergy",
+                        "allergens"
+                    ],
+                    "acronyms_fr": [
+                        "ALL"
+                    ],
+                    "acronyms_en": [
+                        "ALL"
+                    ],
+                    "regex_patterns": [
+                        "\\b(allergi(e|que)|allergique à)\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                },
+                {
+                    "name": "Vaccinations",
+                    "name_en": "Vaccination history",
+                    "synonyms_fr": [
+                        "carnet vaccinal",
+                        "historique vaccins",
+                        "immunisations"
+                    ],
+                    "synonyms_en": [
+                        "vaccine record",
+                        "immunization history"
+                    ],
+                    "acronyms_fr": [
+                        "VAC"
+                    ],
+                    "acronyms_en": [
+                        "VAC"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "OMS"
+                    ]
+                },
+                {
+                    "name": "Maladies Chroniques",
+                    "name_en": "Chronic diseases",
+                    "synonyms_fr": [
+                        "diabète",
+                        "hypertension",
+                        "asthme",
+                        "maladie chronique"
+                    ],
+                    "synonyms_en": [
+                        "diabetes",
+                        "hypertension",
+                        "chronic condition"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b(diabète|hypertension|asthme|cancer|VIH|SIDA|hépatite)\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Handicaps",
+                    "name_en": "Disabilities",
+                    "synonyms_fr": [
+                        "handicap physique",
+                        "handicap mental",
+                        "PMR"
+                    ],
+                    "synonyms_en": [
+                        "physical disability",
+                        "mental disability"
+                    ],
+                    "acronyms_fr": [
+                        "PMR"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "INFORMATIONS_CLINIQUES",
+            "class_en": "CLINICAL_INFORMATION",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Diagnostic Principal (ICD-10/11)",
+                    "name_en": "Primary diagnosis (ICD-10/11)",
+                    "synonyms_fr": [
+                        "diagnostic",
+                        "pathologie",
+                        "maladie diagnostiquée",
+                        "code CIM"
+                    ],
+                    "synonyms_en": [
+                        "diagnosis",
+                        "ICD code",
+                        "medical condition"
+                    ],
+                    "acronyms_fr": [
+                        "DX",
+                        "CIM"
+                    ],
+                    "acronyms_en": [
+                        "DX",
+                        "ICD"
+                    ],
+                    "regex_patterns": [
+                        "\\b[A-Z]\\d{2}(\\.\\d{1,2})?\\b"
+                    ],
+                    "format": "Code ICD: Lettre + 2-4 chiffres (ex: J45.0)",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "OMS ICD"
+                    ]
+                },
+                {
+                    "name": "Signes Vitaux",
+                    "name_en": "Vital signs",
+                    "synonyms_fr": [
+                        "tension artérielle",
+                        "pouls",
+                        "température",
+                        "saturation O2"
+                    ],
+                    "synonyms_en": [
+                        "blood pressure",
+                        "pulse",
+                        "temperature",
+                        "SpO2"
+                    ],
+                    "acronyms_fr": [
+                        "TA",
+                        "FC",
+                        "SpO2"
+                    ],
+                    "acronyms_en": [
+                        "BP",
+                        "HR",
+                        "SpO2"
+                    ],
+                    "regex_patterns": [
+                        "\\b\\d{2,3}/\\d{2,3}\\s*(mmHg)?\\b",
+                        "\\bSpO2[:\\s]*\\d{2,3}%\\b"
+                    ],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                },
+                {
+                    "name": "Notes Cliniques",
+                    "name_en": "Clinical notes",
+                    "synonyms_fr": [
+                        "observations médicales",
+                        "compte rendu consultation"
+                    ],
+                    "synonyms_en": [
+                        "clinical observations",
+                        "doctor's notes"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                },
+                {
+                    "name": "Groupe Sanguin",
+                    "name_en": "Blood type",
+                    "synonyms_fr": [
+                        "groupe sanguin",
+                        "rhésus",
+                        "groupe ABO"
+                    ],
+                    "synonyms_en": [
+                        "blood group",
+                        "Rh factor"
+                    ],
+                    "acronyms_fr": [
+                        "GS"
+                    ],
+                    "acronyms_en": [
+                        "BT"
+                    ],
+                    "regex_patterns": [
+                        "\\b(A|B|AB|O)[+−-]\\b",
+                        "\\b(A|B|AB|O)\\s*(positif|négatif|\\+|-)\\b"
+                    ],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ],
+                    "context_required": [
+                        "sang",
+                        "sanguin",
+                        "groupe",
+                        "rhésus"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "RESULTATS_LABORATOIRE",
+            "class_en": "LABORATORY_RESULTS",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Analyses Sanguines",
+                    "name_en": "Blood tests",
+                    "synonyms_fr": [
+                        "NFS",
+                        "glycémie",
+                        "bilan sanguin",
+                        "hémogramme"
+                    ],
+                    "synonyms_en": [
+                        "CBC",
+                        "blood glucose",
+                        "blood work"
+                    ],
+                    "acronyms_fr": [
+                        "NFS",
+                        "HB",
+                        "GLY"
+                    ],
+                    "acronyms_en": [
+                        "CBC",
+                        "BG"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "LOINC"
+                    ]
+                },
+                {
+                    "name": "Tests Sérologiques",
+                    "name_en": "Serological tests",
+                    "synonyms_fr": [
+                        "sérologie",
+                        "HIV",
+                        "hépatite",
+                        "COVID-19",
+                        "test sérologique"
+                    ],
+                    "synonyms_en": [
+                        "HIV test",
+                        "hepatitis screening",
+                        "COVID test"
+                    ],
+                    "acronyms_fr": [
+                        "HIV",
+                        "HBV",
+                        "HCV",
+                        "COVID"
+                    ],
+                    "acronyms_en": [
+                        "HIV",
+                        "HBV",
+                        "HCV"
+                    ],
+                    "regex_patterns": [
+                        "\\b(HIV|VIH|hépatite|COVID)[:\\s]*(positif|négatif|\\+|-)\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Marqueurs Tumoraux",
+                    "name_en": "Tumor markers",
+                    "synonyms_fr": [
+                        "PSA",
+                        "CA-125",
+                        "AFP",
+                        "marqueurs cancer"
+                    ],
+                    "synonyms_en": [
+                        "cancer markers",
+                        "tumor markers"
+                    ],
+                    "acronyms_fr": [
+                        "PSA",
+                        "AFP"
+                    ],
+                    "acronyms_en": [
+                        "PSA",
+                        "AFP"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "IMAGERIE_MEDICALE",
+            "class_en": "MEDICAL_IMAGING",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Radiographies",
+                    "name_en": "X-rays",
+                    "synonyms_fr": [
+                        "radio",
+                        "radiologie",
+                        "rayon X"
+                    ],
+                    "synonyms_en": [
+                        "X-ray",
+                        "radiograph"
+                    ],
+                    "acronyms_fr": [
+                        "RX"
+                    ],
+                    "acronyms_en": [
+                        "XR"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "DICOM"
+                    ]
+                },
+                {
+                    "name": "Scanner (CT)",
+                    "name_en": "CT Scan",
+                    "synonyms_fr": [
+                        "scanner",
+                        "tomodensitométrie",
+                        "TDM"
+                    ],
+                    "synonyms_en": [
+                        "CT scan",
+                        "computed tomography"
+                    ],
+                    "acronyms_fr": [
+                        "TDM",
+                        "CT"
+                    ],
+                    "acronyms_en": [
+                        "CT"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "DICOM"
+                    ]
+                },
+                {
+                    "name": "IRM",
+                    "name_en": "MRI",
+                    "synonyms_fr": [
+                        "IRM",
+                        "résonance magnétique",
+                        "imagerie RM"
+                    ],
+                    "synonyms_en": [
+                        "MRI",
+                        "magnetic resonance imaging"
+                    ],
+                    "acronyms_fr": [
+                        "IRM"
+                    ],
+                    "acronyms_en": [
+                        "MRI"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "DICOM"
+                    ]
+                },
+                {
+                    "name": "Échographies",
+                    "name_en": "Ultrasounds",
+                    "synonyms_fr": [
+                        "échographie",
+                        "écho",
+                        "ultrason"
+                    ],
+                    "synonyms_en": [
+                        "ultrasound",
+                        "sonography"
+                    ],
+                    "acronyms_fr": [
+                        "ECHO"
+                    ],
+                    "acronyms_en": [
+                        "US"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "DICOM"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "TRAITEMENTS_PRESCRIPTIONS",
+            "class_en": "TREATMENTS_PRESCRIPTIONS",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Ordonnances Médicamenteuses",
+                    "name_en": "Prescriptions",
+                    "synonyms_fr": [
+                        "ordonnance",
+                        "prescription",
+                        "médicaments prescrits"
+                    ],
+                    "synonyms_en": [
+                        "prescription",
+                        "medication order"
+                    ],
+                    "acronyms_fr": [
+                        "ORD",
+                        "RX"
+                    ],
+                    "acronyms_en": [
+                        "RX"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                },
+                {
+                    "name": "Médicaments en Cours",
+                    "name_en": "Current medications",
+                    "synonyms_fr": [
+                        "traitement en cours",
+                        "médicaments actuels",
+                        "posologie"
+                    ],
+                    "synonyms_en": [
+                        "current treatment",
+                        "medication list"
+                    ],
+                    "acronyms_fr": [
+                        "TTT"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                },
+                {
+                    "name": "Effets Indésirables",
+                    "name_en": "Adverse effects",
+                    "synonyms_fr": [
+                        "effets secondaires",
+                        "réactions médicamenteuses"
+                    ],
+                    "synonyms_en": [
+                        "side effects",
+                        "adverse reactions"
+                    ],
+                    "acronyms_fr": [
+                        "EI"
+                    ],
+                    "acronyms_en": [
+                        "AE"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "Pharmacovigilance"
+                    ]
+                },
+                {
+                    "name": "Protocoles Thérapeutiques",
+                    "name_en": "Treatment protocols",
+                    "synonyms_fr": [
+                        "chimiothérapie",
+                        "radiothérapie",
+                        "protocole oncologique"
+                    ],
+                    "synonyms_en": [
+                        "chemotherapy",
+                        "radiation therapy",
+                        "oncology protocol"
+                    ],
+                    "acronyms_fr": [
+                        "CHIMIO",
+                        "RT"
+                    ],
+                    "acronyms_en": [
+                        "CHEMO",
+                        "RT"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "SANTE_MENTALE",
+            "class_en": "MENTAL_HEALTH",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Diagnostic Psychiatrique (DSM-5)",
+                    "name_en": "Psychiatric diagnosis",
+                    "synonyms_fr": [
+                        "diagnostic psy",
+                        "trouble mental",
+                        "maladie psychiatrique"
+                    ],
+                    "synonyms_en": [
+                        "mental disorder",
+                        "psychiatric condition"
+                    ],
+                    "acronyms_fr": [
+                        "DSM"
+                    ],
+                    "acronyms_en": [
+                        "DSM"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Évaluations Psychologiques",
+                    "name_en": "Psychological assessments",
+                    "synonyms_fr": [
+                        "bilan psychologique",
+                        "test psychométrique"
+                    ],
+                    "synonyms_en": [
+                        "psychological tests",
+                        "mental health assessment"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                },
+                {
+                    "name": "Traitements Psychotropes",
+                    "name_en": "Psychotropic medications",
+                    "synonyms_fr": [
+                        "antidépresseurs",
+                        "anxiolytiques",
+                        "neuroleptiques"
+                    ],
+                    "synonyms_en": [
+                        "antidepressants",
+                        "anxiolytics",
+                        "antipsychotics"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                },
+                {
+                    "name": "Addictions",
+                    "name_en": "Addictions",
+                    "synonyms_fr": [
+                        "tabac",
+                        "alcool",
+                        "drogues",
+                        "dépendance",
+                        "toxicomanie"
+                    ],
+                    "synonyms_en": [
+                        "tobacco",
+                        "alcohol",
+                        "drug addiction",
+                        "substance abuse"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "RGPD Art.9"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "DONNEES_GENETIQUES",
+            "class_en": "GENETIC_DATA",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Séquençage ADN",
+                    "name_en": "DNA sequencing",
+                    "synonyms_fr": [
+                        "test génétique",
+                        "analyse ADN",
+                        "génome"
+                    ],
+                    "synonyms_en": [
+                        "genetic testing",
+                        "DNA analysis",
+                        "genome"
+                    ],
+                    "acronyms_fr": [
+                        "ADN"
+                    ],
+                    "acronyms_en": [
+                        "DNA"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "HIPAA"
+                    ]
+                },
+                {
+                    "name": "Marqueurs Génétiques",
+                    "name_en": "Genetic markers",
+                    "synonyms_fr": [
+                        "prédispositions",
+                        "BRCA",
+                        "mutations génétiques"
+                    ],
+                    "synonyms_en": [
+                        "genetic predisposition",
+                        "BRCA",
+                        "genetic mutations"
+                    ],
+                    "acronyms_fr": [
+                        "BRCA"
+                    ],
+                    "acronyms_en": [
+                        "BRCA"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Tests de Paternité",
+                    "name_en": "Paternity tests",
+                    "synonyms_fr": [
+                        "test paternité",
+                        "filiation génétique"
+                    ],
+                    "synonyms_en": [
+                        "paternity test",
+                        "genetic filiation"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "SANTE_REPRODUCTIVE",
+            "class_en": "REPRODUCTIVE_HEALTH",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Historique Obstétrical",
+                    "name_en": "Obstetric history",
+                    "synonyms_fr": [
+                        "grossesses",
+                        "accouchements",
+                        "fausses couches"
+                    ],
+                    "synonyms_en": [
+                        "pregnancies",
+                        "deliveries",
+                        "miscarriages"
+                    ],
+                    "acronyms_fr": [
+                        "G",
+                        "P",
+                        "A"
+                    ],
+                    "acronyms_en": [
+                        "G",
+                        "P",
+                        "A"
+                    ],
+                    "regex_patterns": [
+                        "\\bG\\d+P\\d+A?\\d*\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Contraception",
+                    "name_en": "Contraception",
+                    "synonyms_fr": [
+                        "méthode contraceptive",
+                        "pilule",
+                        "stérilet"
+                    ],
+                    "synonyms_en": [
+                        "birth control",
+                        "contraceptive method"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "HIPAA PHI"
+                    ]
+                },
+                {
+                    "name": "PMA / FIV",
+                    "name_en": "Assisted reproduction",
+                    "synonyms_fr": [
+                        "fécondation in vitro",
+                        "procréation assistée",
+                        "PMA"
+                    ],
+                    "synonyms_en": [
+                        "IVF",
+                        "assisted reproduction",
+                        "fertility treatment"
+                    ],
+                    "acronyms_fr": [
+                        "FIV",
+                        "PMA"
+                    ],
+                    "acronyms_en": [
+                        "IVF",
+                        "ART"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "IST",
+                    "name_en": "STIs",
+                    "synonyms_fr": [
+                        "infections sexuellement transmissibles",
+                        "MST",
+                        "maladies vénériennes"
+                    ],
+                    "synonyms_en": [
+                        "sexually transmitted infections",
+                        "STDs"
+                    ],
+                    "acronyms_fr": [
+                        "IST",
+                        "MST"
+                    ],
+                    "acronyms_en": [
+                        "STI",
+                        "STD"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "HIPAA PHI",
+                        "RGPD Art.9"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ASSURANCE_FACTURATION",
+            "class_en": "INSURANCE_BILLING",
+            "type": "PII",
+            "subclasses": [
+                {
+                    "name": "Numéro de Police d'Assurance",
+                    "name_en": "Insurance policy number",
+                    "synonyms_fr": [
+                        "police assurance",
+                        "contrat assurance santé"
+                    ],
+                    "synonyms_en": [
+                        "insurance policy",
+                        "policy number"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b[A-Z]{2,4}\\d{6,12}\\b"
+                    ],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "HIPAA",
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Factures Médicales",
+                    "name_en": "Medical bills",
+                    "synonyms_fr": [
+                        "facture hôpital",
+                        "honoraires",
+                        "frais médicaux"
+                    ],
+                    "synonyms_en": [
+                        "hospital bill",
+                        "medical fees"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "HIPAA",
+                        "PCI-DSS"
+                    ]
+                }
+            ]
+        }
+    ]
+}

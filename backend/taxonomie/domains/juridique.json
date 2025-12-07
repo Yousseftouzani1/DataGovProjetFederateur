@@ -1,0 +1,161 @@
+{
+    "metadata": {
+        "domain_id": "DOM-008",
+        "domain_name": "DONNEES_JUDICIAIRES",
+        "domain_name_en": "JUDICIAL_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données judiciaires et juridiques ultra-sensibles",
+        "total_entities": 6
+    },
+    "categories": [
+        {
+            "class": "DONNEES_JUDICIAIRES",
+            "class_en": "JUDICIAL_DATA",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Casier judiciaire",
+                    "name_en": "Criminal record",
+                    "synonyms_fr": [
+                        "extrait de casier judiciaire",
+                        "B3",
+                        "antécédents judiciaires",
+                        "casier"
+                    ],
+                    "synonyms_en": [
+                        "criminal background",
+                        "police record"
+                    ],
+                    "acronyms_fr": [
+                        "B3"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Loi 09-08",
+                        "Code pénal Maroc"
+                    ]
+                },
+                {
+                    "name": "Jugement / Décision judiciaire",
+                    "name_en": "Court judgment",
+                    "synonyms_fr": [
+                        "jugement",
+                        "décision tribunal",
+                        "verdict",
+                        "condamnation"
+                    ],
+                    "synonyms_en": [
+                        "court decision",
+                        "verdict",
+                        "sentence"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Loi 09-08",
+                        "Code de procédure pénale"
+                    ]
+                },
+                {
+                    "name": "Procès-verbal de police",
+                    "name_en": "Police report",
+                    "synonyms_fr": [
+                        "PV police",
+                        "rapport police",
+                        "plainte"
+                    ],
+                    "synonyms_en": [
+                        "police report",
+                        "complaint"
+                    ],
+                    "acronyms_fr": [
+                        "PV"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Mandat d'arrêt",
+                    "name_en": "Arrest warrant",
+                    "synonyms_fr": [
+                        "mandat",
+                        "avis de recherche"
+                    ],
+                    "synonyms_en": [
+                        "warrant",
+                        "arrest warrant"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Loi 09-08",
+                        "Code de procédure pénale"
+                    ]
+                },
+                {
+                    "name": "Détention / Incarcération",
+                    "name_en": "Detention / Imprisonment",
+                    "synonyms_fr": [
+                        "détention",
+                        "prison",
+                        "incarcération",
+                        "peine"
+                    ],
+                    "synonyms_en": [
+                        "detention",
+                        "imprisonment",
+                        "jail"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Infractions / Délits",
+                    "name_en": "Offenses / Crimes",
+                    "synonyms_fr": [
+                        "infraction",
+                        "délit",
+                        "crime",
+                        "contravention"
+                    ],
+                    "synonyms_en": [
+                        "offense",
+                        "crime",
+                        "misdemeanor"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Loi 09-08",
+                        "RGPD Art.10"
+                    ]
+                }
+            ]
+        }
+    ]
+}

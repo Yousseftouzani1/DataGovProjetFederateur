@@ -1,0 +1,459 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created_date": "2024-11-22",
+    "project": "Plateforme Gouvernance Données - ENSIAS",
+    "description": "Template de taxonomie pour classification des données sensibles",
+    "total_entities": 20,
+    "domains_count": 6,
+    "instructions": "Remplir les champs manquants pour chaque entité. Les champs avec 'TO_FILL' doivent être complétés."
+  },
+  
+  "domains": {
+    "DOM-001": {
+      "domain_id": "DOM-001",
+      "domain_name": "IDENTITE_DOCUMENTS_OFFICIELS",
+      "domain_owner": "Direction RH / Service État Civil",
+      "domain_steward": "DPO",
+      "description_fr": "Documents officiels d'identification émis par les autorités marocaines"
+    },
+    "DOM-002": {
+      "domain_id": "DOM-002",
+      "domain_name": "COORDONNEES_CONTACT",
+      "domain_owner": "Service Marketing / CRM",
+      "domain_steward": "Responsable CRM",
+      "description_fr": "Informations permettant de contacter une personne"
+    },
+    "DOM-003": {
+      "domain_id": "DOM-003",
+      "domain_name": "DONNEES_FINANCIERES",
+      "domain_owner": "Direction Financière / Trésorerie",
+      "domain_steward": "CFO",
+      "description_fr": "Informations bancaires et financières ultra-sensibles"
+    },
+    "DOM-004": {
+      "domain_id": "DOM-004",
+      "domain_name": "DONNEES_PROFESSIONNELLES",
+      "domain_owner": "Direction RH",
+      "domain_steward": "DRH",
+      "description_fr": "Informations liées à l'emploi et la relation de travail"
+    },
+    "DOM-005": {
+      "domain_id": "DOM-005",
+      "domain_name": "DONNEES_MEDICALES",
+      "domain_owner": "Service Médical / DPO",
+      "domain_steward": "Médecin du travail",
+      "description_fr": "Données de santé protégées par le secret médical absolu"
+    },
+    "DOM-006": {
+      "domain_id": "DOM-006",
+      "domain_name": "DONNEES_TECHNIQUES",
+      "domain_owner": "DSI / Service IT",
+      "domain_steward": "CISO",
+      "description_fr": "Données techniques et métadonnées IT"
+    }
+  },
+  
+  "entities": [
+    {
+      "entity_id": "ENT-001",
+      "entity_name": "CIN_MAROC",
+      "display_name": {
+        "fr": "Carte d'Identité Nationale Marocaine",
+        "ar": "بطاقة التعريف الوطنية المغربية",
+        "en": "Moroccan National Identity Card"
+      },
+      "domain_id": "DOM-001",
+      "classification": {
+        "category": "SPI",
+        "sub_category": "Government_Issued_ID",
+        "risk_level": "Critical",
+        "sensitivity_score": 95
+      },
+      "description": {
+        "short_fr": "Numéro unique de la Carte d'Identité Nationale marocaine",
+        "why_sensitive": "Permet usurpation d'identité, fraude bancaire, utilisation frauduleuse services publics",
+        "business_impact": "Critique - Risque pénal + civil + réputation"
+      },
+      "technical_metadata": {
+        "data_format": "2 lettres majuscules + 5-6 chiffres",
+        "regex_patterns": [
+          "\\b[A-Z]{2}[0-9]{5,6}\\b",
+          "\\b[A-Z]{2}\\s*[0-9]{5,6}\\b",
+          "\\b[A-Z]{2}-[0-9]{5,6}\\b"
+        ],
+        "examples_valid": ["AB123456", "CD12345"],
+        "example_masked": "XX***456"
+      },
+      "compliance": {
+        "regulations": [
+          {"name": "Loi 09-08", "authority": "CNDP"},
+          {"name": "GDPR Article 9", "authority": "CEPD"}
+        ],
+        "penalties": {
+          "min": "10,000 MAD",
+          "max": "600,000 MAD + prison 3 mois à 4 ans"
+        }
+      },
+      "security_controls": {
+        "encryption_required": true,
+        "encryption_algorithm": "AES-256",
+        "masking_required": true,
+        "masking_strategy": "Full",
+        "access_control": "ABAC",
+        "mfa_required": true,
+        "audit_logging": "Mandatory"
+      },
+      "data_lifecycle": {
+        "retention_period": "10 ans après fin de relation",
+        "approved_usage": ["Vérification identité", "KYC", "Conformité réglementaire"],
+        "prohibited_usage": ["Marketing", "Profilage", "Revente"]
+      },
+      "atlas_integration": {
+        "classifications": ["PII", "SPI"],
+        "labels": ["cin", "identity", "restricted", "morocco"],
+        "glossary_terms": ["Identité_Nationale", "Document_Officiel"]
+      },
+      "ranger_policy": {
+        "policy_name": "CIN_Access_Policy",
+        "tag_based": true
+      },
+      "synonyms": ["CIN", "CNI", "Carte Identité", "Numéro CIN", "ID National"]
+    },
+    
+    {
+      "entity_id": "ENT-002",
+      "entity_name": "PASSPORT_NUMBER",
+      "display_name": {
+        "fr": "Numéro de Passeport",
+        "ar": "رقم جواز السفر",
+        "en": "Passport Number"
+      },
+      "domain_id": "DOM-001",
+      "classification": {
+        "category": "SPI",
+        "sub_category": "Government_Issued_ID",
+        "risk_level": "Critical",
+        "sensitivity_score": 95
+      },
+      "description": {
+        "short_fr": "Numéro de passeport biométrique marocain",
+        "why_sensitive": "Document de voyage international - risque usurpation identité",
+        "business_impact": "Critique - Voyage frauduleux + blanchiment"
+      },
+      "technical_metadata": {
+        "data_format": "2 lettres + 6-7 chiffres",
+        "regex_patterns": ["\\b[A-Z]{2}[0-9]{6,7}\\b"],
+        "examples_valid": ["AA1234567", "BB9876543"],
+        "example_masked": "XX***567"
+      },
+      "compliance": {
+        "regulations": [
+          {"name": "Loi 09-08", "authority": "CNDP"},
+          {"name": "GDPR Article 9", "authority": "CEPD"}
+        ],
+        "penalties": {"min": "10,000 MAD", "max": "600,000 MAD + prison"}
+      },
+      "security_controls": {
+        "encryption_required": true,
+        "encryption_algorithm": "AES-256",
+        "masking_required": true,
+        "masking_strategy": "Full",
+        "access_control": "ABAC",
+        "mfa_required": true,
+        "audit_logging": "Mandatory"
+      },
+      "data_lifecycle": {
+        "retention_period": "10 ans après fin de relation",
+        "approved_usage": ["Vérification identité", "Voyage international"],
+        "prohibited_usage": ["Marketing", "Revente"]
+      },
+      "atlas_integration": {
+        "classifications": ["PII", "SPI"],
+        "labels": ["passport", "travel", "identity"],
+        "glossary_terms": ["Document_Voyage", "Passeport"]
+      },
+      "ranger_policy": {"policy_name": "PASSPORT_Access_Policy", "tag_based": true},
+      "synonyms": ["Passeport", "Numéro passeport", "Document voyage"]
+    },
+    
+    {
+      "entity_id": "ENT-007",
+      "entity_name": "IBAN_MAROC",
+      "display_name": {
+        "fr": "IBAN/RIB Marocain",
+        "ar": "الحساب البنكي",
+        "en": "Moroccan IBAN"
+      },
+      "domain_id": "DOM-003",
+      "classification": {
+        "category": "SPI",
+        "sub_category": "Financial_Data",
+        "risk_level": "Critical",
+        "sensitivity_score": 100
+      },
+      "description": {
+        "short_fr": "Numéro de compte bancaire international format IBAN",
+        "why_sensitive": "Permet prélèvement frauduleux, transferts non autorisés, vol direct",
+        "business_impact": "Critique - Perte financière directe immédiate"
+      },
+      "technical_metadata": {
+        "data_format": "MA + 2 chiffres contrôle + 20 caractères",
+        "regex_patterns": ["\\bMA[0-9]{2}[0-9]{20}\\b"],
+        "examples_valid": ["MA64011519000001205000534", "MA12345678901234567890"],
+        "example_masked": "MAXX***534"
+      },
+      "compliance": {
+        "regulations": [
+          {"name": "Loi 09-08", "authority": "CNDP"},
+          {"name": "PCI-DSS", "authority": "PCI SSC"},
+          {"name": "Bank Al-Maghrib Regulations", "authority": "Bank Al-Maghrib"}
+        ],
+        "penalties": {"min": "10,000 MAD", "max": "600,000 MAD + 5,000-100,000 USD/mois"}
+      },
+      "security_controls": {
+        "encryption_required": true,
+        "encryption_algorithm": "AES-256 + HSM",
+        "masking_required": true,
+        "masking_strategy": "Full + Tokenization",
+        "access_control": "ABAC",
+        "mfa_required": true,
+        "audit_logging": "Real-time"
+      },
+      "data_lifecycle": {
+        "retention_period": "7 ans après clôture compte",
+        "approved_usage": ["Paiements autorisés", "Transferts autorisés"],
+        "prohibited_usage": ["Marketing", "Revente", "Partage non autorisé"]
+      },
+      "atlas_integration": {
+        "classifications": ["SPI", "Financial"],
+        "labels": ["iban", "banking", "payment"],
+        "glossary_terms": ["Compte_Bancaire", "RIB"]
+      },
+      "ranger_policy": {"policy_name": "IBAN_Access_Policy", "tag_based": true},
+      "synonyms": ["IBAN", "RIB", "Compte Bancaire", "Numéro compte"]
+    },
+    
+    {
+      "entity_id": "ENT-009",
+      "entity_name": "CVV_CODE",
+      "display_name": {
+        "fr": "Code CVV",
+        "ar": "رمز CVV",
+        "en": "CVV Code"
+      },
+      "domain_id": "DOM-003",
+      "classification": {
+        "category": "SPI",
+        "sub_category": "Financial_Data",
+        "risk_level": "Critical",
+        "sensitivity_score": 100
+      },
+      "description": {
+        "short_fr": "Code de sécurité 3 chiffres au dos de carte bancaire",
+        "why_sensitive": "Permet transactions en ligne sans possession physique carte",
+        "business_impact": "Critique - Fraude en ligne immédiate"
+      },
+      "technical_metadata": {
+        "data_format": "3 chiffres",
+        "regex_patterns": ["\\b[0-9]{3}\\b"],
+        "examples_valid": ["123", "456"],
+        "example_masked": "***"
+      },
+      "compliance": {
+        "regulations": [
+          {"name": "PCI-DSS Level 1", "authority": "PCI SSC"}
+        ],
+        "penalties": {"min": "INTERDICTION TOTALE", "max": "INTERDICTION TOTALE"}
+      },
+      "security_controls": {
+        "encryption_required": false,
+        "encryption_algorithm": "N/A - INTERDICTION TOTALE STOCKAGE",
+        "masking_required": false,
+        "masking_strategy": "N/A",
+        "access_control": "N/A",
+        "mfa_required": false,
+        "audit_logging": "N/A"
+      },
+      "data_lifecycle": {
+        "retention_period": "JAMAIS - Usage immédiat puis effacement",
+        "approved_usage": ["Transaction en cours uniquement"],
+        "prohibited_usage": ["INTERDIT: Stockage sous toute forme"]
+      },
+      "atlas_integration": {
+        "classifications": ["SPI", "PCI"],
+        "labels": ["cvv", "payment", "never_store"],
+        "glossary_terms": ["Code_Securite"]
+      },
+      "ranger_policy": {"policy_name": "CVV_NEVER_STORE", "tag_based": true},
+      "synonyms": ["CVV", "Code sécurité", "CVC"]
+    },
+    
+    {
+      "entity_id": "ENT-011",
+      "entity_name": "CNSS_NUMBER",
+      "display_name": {
+        "fr": "Numéro CNSS",
+        "ar": "رقم الضمان الاجتماعي",
+        "en": "Social Security Number"
+      },
+      "domain_id": "DOM-004",
+      "classification": {
+        "category": "SPI",
+        "sub_category": "Employment_Data",
+        "risk_level": "Critical",
+        "sensitivity_score": 95
+      },
+      "description": {
+        "short_fr": "Numéro d'immatriculation Caisse Nationale Sécurité Sociale",
+        "why_sensitive": "Unique permanent, lie à tous droits sociaux (retraite, santé)",
+        "business_impact": "Critique - Fraude sociale + usurpation droits"
+      },
+      "technical_metadata": {
+        "data_format": "12 chiffres",
+        "regex_patterns": ["\\b[0-9]{12}\\b"],
+        "examples_valid": ["123456789012", "987654321098"],
+        "example_masked": "***890**"
+      },
+      "compliance": {
+        "regulations": [
+          {"name": "Loi 09-08", "authority": "CNDP"},
+          {"name": "Dahir 1-72-184", "authority": "CNSS"}
+        ],
+        "penalties": {"min": "10,000 MAD", "max": "600,000 MAD + prison"}
+      },
+      "security_controls": {
+        "encryption_required": true,
+        "encryption_algorithm": "AES-256",
+        "masking_required": true,
+        "masking_strategy": "Partial",
+        "access_control": "ABAC",
+        "mfa_required": true,
+        "audit_logging": "Mandatory"
+      },
+      "data_lifecycle": {
+        "retention_period": "Durée de vie + 20 ans",
+        "approved_usage": ["Déclarations sociales", "Retraite", "AMO"],
+        "prohibited_usage": ["Marketing", "Profilage", "Revente"]
+      },
+      "atlas_integration": {
+        "classifications": ["SPI", "Social_Security"],
+        "labels": ["cnss", "employment", "social"],
+        "glossary_terms": ["Securite_Sociale", "CNSS"]
+      },
+      "ranger_policy": {"policy_name": "CNSS_Access_Policy", "tag_based": true},
+      "synonyms": ["CNSS", "Sécurité sociale", "Numéro social"]
+    },
+    
+    {
+      "entity_id": "ENT-013",
+      "entity_name": "MEDICAL_RECORD",
+      "display_name": {
+        "fr": "Dossier Médical",
+        "ar": "الملف الطبي",
+        "en": "Medical Record"
+      },
+      "domain_id": "DOM-005",
+      "classification": {
+        "category": "SPI",
+        "sub_category": "Health_Data",
+        "risk_level": "Critical",
+        "sensitivity_score": 100
+      },
+      "description": {
+        "short_fr": "Numéro et contenu du dossier médical patient",
+        "why_sensitive": "Secret médical absolu - historique santé complet",
+        "business_impact": "Critique - Poursuites pénales médecin + discrimination"
+      },
+      "technical_metadata": {
+        "data_format": "Numéro dossier unique établissement",
+        "regex_patterns": [],
+        "examples_valid": ["MED-2024-001", "MED-2024-999"],
+        "example_masked": "MED-XXXX-XXX"
+      },
+      "compliance": {
+        "regulations": [
+          {"name": "Loi 09-08", "authority": "CNDP"},
+          {"name": "Code pénal art.446 - Secret médical", "authority": "Ministère Justice"}
+        ],
+        "penalties": {"min": "10,000 MAD", "max": "600,000 MAD + poursuites pénales"}
+      },
+      "security_controls": {
+        "encryption_required": true,
+        "encryption_algorithm": "AES-256 + HSM",
+        "masking_required": true,
+        "masking_strategy": "Full",
+        "access_control": "ABAC",
+        "mfa_required": true,
+        "audit_logging": "Real-time"
+      },
+      "data_lifecycle": {
+        "retention_period": "20 ans minimum",
+        "approved_usage": ["Soins médicaux", "Suivi patient autorisé"],
+        "prohibited_usage": ["Marketing", "Assurance sans consentement", "Recherche sans anonymisation"]
+      },
+      "atlas_integration": {
+        "classifications": ["SPI", "PHI"],
+        "labels": ["medical", "health", "confidential"],
+        "glossary_terms": ["Dossier_Medical", "Secret_Medical"]
+      },
+      "ranger_policy": {"policy_name": "MEDICAL_Access_Policy", "tag_based": true},
+      "synonyms": ["Dossier médical", "Dossier patient", "Historique santé"]
+    }
+  ],
+  
+  "template_for_new_entities": {
+    "entity_id": "ENT-XXX",
+    "entity_name": "TO_FILL",
+    "display_name": {
+      "fr": "TO_FILL",
+      "ar": "TO_FILL",
+      "en": "TO_FILL"
+    },
+    "domain_id": "TO_FILL (DOM-001 à DOM-006)",
+    "classification": {
+      "category": "TO_FILL (PII ou SPI)",
+      "sub_category": "TO_FILL",
+      "risk_level": "TO_FILL (Low, Medium, High, Critical)",
+      "sensitivity_score": "TO_FILL (0-100)"
+    },
+    "description": {
+      "short_fr": "TO_FILL",
+      "why_sensitive": "TO_FILL",
+      "business_impact": "TO_FILL"
+    },
+    "technical_metadata": {
+      "data_format": "TO_FILL",
+      "regex_patterns": ["TO_FILL"],
+      "examples_valid": ["TO_FILL"],
+      "example_masked": "TO_FILL"
+    },
+    "compliance": {
+      "regulations": [
+        {"name": "TO_FILL", "authority": "TO_FILL"}
+      ],
+      "penalties": {"min": "TO_FILL", "max": "TO_FILL"}
+    },
+    "security_controls": {
+      "encryption_required": "TO_FILL (true/false)",
+      "encryption_algorithm": "TO_FILL",
+      "masking_required": "TO_FILL (true/false)",
+      "masking_strategy": "TO_FILL (None, Partial, Full)",
+      "access_control": "TO_FILL (RBAC, ABAC)",
+      "mfa_required": "TO_FILL (true/false)",
+      "audit_logging": "TO_FILL (None, Basic, Mandatory, Real-time)"
+    },
+    "data_lifecycle": {
+      "retention_period": "TO_FILL",
+      "approved_usage": ["TO_FILL"],
+      "prohibited_usage": ["TO_FILL"]
+    },
+    "atlas_integration": {
+      "classifications": ["TO_FILL"],
+      "labels": ["TO_FILL"],
+      "glossary_terms": ["TO_FILL"]
+    },
+    "ranger_policy": {"policy_name": "TO_FILL", "tag_based": true},
+    "synonyms": ["TO_FILL"]
+  }
+}

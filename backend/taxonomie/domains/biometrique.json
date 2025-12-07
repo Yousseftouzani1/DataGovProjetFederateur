@@ -1,0 +1,173 @@
+{
+    "metadata": {
+        "domain_id": "DOM-007",
+        "domain_name": "DONNEES_BIOMETRIQUES",
+        "domain_name_en": "BIOMETRIC_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données biométriques - IMMUABLES, ne peuvent être changées",
+        "total_entities": 6
+    },
+    "categories": [
+        {
+            "class": "DONNEES_BIOMETRIQUES",
+            "class_en": "BIOMETRIC_DATA",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Empreintes digitales",
+                    "name_en": "Fingerprints",
+                    "synonyms_fr": [
+                        "empreintes",
+                        "dactyloscopie",
+                        "empreinte digitale"
+                    ],
+                    "synonyms_en": [
+                        "fingerprint",
+                        "fingerprint scan"
+                    ],
+                    "acronyms_fr": [
+                        "EMP"
+                    ],
+                    "acronyms_en": [
+                        "FP"
+                    ],
+                    "regex_patterns": [],
+                    "data_format": "image, template, minutiae",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ],
+                    "why_sensitive": "IMMUABLE - ne peut être changé en cas de compromission"
+                },
+                {
+                    "name": "Reconnaissance faciale",
+                    "name_en": "Facial recognition",
+                    "synonyms_fr": [
+                        "biométrie faciale",
+                        "visage",
+                        "reconnaissance visage",
+                        "photo biométrique"
+                    ],
+                    "synonyms_en": [
+                        "face recognition",
+                        "facial biometrics"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [
+                        "FR"
+                    ],
+                    "regex_patterns": [],
+                    "data_format": "photo, vecteurs faciaux, embeddings",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Scan de l'iris",
+                    "name_en": "Iris scan",
+                    "synonyms_fr": [
+                        "scan iris",
+                        "reconnaissance iris",
+                        "biométrie oculaire"
+                    ],
+                    "synonyms_en": [
+                        "iris recognition",
+                        "eye scan"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "data_format": "image, code iris",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Empreinte vocale",
+                    "name_en": "Voice biometrics",
+                    "synonyms_fr": [
+                        "reconnaissance vocale biométrique",
+                        "voix",
+                        "voiceprint"
+                    ],
+                    "synonyms_en": [
+                        "voice recognition",
+                        "voiceprint"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "data_format": "audio, voiceprint",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "ADN / Données génétiques",
+                    "name_en": "DNA / Genetic data",
+                    "synonyms_fr": [
+                        "ADN",
+                        "génome",
+                        "données génétiques",
+                        "profil ADN"
+                    ],
+                    "synonyms_en": [
+                        "DNA",
+                        "genetic data",
+                        "genome"
+                    ],
+                    "acronyms_fr": [
+                        "ADN"
+                    ],
+                    "acronyms_en": [
+                        "DNA"
+                    ],
+                    "regex_patterns": [],
+                    "data_format": "séquence génétique, profil ADN",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ],
+                    "why_sensitive": "Données génétiques héritables - impact sur famille"
+                },
+                {
+                    "name": "Géométrie de la main",
+                    "name_en": "Hand geometry",
+                    "synonyms_fr": [
+                        "forme main",
+                        "géométrie palmaire"
+                    ],
+                    "synonyms_en": [
+                        "hand shape",
+                        "palm geometry"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "data_format": "mesures, template",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ]
+                }
+            ]
+        }
+    ]
+}

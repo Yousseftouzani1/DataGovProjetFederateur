@@ -1,0 +1,117 @@
+Catégorie,Type de Donnée,Description Détaillée,Niveau de Sensibilité,Réglementation Applicable
+1. IDENTIFICATION DE L'EMPLOYÉ,Matricule Employé,Identifiant unique dans l'entreprise,Élevée (PII),"RGPD Art.6, Loi 09-08"
+1. IDENTIFICATION DE L'EMPLOYÉ,Numéro CNSS,Identifiant Caisse Nationale de Sécurité Sociale,Très Élevée (PII),"Loi 09-08, Code travail"
+1. IDENTIFICATION DE L'EMPLOYÉ,Numéro CIN,Carte d'Identité Nationale,Très Élevée (PII),Loi 09-08
+1. IDENTIFICATION DE L'EMPLOYÉ,Photo d'Identité Professionnelle,"Badge, carte employé",Élevée (PII),RGPD Art.6
+1. IDENTIFICATION DE L'EMPLOYÉ,Signature Électronique/Manuscrite,Authentification documents,Élevée (PII),Loi 53-05 Maroc
+1. IDENTIFICATION DE L'EMPLOYÉ,Données Biométriques (Pointage),"Empreintes, reconnaissance faciale",Très Élevée (SPI),"RGPD Art.9, Loi 09-08"
+1. IDENTIFICATION DE L'EMPLOYÉ,Email Professionnel,Adresse email entreprise,Moyenne (PII),RGPD Art.6
+1. IDENTIFICATION DE L'EMPLOYÉ,Numéro de Téléphone Professionnel,Ligne téléphonique travail,Moyenne (PII),RGPD Art.6
+2. INFORMATIONS CONTRACTUELLES,Type de Contrat,"CDI, CDD, Intérim, Stage, etc.",Moyenne,Code du travail
+2. INFORMATIONS CONTRACTUELLES,Date d'Embauche,Date de début de contrat,Moyenne,Code du travail
+2. INFORMATIONS CONTRACTUELLES,Date de Fin de Contrat,Pour CDD/Stage,Moyenne,Code du travail
+2. INFORMATIONS CONTRACTUELLES,Période d'Essai,Durée et résultat,Moyenne,Code du travail
+2. INFORMATIONS CONTRACTUELLES,Poste/Fonction,Intitulé du poste occupé,Moyenne,RGPD Art.6
+2. INFORMATIONS CONTRACTUELLES,Classification/Échelon,"Niveau hiérarchique, coefficient",Moyenne,Convention collective
+2. INFORMATIONS CONTRACTUELLES,Service/Département,Unité organisationnelle,Faible,Interne
+2. INFORMATIONS CONTRACTUELLES,Lieu de Travail,"Site, agence, télétravail",Moyenne,Code du travail
+2. INFORMATIONS CONTRACTUELLES,Temps de Travail,"Temps plein, partiel, horaires",Moyenne,Code du travail
+2. INFORMATIONS CONTRACTUELLES,Clause de Non-Concurrence,Restrictions post-emploi,Élevée,Code du travail
+2. INFORMATIONS CONTRACTUELLES,Clause de Confidentialité,Engagements de secret,Élevée,Droit des contrats
+2. INFORMATIONS CONTRACTUELLES,Avenant au Contrat,Modifications contractuelles,Moyenne,Code du travail
+3. RÉMUNÉRATION ET AVANTAGES,Salaire Brut,Rémunération avant déductions,Très Élevée (PII),"RGPD, Code travail"
+3. RÉMUNÉRATION ET AVANTAGES,Salaire Net,Rémunération après déductions,Très Élevée (PII),"RGPD, Code travail"
+3. RÉMUNÉRATION ET AVANTAGES,Primes et Bonus,"Prime de rendement, 13ème mois, etc.",Élevée (PII),RGPD
+3. RÉMUNÉRATION ET AVANTAGES,Heures Supplémentaires,Calcul et paiement,Élevée,Code du travail
+3. RÉMUNÉRATION ET AVANTAGES,Indemnités,"Transport, repas, logement",Élevée,Code du travail
+3. RÉMUNÉRATION ET AVANTAGES,Avantages en Nature,"Véhicule, logement, téléphone",Élevée,Fiscalité
+3. RÉMUNÉRATION ET AVANTAGES,Participation/Intéressement,Parts sur bénéfices,Élevée (PII),RGPD
+3. RÉMUNÉRATION ET AVANTAGES,Stock-Options/Actions,Attributions d'actions,Élevée (PII),RGPD
+3. RÉMUNÉRATION ET AVANTAGES,Mutuelle/Prévoyance,Couverture santé complémentaire,Élevée (SPI),RGPD Art.9
+3. RÉMUNÉRATION ET AVANTAGES,Retraite Complémentaire,Cotisations et droits acquis,Élevée (PII),RGPD
+3. RÉMUNÉRATION ET AVANTAGES,RIB/Coordonnées Bancaires,Compte pour virement salaire,Très Élevée (PII),"PCI-DSS, RGPD"
+3. RÉMUNÉRATION ET AVANTAGES,Bulletins de Paie,Historique des fiches de paie,Très Élevée (PII),"RGPD, Code travail"
+4. QUALIFICATIONS ET COMPÉTENCES,Diplômes Académiques,"Baccalauréat, Licence, Master, Doctorat",Moyenne (PII),RGPD Art.6
+4. QUALIFICATIONS ET COMPÉTENCES,Établissements de Formation,"Universités, écoles fréquentées",Faible,RGPD Art.6
+4. QUALIFICATIONS ET COMPÉTENCES,Certifications Professionnelles,"PMP, CFA, CISSP, etc.",Moyenne (PII),RGPD Art.6
+4. QUALIFICATIONS ET COMPÉTENCES,Habilitations,"Électrique, CACES, SST, etc.",Élevée,Sécurité au travail
+4. QUALIFICATIONS ET COMPÉTENCES,Licences Professionnelles,"Permis d'exercer (médical, juridique)",Élevée,Réglementation sectorielle
+4. QUALIFICATIONS ET COMPÉTENCES,Langues Parlées,Niveaux de maîtrise (CECRL),Faible,Interne
+4. QUALIFICATIONS ET COMPÉTENCES,Compétences Techniques,"Langages, outils, technologies",Faible,Interne
+4. QUALIFICATIONS ET COMPÉTENCES,Compétences Comportementales,"Soft skills, leadership",Faible,Interne
+4. QUALIFICATIONS ET COMPÉTENCES,Formations Continues,"Stages, séminaires, MOOC",Faible,Interne
+4. QUALIFICATIONS ET COMPÉTENCES,Validité des Certifications,Dates d'expiration,Moyenne,Réglementation
+4. QUALIFICATIONS ET COMPÉTENCES,Agrément Ministériel,Pour professions réglementées,Élevée,Réglementation
+4. QUALIFICATIONS ET COMPÉTENCES,Inscription Ordres Professionnels,"Médecins, avocats, architectes",Élevée,Déontologie
+5. PARCOURS PROFESSIONNEL,CV/Curriculum Vitae,Document de candidature,Moyenne (PII),RGPD Art.6
+5. PARCOURS PROFESSIONNEL,Lettres de Motivation,Documents de candidature,Faible,RGPD Art.6
+5. PARCOURS PROFESSIONNEL,Expériences Antérieures,Postes précédents occupés,Moyenne,RGPD Art.6
+5. PARCOURS PROFESSIONNEL,Ancienneté,Durée dans l'entreprise,Faible,Code du travail
+5. PARCOURS PROFESSIONNEL,Promotions,Évolutions de poste/grade,Moyenne,Interne
+5. PARCOURS PROFESSIONNEL,Mutations,Changements de lieu/service,Moyenne,Code du travail
+5. PARCOURS PROFESSIONNEL,Détachements,Missions temporaires ailleurs,Moyenne,Code du travail
+5. PARCOURS PROFESSIONNEL,Références Professionnelles,Contacts d'anciens employeurs,Moyenne (PII),RGPD Art.6
+5. PARCOURS PROFESSIONNEL,Attestations de Travail,Documents de fin de contrat,Moyenne,Code du travail
+5. PARCOURS PROFESSIONNEL,Certificats de Travail,Confirmation d'emploi,Moyenne,Code du travail
+5. PARCOURS PROFESSIONNEL,Lettres de Recommandation,Témoignages professionnels,Moyenne,RGPD Art.6
+5. PARCOURS PROFESSIONNEL,Plan de Carrière,Évolution prévue,Faible,Interne
+6. ÉVALUATION DE PERFORMANCE,Objectifs Annuels,"KPIs, OKRs définis",Moyenne,RGPD Art.6
+6. ÉVALUATION DE PERFORMANCE,Évaluation Annuelle,Résultats de l'entretien annuel,Élevée (PII),RGPD Art.6
+6. ÉVALUATION DE PERFORMANCE,Notation/Score,Note de performance attribuée,Élevée (PII),RGPD Art.6
+6. ÉVALUATION DE PERFORMANCE,Feedback 360°,Évaluations multi-sources,Élevée (PII),RGPD Art.6
+6. ÉVALUATION DE PERFORMANCE,Auto-évaluation,Appréciation personnelle,Moyenne,RGPD Art.6
+6. ÉVALUATION DE PERFORMANCE,Plan de Développement Personnel,Axes d'amélioration,Moyenne,RGPD Art.6
+6. ÉVALUATION DE PERFORMANCE,Indicateurs de Productivité,Métriques de travail,Élevée,RGPD Art.6
+6. ÉVALUATION DE PERFORMANCE,Résultats de Tests d'Aptitude,Évaluations de compétences,Élevée (PII),RGPD Art.6
+6. ÉVALUATION DE PERFORMANCE,Période Probatoire,Évaluation période d'essai,Élevée,Code du travail
+6. ÉVALUATION DE PERFORMANCE,Reconnaissance/Récompenses,"Prix, distinctions",Faible,Interne
+6. ÉVALUATION DE PERFORMANCE,Potentiel d'Évolution,Succession planning,Moyenne,Interne
+6. ÉVALUATION DE PERFORMANCE,Commentaires Manager,Appréciations hiérarchiques,Élevée (PII),RGPD Art.6
+7. ABSENCES ET CONGÉS,Congés Payés,Solde et historique CP,Moyenne,Code du travail
+7. ABSENCES ET CONGÉS,RTT,Réduction Temps de Travail,Moyenne,Code du travail
+7. ABSENCES ET CONGÉS,Congé Maladie,Arrêts maladie avec justificatifs,Élevée (SPI),"RGPD Art.9, HIPAA"
+7. ABSENCES ET CONGÉS,Congé Maternité/Paternité,Congés parentaux,Élevée (SPI),RGPD Art.9
+7. ABSENCES ET CONGÉS,Congé Parental,Temps partiel pour enfant,Moyenne,Code du travail
+7. ABSENCES ET CONGÉS,Congé Sans Solde,Absence non rémunérée,Moyenne,Code du travail
+7. ABSENCES ET CONGÉS,Congé Formation,Absences pour formation,Faible,Code du travail
+7. ABSENCES ET CONGÉS,Absences Injustifiées,Absences sans motif,Élevée,Code du travail
+7. ABSENCES ET CONGÉS,Accident de Travail,Déclaration et suivi AT,Très Élevée (SPI),"RGPD Art.9, CNAMTS"
+7. ABSENCES ET CONGÉS,Maladie Professionnelle,Pathologies liées au travail,Très Élevée (SPI),RGPD Art.9
+7. ABSENCES ET CONGÉS,Temps Partiel Thérapeutique,Mi-temps thérapeutique,Élevée (SPI),RGPD Art.9
+7. ABSENCES ET CONGÉS,Planning/Emploi du Temps,Horaires de travail,Faible,Code du travail
+8. DOSSIER DISCIPLINAIRE,Avertissements,Sanctions disciplinaires légères,Élevée (PII),"Code du travail, RGPD"
+8. DOSSIER DISCIPLINAIRE,Blâmes,Sanctions disciplinaires moyennes,Élevée (PII),"Code du travail, RGPD"
+8. DOSSIER DISCIPLINAIRE,Mise à Pied,Suspension temporaire,Élevée (PII),Code du travail
+8. DOSSIER DISCIPLINAIRE,Rétrogradation,Réduction de grade/échelon,Élevée (PII),Code du travail
+8. DOSSIER DISCIPLINAIRE,Licenciement pour Faute,Rupture pour motif disciplinaire,Très Élevée (PII),Code du travail
+8. DOSSIER DISCIPLINAIRE,Procès-verbaux de Réunion,PV de commissions disciplinaires,Élevée,Code du travail
+8. DOSSIER DISCIPLINAIRE,Courriers d'Observation,Rappels à l'ordre informels,Moyenne,Interne
+8. DOSSIER DISCIPLINAIRE,Contentieux Prud'homal,Litiges juridiques,Très Élevée,Droit du travail
+8. DOSSIER DISCIPLINAIRE,Harcèlement (signalements),Plaintes pour harcèlement,Très Élevée (SPI),"RGPD Art.9, Code pénal"
+8. DOSSIER DISCIPLINAIRE,Enquêtes Internes,Investigations RH,Élevée,RGPD Art.6
+8. DOSSIER DISCIPLINAIRE,Sanctions Annulées,Décisions annulées,Moyenne,Code du travail
+8. DOSSIER DISCIPLINAIRE,Réhabilitation,Effacement de sanctions,Moyenne,Code du travail
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Aptitude Médicale,Résultat visite médecine du travail,Élevée (SPI),"RGPD Art.9, Code travail"
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Restrictions d'Aptitude,Limitations médicales,Très Élevée (SPI),RGPD Art.9
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Inaptitude,Déclaration d'inaptitude au poste,Très Élevée (SPI),RGPD Art.9
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Visites Médicales,Dates et résumés des visites,Élevée (SPI),RGPD Art.9
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Expositions Professionnelles,"Produits chimiques, bruit, etc.",Élevée (SPI),RGPD Art.9
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Équipements de Protection,EPI attribués,Faible,Sécurité
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Formations Sécurité,Habilitations sécurité,Moyenne,Code du travail
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Registre des Accidents,Historique des incidents,Élevée (SPI),RGPD Art.9
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Déclaration RQTH,Reconnaissance travailleur handicapé,Très Élevée (SPI),"RGPD Art.9, Loi 09-08"
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Aménagement de Poste,Adaptations pour handicap,Élevée (SPI),RGPD Art.9
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Suivi Post-Exposition,Monitoring santé spécifique,Élevée (SPI),RGPD Art.9
+9. SANTÉ ET SÉCURITÉ AU TRAVAIL,Dossier Médical SST,Dossier médecine du travail,Très Élevée (SPI),"RGPD Art.9, HIPAA"
+10. DOCUMENTS ADMINISTRATIFS,Contrat de Travail Original,Document contractuel signé,Élevée,Code du travail
+10. DOCUMENTS ADMINISTRATIFS,Avenants Contractuels,Modifications de contrat,Élevée,Code du travail
+10. DOCUMENTS ADMINISTRATIFS,Fiche de Poste,Description des responsabilités,Faible,Interne
+10. DOCUMENTS ADMINISTRATIFS,Organigramme,Position dans l'organisation,Faible,Interne
+10. DOCUMENTS ADMINISTRATIFS,Délégation de Pouvoirs,Autorité déléguée,Élevée,Droit des sociétés
+10. DOCUMENTS ADMINISTRATIFS,Attestation Employeur,Justificatifs divers,Moyenne,Interne
+10. DOCUMENTS ADMINISTRATIFS,Solde de Tout Compte,Document fin de contrat,Élevée (PII),Code du travail
+10. DOCUMENTS ADMINISTRATIFS,Certificat de Travail,Attestation emploi,Moyenne,Code du travail
+10. DOCUMENTS ADMINISTRATIFS,Reçu pour Solde de Tout Compte,Accusé de réception,Élevée,Code du travail
+10. DOCUMENTS ADMINISTRATIFS,Attestation Pôle Emploi/ANAPEC,Pour droits chômage,Élevée (PII),Réglementation
+10. DOCUMENTS ADMINISTRATIFS,Fiches de Présence/Pointage,Enregistrements temps,Moyenne,Code du travail
+10. DOCUMENTS ADMINISTRATIFS,Notes de Frais,Remboursements de dépenses,Moyenne,Fiscalité

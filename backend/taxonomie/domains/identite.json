@@ -1,0 +1,236 @@
+{
+    "metadata": {
+        "domain_id": "DOM-001",
+        "domain_name": "IDENTITE_DOCUMENTS_OFFICIELS",
+        "domain_name_en": "OFFICIAL_IDENTITY_DOCUMENTS",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Documents officiels d'identification émis par les autorités marocaines",
+        "total_entities": 6
+    },
+    "categories": [
+        {
+            "class": "IDENTITE_PERSONNELLE",
+            "class_en": "PERSONAL_IDENTITY",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Nom complet",
+                    "name_en": "Full name",
+                    "synonyms_fr": [
+                        "nom et prénom",
+                        "identité civile",
+                        "nom patronymique",
+                        "nom de famille"
+                    ],
+                    "synonyms_en": [
+                        "full legal name",
+                        "civil identity",
+                        "personal name"
+                    ],
+                    "acronyms_fr": [
+                        "NOM"
+                    ],
+                    "acronyms_en": [
+                        "FN"
+                    ],
+                    "regex_patterns": [
+                        "\\b[A-Z][a-zàâçéèêëïîôùûü-]+\\s+[A-Z][a-zàâçéèêëïîôùûü-]+\\b",
+                        "\\b[A-Z][A-Z\\s]+\\b"
+                    ],
+                    "sensitivity_level": "high",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08",
+                        "RGPD Art.6"
+                    ]
+                },
+                {
+                    "name": "CIN - Carte d'Identité Nationale",
+                    "name_en": "National Identity Card",
+                    "synonyms_fr": [
+                        "carte nationale",
+                        "pièce d'identité",
+                        "carte d'identité",
+                        "CNI"
+                    ],
+                    "synonyms_en": [
+                        "ID card",
+                        "national ID",
+                        "identity card"
+                    ],
+                    "acronyms_fr": [
+                        "CIN",
+                        "CNI"
+                    ],
+                    "acronyms_en": [
+                        "NIC",
+                        "ID"
+                    ],
+                    "regex_patterns": [
+                        "\\b[A-Z]{1,2}\\d{5,8}\\b",
+                        "\\bCIN[:\\s]*[A-Z]{1,2}\\d{5,8}\\b",
+                        "\\b[A-Z]{2}\\s*[0-9]{5,6}\\b",
+                        "\\b[A-Z]{2}-[0-9]{5,6}\\b"
+                    ],
+                    "format": "1-2 lettres majuscules + 5-8 chiffres (ex: AB123456, CD12345)",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Loi 09-08",
+                        "RGPD Art.9"
+                    ],
+                    "why_sensitive": "Permet usurpation d'identité, fraude bancaire, utilisation frauduleuse services publics"
+                },
+                {
+                    "name": "Numéro de passeport",
+                    "name_en": "Passport number",
+                    "synonyms_fr": [
+                        "passeport",
+                        "document de voyage",
+                        "passeport biométrique"
+                    ],
+                    "synonyms_en": [
+                        "passport ID",
+                        "travel document",
+                        "biometric passport"
+                    ],
+                    "acronyms_fr": [
+                        "PP",
+                        "PASS"
+                    ],
+                    "acronyms_en": [
+                        "PP",
+                        "PASS"
+                    ],
+                    "regex_patterns": [
+                        "\\b[A-Z]{1,2}\\d{6,9}\\b",
+                        "\\b\\d{8,9}\\b",
+                        "\\bPASS[:\\s]*[A-Z]{1,2}\\d{6,9}\\b"
+                    ],
+                    "format": "1-2 lettres + 6-9 chiffres (ex: AA1234567)",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Loi 09-08",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Date de naissance",
+                    "name_en": "Date of birth",
+                    "synonyms_fr": [
+                        "né(e) le",
+                        "date naissance",
+                        "anniversaire"
+                    ],
+                    "synonyms_en": [
+                        "DOB",
+                        "birthdate",
+                        "birthday"
+                    ],
+                    "acronyms_fr": [
+                        "DDN"
+                    ],
+                    "acronyms_en": [
+                        "DOB"
+                    ],
+                    "regex_patterns": [
+                        "\\b(0[1-9]|[12][0-9]|3[01])[-/](0[1-9]|1[0-2])[-/](19|20)\\d{2}\\b",
+                        "\\b(19|20)\\d{2}[-/](0[1-9]|1[0-2])[-/](0[1-9]|[12][0-9]|3[01])\\b"
+                    ],
+                    "format": "DD/MM/YYYY ou YYYY-MM-DD",
+                    "sensitivity_level": "high",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08",
+                        "RGPD Art.6"
+                    ]
+                },
+                {
+                    "name": "Lieu de naissance",
+                    "name_en": "Place of birth",
+                    "synonyms_fr": [
+                        "né(e) à",
+                        "ville de naissance",
+                        "lieu naissance"
+                    ],
+                    "synonyms_en": [
+                        "birthplace",
+                        "place of birth"
+                    ],
+                    "acronyms_fr": [
+                        "LN"
+                    ],
+                    "acronyms_en": [
+                        "POB"
+                    ],
+                    "regex_patterns": [
+                        "\\bné(e)?\\s+(à|au|aux)\\s+[A-Z][a-zàâçéèêëïîôùûü-]+\\b"
+                    ],
+                    "sensitivity_level": "medium",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Nationalité",
+                    "name_en": "Nationality",
+                    "synonyms_fr": [
+                        "citoyenneté",
+                        "origine nationale"
+                    ],
+                    "synonyms_en": [
+                        "citizenship",
+                        "national origin"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b(marocain|marocaine|français|française|algérien|algérienne|tunisien|tunisienne|espagnol|espagnole|américain|américaine)\\b"
+                    ],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 09-08",
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Permis de conduire",
+                    "name_en": "Driver's license",
+                    "synonyms_fr": [
+                        "permis",
+                        "licence de conduite"
+                    ],
+                    "synonyms_en": [
+                        "driving license",
+                        "driver license"
+                    ],
+                    "acronyms_fr": [
+                        "PC"
+                    ],
+                    "acronyms_en": [
+                        "DL"
+                    ],
+                    "regex_patterns": [
+                        "\\b\\d{6,10}\\b"
+                    ],
+                    "format": "6-10 chiffres",
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 09-08"
+                    ],
+                    "context_required": [
+                        "permis",
+                        "conduire",
+                        "licence"
+                    ]
+                }
+            ]
+        }
+    ]
+}
