@@ -23,7 +23,57 @@ async def create_user(user: User):
     await db["users"].insert_one({
         "username": user.username,
         "password": hashed_pw,
-        "role": user.role
+        "role": user.role,
+        "status": "pending"
     })
 
     return {"message": "User created successfully"}
+
+def serialize_user(user):
+    user["_id"] = str(user["_id"])
+    return user
+
+
+@router.get("/pending", dependencies=[Depends(require_role(["Admin"]))])
+async def list_pending_users():
+    users_cursor = db["users"].find({"status": "pending"})
+    users = await users_cursor.to_list(None)
+
+    # Convert ObjectId → string
+    users = [serialize_user(u) for u in users]
+
+    return users
+
+
+
+@router.post("/approve/{username}", dependencies=[Depends(require_role(["Admin"]))])
+async def approve_user(username: str):
+    result = await db["users"].update_one(
+        {"username": username},
+        {"$set": {"status": "approved"}}
+    )
+    return {"message": "User approved"}
+
+
+
+@router.post("/reject/{username}", dependencies=[Depends(require_role(["Admin"]))])
+async def reject_user(username: str):
+    result = await db["users"].update_one(
+        {"username": username},
+        {"$set": {"status": "rejected"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "User rejected"}
+
+
+@router.post("/create-admin")
+async def create_admin_temp():
+    hashed = hash_password("Admin123")
+    await db["users"].insert_one({
+        "username": "admin",
+        "password": hashed,
+        "role": "Admin",
+        "status": "approved"
+    })
+    return {"msg": "Admin created"}

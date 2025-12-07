@@ -17,7 +17,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
     if not verify_password(form_data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Incorrect password")
+        # block pending users
+    if user.get("status") == "pending":
+        raise HTTPException(status_code=403, detail="Account awaiting admin approval")
 
+    # block rejected users
+    if user.get("status") == "rejected":
+        raise HTTPException(status_code=403, detail="Account rejected by admin")
     token = create_token({
         "sub": user["username"],
         "role": user["role"]

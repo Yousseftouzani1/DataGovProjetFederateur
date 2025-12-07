@@ -5,31 +5,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create User | DataGov</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .animated-gradient {
+      background: linear-gradient(-45deg, #667eea, #9977bb, #f4bbfa, #4facfe);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+    }
+
+    .glass {
+      background: #c1f1f3e0;
+      backdrop-filter: blur(14px);
+      border-radius: 1.5rem;
+      border: 1px solid rgba(102, 82, 82, 0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .input-focus:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 3px rgba(129, 130, 197, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+  </style>
+
 </head>
 
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<body class="animated-gradient flex items-center justify-center min-h-screen p-4">
 
-  <div class="bg-white shadow-xl rounded-xl p-10 w-full max-w-lg">
+  <!-- Background glowing circles -->
+  <div class="absolute top-10 left-10 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl floating"></div>
+  <div class="absolute bottom-10 right-10 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl floating" style="animation-delay: 3s;"></div>
 
-    <h1 class="text-3xl font-bold text-center text-gray-700 mb-8">
+  <div class="glass p-10 w-full max-w-lg relative z-10">
+
+    <!-- Title -->
+    <h1 class="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-8">
       Create User
     </h1>
 
+    <!-- Form -->
     <form id="createUserForm" class="space-y-6">
 
       <div>
-        <label class="block font-medium text-gray-700">Username</label>
-        <input id="username" type="text" class="w-full mt-2 p-3 border rounded-lg" required />
+        <label class="block font-semibold text-gray-700 mb-1">Username</label>
+        <input id="username" 
+               type="text" 
+               class="input-focus w-full p-3 border-2 border-gray-200 rounded-xl outline-none transition-all"
+               placeholder="Enter a username"
+               required />
       </div>
 
       <div>
-        <label class="block font-medium text-gray-700">Password</label>
-        <input id="password" type="password" class="w-full mt-2 p-3 border rounded-lg" required />
+        <label class="block font-semibold text-gray-700 mb-1">Password</label>
+        <input id="password"
+               type="password"
+               class="input-focus w-full p-3 border-2 border-gray-200 rounded-xl outline-none transition-all"
+               placeholder="Choose a password"
+               required />
       </div>
 
       <div>
-        <label class="block font-medium text-gray-700">Role</label>
-        <select id="role" class="w-full mt-2 p-3 border rounded-lg" required>
+        <label class="block font-semibold text-gray-700 mb-1">Role</label>
+        <select id="role"
+                class="input-focus w-full p-3 border-2 border-gray-200 rounded-xl outline-none transition-all"
+                required>
           <option value="Annotator">Annotator</option>
           <option value="Labeler">Labeler</option>
           <option value="Data Steward">Data Steward</option>
@@ -38,50 +91,49 @@
 
       <button 
         type="submit" 
-        class="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 font-semibold transition">
+        class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white p-3.5 rounded-xl text-lg font-bold shadow-lg hover:shadow-2xl transform hover:scale-[1.03] transition duration-300">
         Create User
       </button>
 
     </form>
 
-    <p id="message" class="text-center mt-4 font-medium"></p>
+    <p id="message" class="text-center mt-6 text-lg font-semibold"></p>
 
   </div>
 
-
+  <!-- JS (unchanged) -->
   <script>
-  document.getElementById("createUserForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    document.getElementById("createUserForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-    const role = document.getElementById("role").value;
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const role = document.getElementById("role").value;
 
-    const response = await fetch("/users/create", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username, password, role })
+      const response = await fetch("/users/create", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password, role })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        document.getElementById("message").innerHTML = 
+          "<span class='text-green-600'>✔ Account created! Redirecting...</span>";
+
+        setTimeout(() => {
+          window.location.href = "/frontend/login.html";
+        }, 1200);
+
+      } else {
+        document.getElementById("message").innerHTML = 
+          "<span class='text-red-600'>❌ " + data.detail + "</span>";
+      }
     });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      document.getElementById("message").innerHTML = 
-        "<span class='text-green-600'>✔ Account created! You can now log in.</span>";
-
-      setTimeout(() => {
-        window.location.href = "/frontend/login.html";
-      }, 1200);
-
-    } else {
-      document.getElementById("message").innerHTML = 
-        "<span class='text-red-600'>❌ " + data.detail + "</span>";
-    }
-  });
-</script>
-
+  </script>
 
 </body>
 </html>
