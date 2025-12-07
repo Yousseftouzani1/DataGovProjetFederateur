@@ -41,10 +41,13 @@ Ce projet vise à développer une **plateforme de gouvernance des données** cap
 
 ### Dashboard de Test
 
-Ouvrez `frontend/test_classifier.html` dans votre navigateur:
+Ouvrez `frontend/test_classifier.html` dans votre navigateur.
+
 ### Enregistrement Video
 
-![Demo Recording](docs/PF_PII.mp4)
+https://github.com/user-attachments/assets/PF_PII.mp4
+
+> **Note:** Cliquez sur le lien ci-dessus pour voir la démo vidéo, ou téléchargez [docs/PF_PII.mp4](docs/PF_PII.mp4)
 
 #### 1. Page d'accueil - Dashboard chargé
 ![Dashboard](docs/screenshot_01_dashboard.png)
