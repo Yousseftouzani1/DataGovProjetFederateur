@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend and main files
+COPY backend ./backend
+COPY main.py .
+COPY create_steward.py .
+
+# Copy frontend (needed if FastAPI mounts it)
+COPY frontend ./frontend
+
+EXPOSE 8001
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]

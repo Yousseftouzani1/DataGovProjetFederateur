@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+
+  auth-service:
+    build: ./services/auth-serv
+    container_name: auth-backend
+    ports:
+      - "8001:8001"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017
+      - DATABASE_NAME=datagov
+    depends_on:
+      - mongo
+    networks:
+      - backend
+
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - backend
+
+  nginx-gateway:
+    image: nginx:latest          # no Dockerfile needed
+    container_name: nginx-gateway
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount your nginx.conf
+      - ./gateway-nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      
+      # Mount frontend HTML files
+      - ./services/auth-serv/frontend:/usr/share/nginx/html:ro
+      
+    depends_on:
+      - auth-service
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  mongo_data:
