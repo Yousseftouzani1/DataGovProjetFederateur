@@ -5,6 +5,8 @@ services:
   auth-service:
     build: ./services/auth-serv
     container_name: auth-backend
+    env_file:
+      - ./services/auth-serv/.env
     ports:
       - "8001:8001"
     environment:
