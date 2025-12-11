@@ -1,0 +1,152 @@
+{
+    "metadata": {
+        "domain_id": "DOM-009",
+        "domain_name": "DONNEES_VEHICULES",
+        "domain_name_en": "VEHICLE_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données relatives aux véhicules et transport",
+        "total_entities": 5
+    },
+    "categories": [
+        {
+            "class": "DONNEES_VEHICULES",
+            "class_en": "VEHICLE_DATA",
+            "type": "PII",
+            "subclasses": [
+                {
+                    "name": "Immatriculation véhicule",
+                    "name_en": "License plate",
+                    "synonyms_fr": [
+                        "plaque immatriculation",
+                        "numéro plaque",
+                        "matricule véhicule"
+                    ],
+                    "synonyms_en": [
+                        "license plate",
+                        "vehicle registration",
+                        "plate number"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [
+                        "LP"
+                    ],
+                    "regex_patterns": [
+                        "\\b\\d{1,6}\\s?[أابتثجحخدذرزسشصضطظعغفقكلمنهوي]\\s?\\d{1,4}\\b",
+                        "\\bWW\\s?\\d{1,6}\\b",
+                        "\\b\\d{1,5}-[أ-ي]-\\d{1,4}\\b"
+                    ],
+                    "format": "Chiffres + lettre arabe + chiffres (Maroc)",
+                    "sensitivity_level": "medium",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Permis de conduire",
+                    "name_en": "Driver's license",
+                    "synonyms_fr": [
+                        "permis",
+                        "licence conduire",
+                        "permis B"
+                    ],
+                    "synonyms_en": [
+                        "driving license",
+                        "driver license"
+                    ],
+                    "acronyms_fr": [
+                        "PC"
+                    ],
+                    "acronyms_en": [
+                        "DL"
+                    ],
+                    "regex_patterns": [
+                        "\\b\\d{6,10}\\b"
+                    ],
+                    "format": "6-10 chiffres",
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Carte grise",
+                    "name_en": "Vehicle registration card",
+                    "synonyms_fr": [
+                        "certificat immatriculation",
+                        "carte grise",
+                        "document véhicule"
+                    ],
+                    "synonyms_en": [
+                        "registration certificate",
+                        "vehicle title"
+                    ],
+                    "acronyms_fr": [
+                        "CG"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "medium",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Numéro de châssis (VIN)",
+                    "name_en": "Vehicle Identification Number",
+                    "synonyms_fr": [
+                        "VIN",
+                        "numéro châssis",
+                        "numéro série véhicule"
+                    ],
+                    "synonyms_en": [
+                        "VIN",
+                        "chassis number"
+                    ],
+                    "acronyms_fr": [
+                        "VIN"
+                    ],
+                    "acronyms_en": [
+                        "VIN"
+                    ],
+                    "regex_patterns": [
+                        "\\b[A-HJ-NPR-Z0-9]{17}\\b"
+                    ],
+                    "format": "17 caractères alphanumériques",
+                    "sensitivity_level": "medium",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Assurance véhicule",
+                    "name_en": "Vehicle insurance",
+                    "synonyms_fr": [
+                        "assurance auto",
+                        "police assurance véhicule",
+                        "contrat assurance"
+                    ],
+                    "synonyms_en": [
+                        "car insurance",
+                        "auto insurance policy"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b[A-Z]{2,4}\\d{8,12}\\b"
+                    ],
+                    "sensitivity_level": "medium",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                }
+            ]
+        }
+    ]
+}

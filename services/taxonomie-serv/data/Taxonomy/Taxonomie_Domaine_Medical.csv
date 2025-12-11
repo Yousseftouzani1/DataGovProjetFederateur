@@ -1,0 +1,79 @@
+Catégorie,Type de Donnée,Description Détaillée,Niveau de Sensibilité,Réglementation Applicable
+1. DONNÉES D'IDENTIFICATION DU PATIENT,Numéro de Dossier Médical (NDM),Identifiant unique du patient dans le système de santé,Très Élevée (SPI),"HIPAA, Loi 09-08, RGPD Art.9"
+1. DONNÉES D'IDENTIFICATION DU PATIENT,Numéro d'Assurance Maladie,Identifiant du régime d'assurance santé,Très Élevée (SPI),"HIPAA, CNSS Maroc"
+1. DONNÉES D'IDENTIFICATION DU PATIENT,Numéro de Sécurité Sociale,Identifiant national pour les prestations sociales,Très Élevée (SPI),"Loi 09-08, RGPD"
+1. DONNÉES D'IDENTIFICATION DU PATIENT,Identifiant Biométrique Patient,"Empreintes digitales, scan iris pour identification",Très Élevée (SPI),"RGPD Art.9, Loi 09-08"
+1. DONNÉES D'IDENTIFICATION DU PATIENT,Photo d'Identité Médicale,Photo du visage pour identification,Élevée (SPI),"HIPAA, RGPD Art.9"
+1. DONNÉES D'IDENTIFICATION DU PATIENT,Code Patient Unique (CPU),Code interne de l'établissement,Élevée,Politique interne
+2. ANTÉCÉDENTS MÉDICAUX,Antécédents Personnels,"Maladies passées, interventions chirurgicales",Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+2. ANTÉCÉDENTS MÉDICAUX,Antécédents Familiaux,"Maladies héréditaires, prédispositions génétiques",Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+2. ANTÉCÉDENTS MÉDICAUX,Allergies,"Médicaments, aliments, substances allergènes",Très Élevée (SPI),HIPAA PHI
+2. ANTÉCÉDENTS MÉDICAUX,Vaccinations,Historique complet des vaccinations,Élevée (SPI),"HIPAA PHI, OMS"
+2. ANTÉCÉDENTS MÉDICAUX,Hospitalisations Antérieures,"Dates, motifs, durées d'hospitalisation",Très Élevée (SPI),HIPAA PHI
+2. ANTÉCÉDENTS MÉDICAUX,Interventions Chirurgicales,"Type, date, résultat des opérations",Très Élevée (SPI),HIPAA PHI
+2. ANTÉCÉDENTS MÉDICAUX,Maladies Chroniques,"Diabète, hypertension, asthme, etc.",Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+2. ANTÉCÉDENTS MÉDICAUX,Handicaps,Handicaps physiques ou mentaux,Très Élevée (SPI),"RGPD Art.9, Loi 09-08"
+3. INFORMATIONS CLINIQUES,Diagnostic Principal (ICD-10/11),Code et description du diagnostic,Très Élevée (SPI),"HIPAA PHI, OMS ICD"
+3. INFORMATIONS CLINIQUES,Diagnostics Secondaires,Comorbidités et conditions associées,Très Élevée (SPI),HIPAA PHI
+3. INFORMATIONS CLINIQUES,Signes Vitaux,"Tension, pouls, température, saturation O2",Élevée (SPI),HIPAA PHI
+3. INFORMATIONS CLINIQUES,Symptômes Déclarés,Symptômes rapportés par le patient,Élevée (SPI),HIPAA PHI
+3. INFORMATIONS CLINIQUES,Examen Physique,Résultats de l'examen clinique,Très Élevée (SPI),HIPAA PHI
+3. INFORMATIONS CLINIQUES,Notes Cliniques,Observations du médecin,Très Élevée (SPI),HIPAA PHI
+3. INFORMATIONS CLINIQUES,Pronostic,Évolution prévisible de la maladie,Très Élevée (SPI),HIPAA PHI
+3. INFORMATIONS CLINIQUES,Score de Gravité,"Scores ASA, Glasgow, APACHE, etc.",Élevée (SPI),HIPAA PHI
+4. RÉSULTATS DE LABORATOIRE,Analyses Sanguines,"NFS, glycémie, créatinine, bilan lipidique",Très Élevée (SPI),"HIPAA PHI, LOINC"
+4. RÉSULTATS DE LABORATOIRE,Analyses Urinaires,"ECBU, protéinurie, glycosurie",Élevée (SPI),"HIPAA PHI, LOINC"
+4. RÉSULTATS DE LABORATOIRE,Tests Sérologiques,"HIV, hépatites, COVID-19, etc.",Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+4. RÉSULTATS DE LABORATOIRE,Cultures Bactériologiques,"Antibiogrammes, identification germes",Élevée (SPI),HIPAA PHI
+4. RÉSULTATS DE LABORATOIRE,Marqueurs Tumoraux,"PSA, CA-125, AFP, etc.",Très Élevée (SPI),HIPAA PHI
+4. RÉSULTATS DE LABORATOIRE,Gaz du Sang,"pH, pO2, pCO2, bicarbonates",Élevée (SPI),HIPAA PHI
+4. RÉSULTATS DE LABORATOIRE,Bilan Hépatique,"Transaminases, bilirubine, GGT",Élevée (SPI),HIPAA PHI
+4. RÉSULTATS DE LABORATOIRE,Bilan Rénal,"Urée, créatinine, DFG",Élevée (SPI),HIPAA PHI
+5. IMAGERIE MÉDICALE,Radiographies,Images et rapports radiologiques,Très Élevée (SPI),"HIPAA PHI, DICOM"
+5. IMAGERIE MÉDICALE,Scanner (CT),Images tomodensitométriques,Très Élevée (SPI),"HIPAA PHI, DICOM"
+5. IMAGERIE MÉDICALE,IRM,Images par résonance magnétique,Très Élevée (SPI),"HIPAA PHI, DICOM"
+5. IMAGERIE MÉDICALE,Échographies,Images et mesures échographiques,Très Élevée (SPI),"HIPAA PHI, DICOM"
+5. IMAGERIE MÉDICALE,Mammographies,Dépistage et diagnostic sein,Très Élevée (SPI),HIPAA PHI
+5. IMAGERIE MÉDICALE,Scintigraphies,Images de médecine nucléaire,Très Élevée (SPI),"HIPAA PHI, DICOM"
+5. IMAGERIE MÉDICALE,Angiographies,Imagerie des vaisseaux sanguins,Très Élevée (SPI),HIPAA PHI
+5. IMAGERIE MÉDICALE,PET Scan,Tomographie par émission de positons,Très Élevée (SPI),HIPAA PHI
+6. TRAITEMENTS ET PRESCRIPTIONS,Ordonnances Médicamenteuses,"Médicaments prescrits, posologie",Très Élevée (SPI),HIPAA PHI
+6. TRAITEMENTS ET PRESCRIPTIONS,Médicaments en Cours,Liste des traitements actuels,Très Élevée (SPI),HIPAA PHI
+6. TRAITEMENTS ET PRESCRIPTIONS,Posologie et Durée,Instructions de prise des médicaments,Élevée (SPI),HIPAA PHI
+6. TRAITEMENTS ET PRESCRIPTIONS,Effets Indésirables,Réactions aux médicaments,Très Élevée (SPI),"HIPAA PHI, Pharmacovigilance"
+6. TRAITEMENTS ET PRESCRIPTIONS,Interactions Médicamenteuses,Contre-indications détectées,Très Élevée (SPI),HIPAA PHI
+6. TRAITEMENTS ET PRESCRIPTIONS,Protocoles Thérapeutiques,"Chimiothérapie, radiothérapie, etc.",Très Élevée (SPI),HIPAA PHI
+6. TRAITEMENTS ET PRESCRIPTIONS,Plan de Soins,Programme thérapeutique global,Élevée (SPI),HIPAA PHI
+6. TRAITEMENTS ET PRESCRIPTIONS,Consentements aux Traitements,Formulaires de consentement éclairé,Très Élevée,"RGPD Art.9, Éthique médicale"
+7. SANTÉ MENTALE,Diagnostic Psychiatrique (DSM-5),Troubles mentaux diagnostiqués,Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+7. SANTÉ MENTALE,Évaluations Psychologiques,Tests et bilans psychologiques,Très Élevée (SPI),HIPAA PHI
+7. SANTÉ MENTALE,Historique de Thérapies,"Psychothérapies, TCC, etc.",Très Élevée (SPI),HIPAA PHI
+7. SANTÉ MENTALE,Traitements Psychotropes,"Antidépresseurs, anxiolytiques, etc.",Très Élevée (SPI),HIPAA PHI
+7. SANTÉ MENTALE,Hospitalisations Psychiatriques,Séjours en unité psychiatrique,Très Élevée (SPI),HIPAA PHI
+7. SANTÉ MENTALE,Évaluations de Risque,"Risque suicidaire, dangerosité",Très Élevée (SPI),HIPAA PHI
+7. SANTÉ MENTALE,Notes de Séances,Comptes rendus de consultations psy,Très Élevée (SPI),HIPAA PHI
+7. SANTÉ MENTALE,Addictions,"Tabac, alcool, drogues, jeux",Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+8. DONNÉES GÉNÉTIQUES,Séquençage ADN,Résultats de tests génétiques,Très Élevée (SPI),"RGPD Art.9, HIPAA"
+8. DONNÉES GÉNÉTIQUES,Marqueurs Génétiques,"Prédispositions héréditaires (BRCA, etc.)",Très Élevée (SPI),RGPD Art.9
+8. DONNÉES GÉNÉTIQUES,Caryotype,Analyse chromosomique,Très Élevée (SPI),RGPD Art.9
+8. DONNÉES GÉNÉTIQUES,Tests de Paternité,Résultats de filiation génétique,Très Élevée (SPI),"RGPD Art.9, Loi 09-08"
+8. DONNÉES GÉNÉTIQUES,Pharmacogénomique,Réponse génétique aux médicaments,Très Élevée (SPI),RGPD Art.9
+8. DONNÉES GÉNÉTIQUES,Conseil Génétique,Recommandations et consultations,Très Élevée (SPI),RGPD Art.9
+8. DONNÉES GÉNÉTIQUES,Biobanque - Échantillons,Prélèvements biologiques stockés,Très Élevée (SPI),RGPD Art.9
+8. DONNÉES GÉNÉTIQUES,Génome Complet,Whole Genome Sequencing (WGS),Très Élevée (SPI),RGPD Art.9
+9. SANTÉ REPRODUCTIVE,Historique Obstétrical,"Grossesses, accouchements, fausses couches",Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+9. SANTÉ REPRODUCTIVE,Contraception,Méthodes utilisées,Élevée (SPI),HIPAA PHI
+9. SANTÉ REPRODUCTIVE,Fertilité,Bilans et traitements de fertilité,Très Élevée (SPI),HIPAA PHI
+9. SANTÉ REPRODUCTIVE,PMA/FIV,Procréation médicalement assistée,Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+9. SANTÉ REPRODUCTIVE,IVG,Interruptions volontaires de grossesse,Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+9. SANTÉ REPRODUCTIVE,Ménopause,Données sur la ménopause,Élevée (SPI),HIPAA PHI
+9. SANTÉ REPRODUCTIVE,IST,Infections sexuellement transmissibles,Très Élevée (SPI),"HIPAA PHI, RGPD Art.9"
+9. SANTÉ REPRODUCTIVE,Échographies Prénatales,Suivi de grossesse,Très Élevée (SPI),HIPAA PHI
+10. ASSURANCE ET FACTURATION MÉDICALE,Numéro de Police d'Assurance,Identifiant du contrat d'assurance,Élevée,"HIPAA, Loi 09-08"
+10. ASSURANCE ET FACTURATION MÉDICALE,Nom de l'Assureur,Compagnie d'assurance santé,Moyenne,HIPAA
+10. ASSURANCE ET FACTURATION MÉDICALE,Couverture Médicale,Prestations couvertes,Moyenne,HIPAA
+10. ASSURANCE ET FACTURATION MÉDICALE,Factures Médicales,Détail des actes et montants,Élevée,"HIPAA, PCI-DSS"
+10. ASSURANCE ET FACTURATION MÉDICALE,Remboursements,Historique des remboursements,Élevée,HIPAA
+10. ASSURANCE ET FACTURATION MÉDICALE,Tiers Payant,Informations de prise en charge,Élevée,Loi marocaine
+10. ASSURANCE ET FACTURATION MÉDICALE,Codes Actes Médicaux (CCAM),Codification des actes,Moyenne,"HIPAA, Nomenclature"
+10. ASSURANCE ET FACTURATION MÉDICALE,GHM/GHS,Groupe Homogène de Malades/Séjour,Moyenne,"T2A, HIPAA"

@@ -1,0 +1,244 @@
+{
+    "metadata": {
+        "domain_id": "DOM-006",
+        "domain_name": "EDUCATION",
+        "domain_name_en": "EDUCATION",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données relatives à l'éducation et formation",
+        "total_entities": 8
+    },
+    "categories": [
+        {
+            "class": "EDUCATION",
+            "class_en": "EDUCATION",
+            "type": "PII",
+            "subclasses": [
+                {
+                    "name": "Code Massar",
+                    "name_en": "Massar student code",
+                    "synonyms_fr": [
+                        "code massar",
+                        "identifiant massar",
+                        "numéro massar",
+                        "code élève"
+                    ],
+                    "synonyms_en": [
+                        "massar code",
+                        "student ID"
+                    ],
+                    "acronyms_fr": [
+                        "MASSAR"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b[MPTJ]\\d{9}\\b",
+                        "\\b[A-Z]\\d{9}\\b",
+                        "\\bMassar[:\\s]*[A-Z]\\d{9}\\b"
+                    ],
+                    "format": "1 lettre (M/P/T/J) + 9 chiffres",
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 09-08",
+                        "MEN Maroc"
+                    ]
+                },
+                {
+                    "name": "CNE - Code National Étudiant",
+                    "name_en": "National student code",
+                    "synonyms_fr": [
+                        "code national étudiant",
+                        "CNE",
+                        "numéro étudiant"
+                    ],
+                    "synonyms_en": [
+                        "national student ID",
+                        "CNE"
+                    ],
+                    "acronyms_fr": [
+                        "CNE"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b[A-Z]\\d{9}\\b",
+                        "\\bCNE[:\\s]*[A-Z]\\d{9}\\b"
+                    ],
+                    "format": "1 lettre + 9 chiffres",
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 09-08",
+                        "MESRSFC Maroc"
+                    ]
+                },
+                {
+                    "name": "Apogée - Numéro Étudiant",
+                    "name_en": "Apogee student number",
+                    "synonyms_fr": [
+                        "numéro apogée",
+                        "code apogée",
+                        "numéro universitaire"
+                    ],
+                    "synonyms_en": [
+                        "apogee ID",
+                        "university ID"
+                    ],
+                    "acronyms_fr": [
+                        "APO"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b\\d{8,10}\\b"
+                    ],
+                    "format": "8-10 chiffres",
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 09-08"
+                    ],
+                    "context_required": [
+                        "apogée",
+                        "étudiant",
+                        "université"
+                    ]
+                },
+                {
+                    "name": "Relevé de Notes",
+                    "name_en": "Academic transcript",
+                    "synonyms_fr": [
+                        "bulletin scolaire",
+                        "relevé de notes",
+                        "notes",
+                        "résultats scolaires"
+                    ],
+                    "synonyms_en": [
+                        "grade report",
+                        "transcript",
+                        "school results"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Diplôme / Attestation",
+                    "name_en": "Degree / Certificate",
+                    "synonyms_fr": [
+                        "diplôme",
+                        "attestation",
+                        "certificat",
+                        "baccalauréat",
+                        "licence",
+                        "master"
+                    ],
+                    "synonyms_en": [
+                        "degree",
+                        "certificate",
+                        "diploma"
+                    ],
+                    "acronyms_fr": [
+                        "BAC",
+                        "LIC",
+                        "MST",
+                        "DOC"
+                    ],
+                    "acronyms_en": [
+                        "BA",
+                        "MA",
+                        "PhD"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "medium",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Numéro Baccalauréat",
+                    "name_en": "Baccalaureate number",
+                    "synonyms_fr": [
+                        "numéro bac",
+                        "code bac",
+                        "candidat bac"
+                    ],
+                    "synonyms_en": [
+                        "bac number",
+                        "baccalaureate ID"
+                    ],
+                    "acronyms_fr": [
+                        "BAC"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b\\d{8,10}\\b"
+                    ],
+                    "format": "8-10 chiffres",
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 09-08",
+                        "MEN Maroc"
+                    ],
+                    "context_required": [
+                        "baccalauréat",
+                        "bac",
+                        "candidat"
+                    ]
+                },
+                {
+                    "name": "Dossier Scolaire",
+                    "name_en": "School record",
+                    "synonyms_fr": [
+                        "dossier élève",
+                        "dossier scolaire",
+                        "fiche élève"
+                    ],
+                    "synonyms_en": [
+                        "student file",
+                        "school file"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Établissement de Formation",
+                    "name_en": "Educational institution",
+                    "synonyms_fr": [
+                        "école",
+                        "université",
+                        "lycée",
+                        "collège",
+                        "établissement"
+                    ],
+                    "synonyms_en": [
+                        "school",
+                        "university",
+                        "college"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "low",
+                    "risk_level": "Low",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                }
+            ]
+        }
+    ]
+}

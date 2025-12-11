@@ -1,0 +1,156 @@
+{
+    "metadata": {
+        "domain_id": "DOM-002",
+        "domain_name": "COORDONNEES_CONTACT",
+        "domain_name_en": "CONTACT_INFORMATION",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Informations permettant de contacter une personne",
+        "total_entities": 4
+    },
+    "categories": [
+        {
+            "class": "COORDONNEES",
+            "class_en": "CONTACT_INFORMATION",
+            "type": "PII",
+            "subclasses": [
+                {
+                    "name": "Adresse postale",
+                    "name_en": "Postal address",
+                    "synonyms_fr": [
+                        "adresse domicile",
+                        "résidence",
+                        "adresse personnelle",
+                        "domicile"
+                    ],
+                    "synonyms_en": [
+                        "home address",
+                        "residence",
+                        "mailing address"
+                    ],
+                    "acronyms_fr": [
+                        "ADR"
+                    ],
+                    "acronyms_en": [
+                        "ADDR"
+                    ],
+                    "regex_patterns": [
+                        "\\d+[,\\s]+[A-Za-zàâçéèêëïîôùûü\\s-]+[,\\s]+\\d{5}[,\\s]+[A-Za-zàâçéèêëïîôùûü\\s-]+",
+                        "\\d+[,\\s]+(Rue|Avenue|Boulevard|Bd|Av|Immeuble|Résidence)[\\s\\w-]+",
+                        "\\b\\d{5}\\s+[A-Za-zàâçéèêëïîôùûü-]+\\b"
+                    ],
+                    "sensitivity_level": "high",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08",
+                        "RGPD Art.6"
+                    ]
+                },
+                {
+                    "name": "Numéro de téléphone",
+                    "name_en": "Phone number",
+                    "synonyms_fr": [
+                        "mobile",
+                        "portable",
+                        "GSM",
+                        "téléphone fixe",
+                        "numéro mobile",
+                        "téléphone"
+                    ],
+                    "synonyms_en": [
+                        "mobile",
+                        "cell phone",
+                        "phone",
+                        "telephone"
+                    ],
+                    "acronyms_fr": [
+                        "TEL",
+                        "GSM"
+                    ],
+                    "acronyms_en": [
+                        "TEL",
+                        "PHONE"
+                    ],
+                    "regex_patterns": [
+                        "\\b(\\+212|00212|0)[5-7]\\d{8}\\b",
+                        "\\b0\\d{9}\\b",
+                        "\\b(\\+212|00212|0)\\s?[5-7]\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}\\b",
+                        "\\b05[2-3]\\d{7}\\b"
+                    ],
+                    "format": "+212 6XX XXX XXX ou 06XX XXX XXX (mobile), 05XX XXX XXX (fixe)",
+                    "sensitivity_level": "high",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08",
+                        "RGPD Art.6"
+                    ],
+                    "why_sensitive": "Spam, phishing, bypass 2FA"
+                },
+                {
+                    "name": "Adresse email",
+                    "name_en": "Email address",
+                    "synonyms_fr": [
+                        "email",
+                        "courriel",
+                        "adresse électronique",
+                        "mail"
+                    ],
+                    "synonyms_en": [
+                        "email",
+                        "e-mail",
+                        "electronic mail"
+                    ],
+                    "acronyms_fr": [
+                        "EMAIL",
+                        "MAIL"
+                    ],
+                    "acronyms_en": [
+                        "EMAIL"
+                    ],
+                    "regex_patterns": [
+                        "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b"
+                    ],
+                    "format": "utilisateur@domaine.extension",
+                    "sensitivity_level": "high",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Loi 09-08",
+                        "RGPD Art.6"
+                    ],
+                    "why_sensitive": "Phishing, reset password, spam"
+                },
+                {
+                    "name": "Réseaux sociaux",
+                    "name_en": "Social media handles",
+                    "synonyms_fr": [
+                        "profil social",
+                        "compte facebook",
+                        "compte instagram",
+                        "linkedin"
+                    ],
+                    "synonyms_en": [
+                        "social profile",
+                        "facebook",
+                        "instagram",
+                        "linkedin"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "@[A-Za-z0-9_]{3,30}",
+                        "facebook\\.com/[A-Za-z0-9.]+",
+                        "linkedin\\.com/in/[A-Za-z0-9-]+",
+                        "instagram\\.com/[A-Za-z0-9_.]+",
+                        "twitter\\.com/[A-Za-z0-9_]+"
+                    ],
+                    "sensitivity_level": "medium",
+                    "risk_level": "Low",
+                    "regulations": [
+                        "Loi 09-08"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,912 @@
+{
+    "metadata": {
+        "domain_id": "DOM-004",
+        "domain_name": "DONNEES_PROFESSIONNELLES",
+        "domain_name_en": "PROFESSIONAL_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Informations liées à l'emploi et la relation de travail - Source: Taxonomie_Domaine_Professionnel.csv (117 entries)",
+        "total_entities": 35
+    },
+    "categories": [
+        {
+            "class": "IDENTIFICATION_EMPLOYE",
+            "class_en": "EMPLOYEE_IDENTIFICATION",
+            "type": "PII",
+            "subclasses": [
+                {
+                    "name": "Matricule Employé",
+                    "name_en": "Employee ID",
+                    "synonyms_fr": [
+                        "matricule",
+                        "numéro employé",
+                        "identifiant salarié",
+                        "code employé"
+                    ],
+                    "synonyms_en": [
+                        "employee ID",
+                        "staff number",
+                        "worker ID"
+                    ],
+                    "acronyms_fr": [
+                        "MAT",
+                        "EMP"
+                    ],
+                    "acronyms_en": [
+                        "EMP",
+                        "ID"
+                    ],
+                    "regex_patterns": [
+                        "\\b[A-Z]{2,4}\\d{4,8}\\b",
+                        "\\bEMP-?\\d{4,8}\\b",
+                        "\\bMAT[:\\s]*\\d+\\b"
+                    ],
+                    "sensitivity_level": "medium",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "RGPD Art.6",
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Numéro CNSS",
+                    "name_en": "CNSS number (Social Security)",
+                    "synonyms_fr": [
+                        "sécurité sociale",
+                        "immatriculation CNSS",
+                        "numéro social"
+                    ],
+                    "synonyms_en": [
+                        "social security number",
+                        "CNSS ID"
+                    ],
+                    "acronyms_fr": [
+                        "CNSS",
+                        "SS"
+                    ],
+                    "acronyms_en": [
+                        "SSN",
+                        "CNSS"
+                    ],
+                    "regex_patterns": [
+                        "\\b\\d{9,12}\\b",
+                        "\\bCNSS[:\\s]*\\d{9,12}\\b"
+                    ],
+                    "format": "9-12 chiffres",
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Loi 09-08",
+                        "Dahir 1-72-184",
+                        "Code du travail"
+                    ],
+                    "why_sensitive": "Unique permanent, lie à tous droits sociaux (retraite, santé)"
+                },
+                {
+                    "name": "Données Biométriques Pointage",
+                    "name_en": "Biometric attendance data",
+                    "synonyms_fr": [
+                        "empreinte pointage",
+                        "reconnaissance faciale pointage"
+                    ],
+                    "synonyms_en": [
+                        "fingerprint attendance",
+                        "facial recognition clock-in"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Photo d'Identité Professionnelle",
+                    "name_en": "Professional ID photo",
+                    "synonyms_fr": [
+                        "photo badge",
+                        "photo carte employé"
+                    ],
+                    "synonyms_en": [
+                        "badge photo",
+                        "employee card photo"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "RGPD Art.6"
+                    ]
+                },
+                {
+                    "name": "Signature",
+                    "name_en": "Signature",
+                    "synonyms_fr": [
+                        "signature électronique",
+                        "signature manuscrite"
+                    ],
+                    "synonyms_en": [
+                        "electronic signature",
+                        "handwritten signature"
+                    ],
+                    "acronyms_fr": [
+                        "SIG"
+                    ],
+                    "acronyms_en": [
+                        "SIG"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Loi 53-05 Maroc"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "INFORMATIONS_CONTRACTUELLES",
+            "class_en": "CONTRACTUAL_INFORMATION",
+            "type": "PII",
+            "subclasses": [
+                {
+                    "name": "Type de Contrat",
+                    "name_en": "Contract type",
+                    "synonyms_fr": [
+                        "CDI",
+                        "CDD",
+                        "intérim",
+                        "stage",
+                        "contrat travail"
+                    ],
+                    "synonyms_en": [
+                        "permanent contract",
+                        "fixed-term contract",
+                        "internship"
+                    ],
+                    "acronyms_fr": [
+                        "CDI",
+                        "CDD"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b(CDI|CDD|Intérim|Stage|Contrat)\\b"
+                    ],
+                    "sensitivity_level": "medium",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "Date d'Embauche",
+                    "name_en": "Hire date",
+                    "synonyms_fr": [
+                        "date début contrat",
+                        "date entrée",
+                        "date recrutement"
+                    ],
+                    "synonyms_en": [
+                        "start date",
+                        "joining date",
+                        "hire date"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b(0[1-9]|[12][0-9]|3[01])[-/](0[1-9]|1[0-2])[-/](19|20)\\d{2}\\b"
+                    ],
+                    "sensitivity_level": "medium",
+                    "risk_level": "Low",
+                    "regulations": [
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "Poste / Fonction",
+                    "name_en": "Job title / Position",
+                    "synonyms_fr": [
+                        "fonction",
+                        "intitulé de poste",
+                        "titre",
+                        "métier"
+                    ],
+                    "synonyms_en": [
+                        "job title",
+                        "position",
+                        "role"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "low",
+                    "risk_level": "Low",
+                    "regulations": [
+                        "RGPD Art.6"
+                    ]
+                },
+                {
+                    "name": "Clause de Non-Concurrence",
+                    "name_en": "Non-compete clause",
+                    "synonyms_fr": [
+                        "non-concurrence",
+                        "clause restrictive"
+                    ],
+                    "synonyms_en": [
+                        "non-compete",
+                        "restrictive covenant"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "Clause de Confidentialité",
+                    "name_en": "Confidentiality clause",
+                    "synonyms_fr": [
+                        "NDA",
+                        "secret professionnel",
+                        "confidentialité"
+                    ],
+                    "synonyms_en": [
+                        "NDA",
+                        "confidentiality agreement"
+                    ],
+                    "acronyms_fr": [
+                        "NDA"
+                    ],
+                    "acronyms_en": [
+                        "NDA"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Droit des contrats"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "REMUNERATION_AVANTAGES",
+            "class_en": "COMPENSATION_BENEFITS",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Salaire Brut",
+                    "name_en": "Gross salary",
+                    "synonyms_fr": [
+                        "salaire brut",
+                        "rémunération brute"
+                    ],
+                    "synonyms_en": [
+                        "gross pay",
+                        "gross salary"
+                    ],
+                    "acronyms_fr": [
+                        "SAL"
+                    ],
+                    "acronyms_en": [
+                        "SAL"
+                    ],
+                    "regex_patterns": [
+                        "\\b\\d{3,7}\\s*(MAD|DH|dirhams?)\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD",
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "Salaire Net",
+                    "name_en": "Net salary",
+                    "synonyms_fr": [
+                        "salaire net",
+                        "rémunération nette",
+                        "paie nette"
+                    ],
+                    "synonyms_en": [
+                        "net pay",
+                        "take-home pay"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b\\d{3,7}\\s*(MAD|DH|dirhams?)\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD",
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "Primes et Bonus",
+                    "name_en": "Bonuses and incentives",
+                    "synonyms_fr": [
+                        "prime",
+                        "bonus",
+                        "13ème mois",
+                        "prime rendement"
+                    ],
+                    "synonyms_en": [
+                        "bonus",
+                        "incentive",
+                        "performance bonus"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "RGPD"
+                    ]
+                },
+                {
+                    "name": "Bulletin de Paie",
+                    "name_en": "Payslip",
+                    "synonyms_fr": [
+                        "fiche de paie",
+                        "bulletin salaire",
+                        "slip de paie"
+                    ],
+                    "synonyms_en": [
+                        "payslip",
+                        "pay stub",
+                        "salary slip"
+                    ],
+                    "acronyms_fr": [
+                        "BP"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD",
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "RIB Salarié",
+                    "name_en": "Employee bank details",
+                    "synonyms_fr": [
+                        "coordonnées bancaires employé",
+                        "compte virement salaire"
+                    ],
+                    "synonyms_en": [
+                        "bank details for salary",
+                        "payroll account"
+                    ],
+                    "acronyms_fr": [
+                        "RIB"
+                    ],
+                    "acronyms_en": [
+                        "IBAN"
+                    ],
+                    "regex_patterns": [
+                        "\\bMA\\d{2}[A-Z0-9]{22,24}\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "PCI-DSS",
+                        "RGPD"
+                    ]
+                },
+                {
+                    "name": "Stock-Options / Actions",
+                    "name_en": "Stock options / Shares",
+                    "synonyms_fr": [
+                        "stock options",
+                        "actions gratuites",
+                        "participation"
+                    ],
+                    "synonyms_en": [
+                        "stock options",
+                        "equity",
+                        "shares"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "RGPD"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "QUALIFICATIONS_COMPETENCES",
+            "class_en": "QUALIFICATIONS_SKILLS",
+            "type": "PII",
+            "subclasses": [
+                {
+                    "name": "Diplômes Académiques",
+                    "name_en": "Academic degrees",
+                    "synonyms_fr": [
+                        "diplôme",
+                        "baccalauréat",
+                        "licence",
+                        "master",
+                        "doctorat"
+                    ],
+                    "synonyms_en": [
+                        "degree",
+                        "bachelor",
+                        "master",
+                        "PhD"
+                    ],
+                    "acronyms_fr": [
+                        "BAC",
+                        "LIC",
+                        "MST",
+                        "DOC"
+                    ],
+                    "acronyms_en": [
+                        "BA",
+                        "MA",
+                        "PhD"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "medium",
+                    "risk_level": "Low",
+                    "regulations": [
+                        "RGPD Art.6"
+                    ]
+                },
+                {
+                    "name": "Certifications Professionnelles",
+                    "name_en": "Professional certifications",
+                    "synonyms_fr": [
+                        "certification",
+                        "PMP",
+                        "CFA",
+                        "CISSP",
+                        "AWS"
+                    ],
+                    "synonyms_en": [
+                        "certification",
+                        "professional certificate"
+                    ],
+                    "acronyms_fr": [
+                        "CERT"
+                    ],
+                    "acronyms_en": [
+                        "CERT"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "low",
+                    "risk_level": "Low",
+                    "regulations": [
+                        "RGPD Art.6"
+                    ]
+                },
+                {
+                    "name": "Habilitations",
+                    "name_en": "Authorizations / Licenses",
+                    "synonyms_fr": [
+                        "habilitation électrique",
+                        "CACES",
+                        "SST"
+                    ],
+                    "synonyms_en": [
+                        "electrical authorization",
+                        "forklift license",
+                        "safety certification"
+                    ],
+                    "acronyms_fr": [
+                        "CACES",
+                        "SST"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "Medium",
+                    "regulations": [
+                        "Sécurité au travail"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "EVALUATION_PERFORMANCE",
+            "class_en": "PERFORMANCE_EVALUATION",
+            "type": "PII",
+            "subclasses": [
+                {
+                    "name": "Évaluation Annuelle",
+                    "name_en": "Annual performance review",
+                    "synonyms_fr": [
+                        "entretien annuel",
+                        "évaluation performance",
+                        "bilan annuel"
+                    ],
+                    "synonyms_en": [
+                        "annual review",
+                        "performance appraisal"
+                    ],
+                    "acronyms_fr": [
+                        "EA"
+                    ],
+                    "acronyms_en": [
+                        "APR"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "RGPD Art.6"
+                    ]
+                },
+                {
+                    "name": "Notation / Score Performance",
+                    "name_en": "Performance rating / Score",
+                    "synonyms_fr": [
+                        "note",
+                        "score",
+                        "rating",
+                        "notation"
+                    ],
+                    "synonyms_en": [
+                        "rating",
+                        "score",
+                        "grade"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b[1-5]/5\\b",
+                        "\\b(A|B|C|D|E)\\b"
+                    ],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "RGPD Art.6"
+                    ],
+                    "context_required": [
+                        "performance",
+                        "note",
+                        "évaluation"
+                    ]
+                },
+                {
+                    "name": "Commentaires Manager",
+                    "name_en": "Manager comments",
+                    "synonyms_fr": [
+                        "appréciation hiérarchique",
+                        "feedback manager"
+                    ],
+                    "synonyms_en": [
+                        "manager feedback",
+                        "supervisor comments"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "RGPD Art.6"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "ABSENCES_CONGES",
+            "class_en": "ABSENCES_LEAVES",
+            "type": "PII",
+            "subclasses": [
+                {
+                    "name": "Congés Payés",
+                    "name_en": "Paid leave",
+                    "synonyms_fr": [
+                        "CP",
+                        "congés annuels",
+                        "vacances"
+                    ],
+                    "synonyms_en": [
+                        "vacation",
+                        "annual leave",
+                        "PTO"
+                    ],
+                    "acronyms_fr": [
+                        "CP"
+                    ],
+                    "acronyms_en": [
+                        "PTO"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "low",
+                    "risk_level": "Low",
+                    "regulations": [
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "Congé Maladie",
+                    "name_en": "Sick leave",
+                    "synonyms_fr": [
+                        "arrêt maladie",
+                        "maladie",
+                        "ITT"
+                    ],
+                    "synonyms_en": [
+                        "sick leave",
+                        "medical leave"
+                    ],
+                    "acronyms_fr": [
+                        "AM"
+                    ],
+                    "acronyms_en": [
+                        "SL"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "HIPAA"
+                    ]
+                },
+                {
+                    "name": "Congé Maternité / Paternité",
+                    "name_en": "Maternity / Paternity leave",
+                    "synonyms_fr": [
+                        "congé maternité",
+                        "congé paternité",
+                        "congé parental"
+                    ],
+                    "synonyms_en": [
+                        "maternity leave",
+                        "paternity leave"
+                    ],
+                    "acronyms_fr": [
+                        "CM",
+                        "CPat"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Accident de Travail",
+                    "name_en": "Work accident",
+                    "synonyms_fr": [
+                        "AT",
+                        "accident travail",
+                        "blessure professionnelle"
+                    ],
+                    "synonyms_en": [
+                        "work injury",
+                        "occupational accident"
+                    ],
+                    "acronyms_fr": [
+                        "AT"
+                    ],
+                    "acronyms_en": [
+                        "WA"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "CNAMTS"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "DOSSIER_DISCIPLINAIRE",
+            "class_en": "DISCIPLINARY_RECORD",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Avertissements",
+                    "name_en": "Warnings",
+                    "synonyms_fr": [
+                        "avertissement",
+                        "rappel à l'ordre",
+                        "sanction légère"
+                    ],
+                    "synonyms_en": [
+                        "warning",
+                        "written warning"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Code du travail",
+                        "RGPD"
+                    ]
+                },
+                {
+                    "name": "Blâmes",
+                    "name_en": "Reprimands",
+                    "synonyms_fr": [
+                        "blâme",
+                        "sanction disciplinaire"
+                    ],
+                    "synonyms_en": [
+                        "reprimand",
+                        "formal warning"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "high",
+                    "risk_level": "High",
+                    "regulations": [
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "Licenciement pour Faute",
+                    "name_en": "Dismissal for misconduct",
+                    "synonyms_fr": [
+                        "licenciement faute grave",
+                        "rupture pour faute"
+                    ],
+                    "synonyms_en": [
+                        "dismissal for cause",
+                        "termination for misconduct"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "Harcèlement (signalements)",
+                    "name_en": "Harassment reports",
+                    "synonyms_fr": [
+                        "harcèlement",
+                        "plainte harcèlement",
+                        "signalement"
+                    ],
+                    "synonyms_en": [
+                        "harassment complaint",
+                        "harassment report"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Code pénal"
+                    ]
+                }
+            ]
+        },
+        {
+            "class": "SANTE_SECURITE_TRAVAIL",
+            "class_en": "OCCUPATIONAL_HEALTH_SAFETY",
+            "type": "SPI",
+            "subclasses": [
+                {
+                    "name": "Aptitude Médicale",
+                    "name_en": "Medical fitness",
+                    "synonyms_fr": [
+                        "visite médicale",
+                        "aptitude médecine du travail"
+                    ],
+                    "synonyms_en": [
+                        "medical fitness",
+                        "occupational health check"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [
+                        "\\b(Apte|Inapte|Aptitude partielle)\\b"
+                    ],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Code du travail"
+                    ]
+                },
+                {
+                    "name": "Restrictions d'Aptitude",
+                    "name_en": "Work restrictions",
+                    "synonyms_fr": [
+                        "restrictions médicales",
+                        "limitations",
+                        "aménagement poste"
+                    ],
+                    "synonyms_en": [
+                        "work restrictions",
+                        "medical limitations"
+                    ],
+                    "acronyms_fr": [],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9"
+                    ]
+                },
+                {
+                    "name": "Déclaration RQTH",
+                    "name_en": "Disability declaration",
+                    "synonyms_fr": [
+                        "travailleur handicapé",
+                        "RQTH",
+                        "handicap"
+                    ],
+                    "synonyms_en": [
+                        "disability status",
+                        "disabled worker"
+                    ],
+                    "acronyms_fr": [
+                        "RQTH"
+                    ],
+                    "acronyms_en": [],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "Loi 09-08"
+                    ]
+                },
+                {
+                    "name": "Dossier Médical SST",
+                    "name_en": "Occupational health record",
+                    "synonyms_fr": [
+                        "dossier médecine du travail",
+                        "dossier SST"
+                    ],
+                    "synonyms_en": [
+                        "occupational health file"
+                    ],
+                    "acronyms_fr": [
+                        "SST"
+                    ],
+                    "acronyms_en": [
+                        "OHS"
+                    ],
+                    "regex_patterns": [],
+                    "sensitivity_level": "critical",
+                    "risk_level": "Critical",
+                    "regulations": [
+                        "RGPD Art.9",
+                        "HIPAA"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,1771 @@
+Projet F´ ed´ erateur
+Syst` eme de Gouvernance et Protection des Donn´ ees Sensibles
+Architecture Microservices avec FastAPI + MongoDB
+Table des mati` eres
+1 Introduction 5
+1.1 Contexte du Projet . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.2 Objectifs Strat´ egiques . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.3 Stack Technique . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.4 Architecture Microservices . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+2 Orchestration des Workflows avec Apache Airflow 7
+2.1 Pourquoi Apache Airflow ? . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+2.2 Installation et Configuration . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+2.3 Architecture des DAGs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+2.4 Exemple de DAG pour le Pipeline Complet . . . . . . . . . . . . . . . . . . 8
+2.5 Exemple de Configuration YAML . . . . . . . . . . . . . . . . . . . . . . . 9
+2.6 Int´ egration avec FastAPI . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+3 Tˆ ache 1 : Module d’Authentification et Gestion des Rˆ oles 11
+3.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+3.2 User Stories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+3.3 Technologies et Biblioth` eques . . . . . . . . . . . . . . . . . . . . . . . . . 11
+3.4 Documentation de R´ ef´ erence . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+3.5 Algorithme de V´ erification JWT . . . . . . . . . . . . . . . . . . . . . . . . 11
+3.6 Int´ egration Apache Ranger . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+3.7 KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+3.8 Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+4 Tˆ ache 2 : Taxonomie Fine-Grained des Donn´ ees Sensibles (PII/SPI) 14
+4.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+4.2 User Stories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+4.3 Classification PII vs SPI . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+4.4 Formule de Score de Sensibilit´ e . . . . . . . . . . . . . . . . . . . . . . . . 14
+4.5 Documentation de R´ ef´ erence . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+4.6 Int´ egration Apache Atlas . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+4.7 Algorithme de Classification Automatique . . . . . . . . . . . . . . . . . . 16
+4.8 KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+4.9 Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+1Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+5 Tˆ ache 3 : Personnalisation Microsoft Presidio pour le Contexte Maro-
+cain 17
+5.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+5.2 User Stories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+5.3 Documentation de R´ ef´ erence . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+5.4 Recognizers Personnalis´ es . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+5.5 Algorithme de D´ etection avec Score de Confiance . . . . . . . . . . . . . . 17
+5.6 M´ etriques d’ ´Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+5.7 Datasets de Test . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+5.8 KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+5.9 Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+6 Tˆ ache 4 : Data Cleaning et Profiling 20
+6.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+6.2 User Stories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+6.3 Documentation de R´ ef´ erence . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+6.4 Pipeline de Nettoyage . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+6.5 Algorithme de D´ etection d’Outliers IQR . . . . . . . . . . . . . . . . . . . 21
+6.6 KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+6.7 Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+7 Tˆ ache 5 : Syst` eme de Classification Fine-Grained 23
+7.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+7.2 User Stories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+7.3 Architecture du Classifieur . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+7.4 Mod` eles HuggingFace Recommand´ es . . . . . . . . . . . . . . . . . . . . . 24
+7.5 Algorithme de Classification Ensemble . . . . . . . . . . . . . . . . . . . . 24
+7.6 Classes de Sensibilit´ e . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+7.7 KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+7.8 Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+8 Tˆ ache 6 : Correction Automatique des Incoh´ erences (Data Quality V2) 26
+8.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+8.2 User Stories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+8.3 Types d’Incoh´ erences D´ etect´ ees . . . . . . . . . . . . . . . . . . . . . . . . 26
+8.4 Architecture du Syst` eme de Correction . . . . . . . . . . . . . . . . . . . . 27
+8.5 Algorithme de Correction avec ML . . . . . . . . . . . . . . . . . . . . . . 27
+8.6 Mod` eles ML pour Correction . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+8.7 KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+8.8 Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+9 Tˆ ache 7 : Workflow de Validation Humaine 30
+9.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+9.2 User Stories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+9.3 Rˆ oles et Responsabilit´ es . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+9.4 Workflow de Validation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+9.5 Algorithme d’Assignment Intelligent . . . . . . . . . . . . . . . . . . . . . . 31
+9.6 M´ etriques de Qualit´ e des Annotateurs . . . . . . . . . . . . . . . . . . . . 31
+9.7 Documentation de R´ ef´ erence . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+2Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+9.8 KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+9.9 Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+10 Tˆ ache 8 : M´ etriques et Normes ISO - Data Quality Scoring 33
+10.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+10.2 User Stories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+10.3 Dimensions ISO 25012 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+10.4 Formule Globale de Qualit´ e . . . . . . . . . . . . . . . . . . . . . . . . . . 33
+10.5 Algorithme de Calcul Multi-Dimensions . . . . . . . . . . . . . . . . . . . . 34
+10.6 Documentation de R´ ef´ erence . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+10.7 KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+10.8 Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35
+11 Tˆ ache 9 : EthiMask - Framework de Masquage Contextuel 36
+11.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+11.2 User Stories . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+11.3 Architecture du Perceptron V0.1 . . . . . . . . . . . . . . . . . . . . . . . 36
+11.4 Mapping Score→Niveau de Masquage . . . . . . . . . . . . . . . . . . . . 36
+11.5 Architecture D´ etaill´ ee . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+11.6 Chiffrement Homomorphique (Niveau 1) . . . . . . . . . . . . . . . . . . . 37
+11.7 Privacy Diff´ erentielle (Niveau 3) . . . . . . . . . . . . . . . . . . . . . . . . 38
+11.8 Algorithme de Masquage Adaptatif . . . . . . . . . . . . . . . . . . . . . . 38
+11.9 ´Evolution vers V1 (R´ eseau de Neurones) . . . . . . . . . . . . . . . . . . . 38
+11.10Documentation de R´ ef´ erence . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+11.11KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+11.12Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+12 Int´ egration Apache Atlas et Apache Ranger 41
+12.1 Description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+12.2 Architecture d’Int´ egration . . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+12.3 Configuration Apache Atlas . . . . . . . . . . . . . . . . . . . . . . . . . . 41
+12.4 Configuration Apache Ranger . . . . . . . . . . . . . . . . . . . . . . . . . 42
+12.5 Workflow d’Int´ egration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+12.6 Librairies Python . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+12.7 Documentation de R´ ef´ erence . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+12.8 KPIs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+12.9 Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
+12.10Cr´ eation du Dataset MAPA (Moroccan Personal Information) . . . . . . . 45
+12.11M´ etriques d’ ´Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+12.12Livrables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+13 Planning et Organisation 47
+13.1 R´ epartition des Tˆ aches . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 47
+13.2 Diagramme de Gantt . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+13.3 Crit` eres de Succ` es . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+13.4 Livrables Finaux . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+3Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+14 Ressources et R´ ef´ erences 50
+14.1 Documentation Technique . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+14.2 R´ eglementations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+14.3 Tutoriels et Guides . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+14.4 Repositories GitHub Inspirants . . . . . . . . . . . . . . . . . . . . . . . . 51
+15 Annexes 52
+15.1 Annexe A : Structure Compl` ete du Projet . . . . . . . . . . . . . . . . . . 52
+15.2 Annexe B : Configuration Airflow YAML . . . . . . . . . . . . . . . . . . . 55
+15.3 Annexe C : Glossaire . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 57
+16 Conclusion 59
+4Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+1 Introduction
+1.1 Contexte du Projet
+Dans un contexte o` u la protection des donn´ ees personnelles est devenue une priorit´ e
+r´ eglementaire et ´ ethique, ce projet vise ` a d´ evelopper un syst` eme complet de gouvernance
+des donn´ ees sensibles. Le syst` eme doit ˆ etre conforme aux r´ eglementations RGPD eu-
+rop´ eennes et ` a la Loi 09-08 marocaine, tout en garantissant la qualit´ e et la tra¸ cabilit´ e des
+donn´ ees.
+1.2 Objectifs Strat´ egiques
+— D´ evelopper une plateforme modulaire de gestion des donn´ ees sensibles
+— Impl´ ementer des m´ ecanismes automatis´ es de d´ etection et protection
+— Assurer la conformit´ e RGPD et Loi 09-08 marocaine
+— Garantir la qualit´ e des donn´ ees selon les normes ISO 8000 et ISO 25012
+— Cr´ eer un syst` eme extensible bas´ e sur une architecture microservices
+— Int´ egrer un framework de masquage contextuel intelligent (EthiMask)
+1.3 Stack Technique
+—Backend :Python avec FastAPI
+—Base de donn´ ees :MongoDB (via MongoDB Compass)
+—ODM :Motor + Beanie (async)
+—Orchestration :Apache Airflow (workflows YAML)
+—Gouvernance Big Data :Apache Atlas + Apache Ranger (HDP Sandbox)
+—ML/NLP :HuggingFace Transformers, spaCy
+—Privacy :Microsoft Presidio, TenSEAL
+5Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+1.4 Architecture Microservices
+API GW
+AUTH TAXO PRES CLEAN QUAL
+CLS CORR ETHI ANNO
+MDBAFLW ATLS
+RNG
+Figure 1– Architecture Microservices du Syst` eme (avec abr´ eviations)
+Abr´ eviations :
+—API GW: API Gateway (FastAPI)
+—AUTH: Authentification Service
+—TAXO: Taxonomy Service
+—PRES: Presidio Service
+—CLEAN: Cleaning Service
+—QUAL: Quality Service
+—CLS: Classification Service
+—CORR: Correction Service
+—ETHI: EthiMask Service
+—ANNO: Annotation Service
+—MDB: MongoDB
+—AFLW: Apache Airflow (Orchestration)
+—ATLS: Apache Atlas (Metadata Governance)
+—RNG: Apache Ranger (Policies / Security)
+6Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+2 Orchestration des Workflows avec Apache Airflow
+2.1 Pourquoi Apache Airflow ?
+Apache Airflow est la solution d’orchestration recommand´ ee pour ce projet car :
+—Workflows YAML/Python :Configuration d´ eclarative et programmable
+—Extensibilit´ e :Ajout de nouveaux modules sans modification du core
+—Monitoring :Interface web pour surveiller l’ex´ ecution des pipelines
+—Retry & Alerting :Gestion automatique des erreurs
+—Int´ egration :Compatible avec FastAPI, MongoDB, et services externes
+2.2 Installation et Configuration
+Installation :
+pip install apache-airflow
+pip install apache-airflow-providers-http
+pip install apache-airflow-providers-mongo
+Configuration (airflow.cfg) :
+[core]
+dags_folder = /path/to/dags
+executor = LocalExecutor
+sql_alchemy_conn = sqlite:////path/to/airflow.db
+[webserver]
+base_url = http://localhost:8080
+web_server_port = 8080
+7Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+2.3 Architecture des DAGs
+Start
+Upload Dataset
+Profile Data
+Clean Data
+Detect PII (Presidio)
+Classify Sensitivity
+Quality Assessment
+Apply EthiMask
+Store in MongoDB
+End
+Figure 2– Pipeline Principal de Traitement des Donn´ ees
+2.4 Exemple de DAG pour le Pipeline Complet
+Fichier : dags/data processing pipeline.py
+Note : Le code complet est fourni dans les ressources du projet. Voici la structure :
+— D´ efinition du DAG avec schedule et retry policy
+— Task 1 : Upload et validation du dataset
+8Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+— Task 2 : Profiling avec ydata-profiling
+— Task 3 : Nettoyage (pipeline Python)
+— Task 4 : D´ etection PII avec Presidio
+— Task 5 : Classification fine-grained
+— Task 6 : ´Evaluation qualit´ e ISO
+— Task 7 : Application EthiMask
+— Task 8 : Stockage MongoDB et Atlas
+2.5 Exemple de Configuration YAML
+Fichier : config/pipeline config.yaml
+pipeline:
+name: "data_processing_pipeline"
+schedule_interval: "0 2 * * *" # Daily at 2AM
+tasks:
+upload_dataset:
+service: "cleaning_service"
+endpoint: "/upload"
+retry: 3
+profile_data:
+service: "cleaning_service"
+endpoint: "/profile/{dataset_id}"
+depends_on: ["upload_dataset"]
+clean_data:
+service: "cleaning_service"
+endpoint: "/clean/{dataset_id}"
+params:
+remove_duplicates: true
+handle_missing: "mean"
+remove_outliers: true
+depends_on: ["profile_data"]
+detect_pii:
+service: "presidio_service"
+endpoint: "/analyze"
+depends_on: ["clean_data"]
+classify_sensitivity:
+service: "classification_service"
+endpoint: "/classify/{dataset_id}"
+depends_on: ["detect_pii"]
+quality_assessment:
+9Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+service: "quality_service"
+endpoint: "/evaluate/{dataset_id}"
+depends_on: ["clean_data"]
+apply_ethimask:
+service: "ethimask_service"
+endpoint: "/mask/{dataset_id}"
+depends_on: ["classify_sensitivity", "quality_assessment"]
+store_results:
+service: "storage_service"
+endpoint: "/store"
+depends_on: ["apply_ethimask"]
+2.6 Int´ egration avec FastAPI
+Pour que chaque microservice soit appelable par Airflow, chaque service FastAPI ex-
+pose des endpoints standardis´ es :
+—POST /api/v1/{service}/execute- Ex´ ecution de la tˆ ache
+—GET /api/v1/{service}/status/{task id}- Statut de la tˆ ache
+—GET /api/v1/{service}/result/{task id}- R´ esultat de la tˆ ache
+Communication Airflow→FastAPI :
+— Utilisation deSimpleHttpOperatord’Airflow
+— Authentification via JWT tokens
+— Retry automatique en cas d’´ echec
+— Logging centralis´ e
+10Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+3 Tˆ ache 1 : Module d’Authentification et Gestion des
+Rˆ oles
+3.1 Description
+D´ evelopper un syst` eme d’authentification robuste avec gestion granulaire des rˆ oles
+(Admin, Data Steward, Data Annotator, Data Labeler) utilisant FastAPI et JWT, int´ egr´ e
+avec Apache Ranger pour le contrˆ ole d’acc` es.
+3.2 User Stories
+1.US-AUTH-01 :En tant qu’utilisateur, je veux m’inscrire avec email/mot de passe
+pour acc´ eder au syst` eme
+2.US-AUTH-02 :En tant qu’utilisateur, je veux me connecter et recevoir un token
+JWT pour authentifier mes requˆ etes
+3.US-AUTH-03 :En tant qu’Admin, je veux assigner des rˆ oles aux utilisateurs pour
+g´ erer les permissions
+4.US-AUTH-04 :En tant que syst` eme, je veux v´ erifier les permissions selon le rˆ ole
+avant d’autoriser une action
+5.US-AUTH-05 :En tant qu’Admin, je veux int´ egrer les politiques Apache Ranger
+pour contrˆ oler l’acc` es aux donn´ ees sensibles
+6.US-AUTH-06 :En tant que Data Steward, je veux consulter les logs d’acc` es via
+Apache Atlas pour auditer les actions
+3.3 Technologies et Biblioth` eques
+—FastAPI :Framework web asynchrone
+—python-jose :Gestion JWT
+—passlib :Hashing s´ ecuris´ e des mots de passe
+—Motor + Beanie :ODM MongoDB asynchrone
+—pydantic :Validation des donn´ ees
+3.4 Documentation de R´ ef´ erence
+— FastAPI Security :https://fastapi.tiangolo.com/tutorial/security/
+— JWT Best Practices :https://datatracker.ietf.org/doc/html/rfc8725
+— OWASP Auth Cheat Sheet :https://cheatsheetseries.owasp.org/cheatsheets/
+Authentication_Cheat_Sheet.html
+— Apache Ranger :https://ranger.apache.org/
+3.5 Algorithme de V´ erification JWT
+11Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Algorithm 1V´ erification et Validation du Token JWT
+Require:Token JWT, Secret Key, Algorithm
+Ensure:User authentifi´ e ou Exception
+1:token←Extract from Authorization Header
+2:iftokenis Nonethen
+3:raiseUnauthorizedException
+4:end if
+5:payload←jwt.decode(token,secret key,algorithm)
+6:email←payload[”sub”]
+7:user←Database.findOne({email :email})
+8:ifuseris None OR NOTuser.is activethen
+9:raiseUnauthorizedException
+10:end if
+11:user.last login←Current UTC Time
+12:Database.save(user)
+13:returnuserJWTError
+14:raiseUnauthorizedException
+3.6 Int´ egration Apache Ranger
+Apache Ranger permet de d´ efinir des politiques d’acc` es granulaires :
+—Resource-based policies :Contrˆ ole par dataset, table, colonne
+—Tag-based policies :Contrˆ ole par classification (PII, SPI, etc.)
+—Masking policies :Masquage automatique selon le rˆ ole
+—Row-level filtering :Filtrage des donn´ ees sensibles
+Workflow d’int´ egration :
+1. L’utilisateur s’authentifie via FastAPI→Re¸ coit JWT
+2. Requˆ ete d’acc` es ` a une donn´ ee sensible
+3. FastAPI valide le JWT→Extrait le rˆ ole
+4. Appel ` a Ranger REST API pour v´ erifier la politique
+5. Si autoris´ e, appliquer le niveau de masquage appropri´ e
+6. Retourner les donn´ ees (masqu´ ees si n´ ecessaire)
+3.7 KPIs
+— Temps de r´ eponse authentification ¡ 100ms
+— Taux de succ` es>99.9%
+— Z´ ero faille de s´ ecurit´ e (OWASP Top 10)
+— Code coverage>85%
+— Int´ egration Ranger fonctionnelle
+3.8 Livrables
+1. Code source FastAPI avec structure microservice
+12Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+2. Documentation API Swagger auto-g´ en´ er´ ee
+3. Tests unitaires et d’int´ egration (pytest)
+4. Configuration Apache Ranger (policies JSON)
+5. Guide de d´ eploiement
+13Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+4 Tˆ ache 2 : Taxonomie Fine-Grained des Donn´ ees
+Sensibles (PII/SPI)
+4.1 Description
+Cr´ eer une taxonomie d´ etaill´ ee des donn´ ees sensibles incluant les PII (Personally Iden-
+tifiable Information) et SPI (Sensitive Personal Information), conforme au RGPD et ` a la
+Loi 09-08 marocaine.
+4.2 User Stories
+1.US-TAX-01 :En tant que Data Steward, je veux consulter la taxonomie compl` ete
+via l’API pour comprendre les classifications
+2.US-TAX-02 :En tant qu’Admin, je veux ajouter/modifier des cat´ egories PII/SPI
+dans MongoDB Compass
+3.US-TAX-03 :En tant que syst` eme, je veux valider automatiquement les donn´ ees
+selon la taxonomie
+4.US-TAX-04 :En tant que d´ eveloppeur, je veux peupler la base avec le script de
+taxonomie
+5.US-TAX-05 :En tant que Data Steward, je veux calculer le score de sensibilit´ e
+d’un attribut
+6.US-TAX-06 :En tant que syst` eme, je veux synchroniser la taxonomie avec Apache
+Atlas pour la gouvernance
+4.3 Classification PII vs SPI
+Cat´ egorie Exemples Sensibilit´ e
+PII Direct Nom, pr´ enom, CIN, passe-
+portHIGH
+PII Indirect Adresse IP, cookies, identi-
+fiantsMEDIUM
+SPI - Sant´ e Dossier m´ edical, CNSS,
+groupe sanguinCRITICAL
+SPI - Finance IBAN, RIB, carte bancaire,
+salaireCRITICAL
+SPI - Biom´ etrie Empreintes, iris, reconnais-
+sance facialeCRITICAL
+SPI - Origine Origine ethnique, religieuse,
+politiqueCRITICAL
+Quasi-identifiants Code postal + ˆ age + sexe MEDIUM-HIGH
+4.4 Formule de Score de Sensibilit´ e
+Le score de sensibilit´ e est calcul´ e selon la formule pond´ er´ ee :
+Stotal=α·L legal+β·R risk+γ·I impact (1)
+14Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+O` u :
+—L legal: Niveau d’obligation l´ egale (RGPD/Loi 09-08)∈[0,1]
+—R risk: Risque d’atteinte ` a la vie priv´ ee∈[0,1]
+—I impact : Impact en cas de fuite∈[0,1]
+— Poids sugg´ er´ es :α= 0.4,β= 0.3,γ= 0.3
+Mapping Score→Niveau :
+—S∈[0,0.3[ : LOW
+—S∈[0.3,0.6[ : MEDIUM
+—S∈[0.6,0.85[ : HIGH
+—S∈[0.85,1.0] : CRITICAL
+4.5 Documentation de R´ ef´ erence
+— RGPD (GDPR) :https://gdpr-info.eu/
+— Loi 09-08 Maroc :https://www.dgssi.gov.ma/fr/loi-09-08-relative-la-protection-des-personnes-physiques-legard-du-traitement-des
+— NIST Privacy Framework :https://www.nist.gov/privacy-framework
+— Apache Atlas REST API :https://atlas.apache.org/api/v2/index.html
+4.6 Int´ egration Apache Atlas
+Apache Atlas permet de cr´ eer un catalogue de donn´ ees avec lignage et classification :
+Synchronisation Taxonomie→Atlas :
+1. Cr´ eer des types d’entit´ es Atlas pour chaque cat´ egorie PII/SPI
+2. D´ efinir des classifications (tags) : PII, SPI, CRITICAL, etc.
+3. Associer les m´ etadonn´ ees de sensibilit´ e
+4. Cr´ eer le lignage des transformations de donn´ ees
+5. Activer les notifications d’´ ev´ enements
+Exemple de cr´ eation d’entit´ e Atlas :
+POST /api/atlas/v2/entity
+{
+"entity": {
+"typeName": "data_attribute",
+"attributes": {
+"name": "CIN_Marocain",
+"qualifiedName": "PII-001::ID-CIN",
+"sensitivity_level": "HIGH",
+"legal_basis": ["RGPD Art.6", "Loi 09-08 Art.3"],
+"encryption_required": true
+},
+"classifications": [
+{"typeName": "PII"},
+{"typeName": "HIGH_SENSITIVITY"}
+]
+}
+}
+15Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+4.7 Algorithme de Classification Automatique
+Algorithm 2Classification Automatique d’un Attribut
+Require:AttributeA, TaxonomyT, Thresholdθ
+Ensure:Classification & Sensitivity Score
+1:candidates←[]
+2:foreachcategoryinTdo
+3:foreachdatatypeincategory.datatypesdo
+4:score←0
+5:ifA.namematchesdatatype.keywordsthen
+6:score←score+ 0.3
+7:end if
+8:ifA.valuematchesdatatype.regex patternthen
+9:score←score+ 0.5
+10:end if
+11:ifA.contextmatchesdatatype.contextthen
+12:score←score+ 0.2
+13:end if
+14:ifscore≥θthen
+15:candidates.append({datatype, score})
+16:end if
+17:end for
+18:end for
+19:best←argmax(candidates, key=score)
+20:sensitivity←ComputeSensitivity(best)
+21:returnbest.datatype,sensitivity
+4.8 KPIs
+— Couverture taxonomie :>50 types de donn´ ees
+— Pr´ ecision classification :>90%
+— Temps de recherche :<50ms
+— Synchronisation Atlas :<2s par entit´ e
+4.9 Livrables
+1. Code source FastAPI CRUD taxonomie
+2. Script Python de population MongoDB
+3. Collection MongoDB export´ ee (JSON)
+4. Types et classifications Atlas (JSON)
+5. Mapping RGPD/Loi 09-08 complet
+6. Documentation API Swagger
+16Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+5 Tˆ ache 3 : Personnalisation Microsoft Presidio pour
+le Contexte Marocain
+5.1 Description
+Adapter Microsoft Presidio pour d´ etecter les donn´ ees sensibles sp´ ecifiques au contexte
+marocain (CIN, t´ el´ ephones, IBAN MA, CNSS) et l’int´ egrer dans l’architecture microser-
+vice.
+5.2 User Stories
+1.US-PRES-01 :En tant que syst` eme, je veux d´ etecter automatiquement les CIN
+marocains dans un texte
+2.US-PRES-02 :En tant que Data Steward, je veux personnaliser les patterns de
+d´ etection via configuration
+3.US-PRES-03 :En tant qu’utilisateur API, je veux anonymiser un texte contenant
+des donn´ ees sensibles
+4.US-PRES-04 :En tant que d´ eveloppeur, je veux tester les recognizers avec des
+jeux de donn´ ees
+5.US-PRES-05 :En tant que syst` eme, je veux int´ egrer la d´ etection avec le pipeline
+Airflow
+6.US-PRES-06 :En tant que Data Annotator, je veux corriger les faux positifs
+d´ etect´ es
+5.3 Documentation de R´ ef´ erence
+— Microsoft Presidio :https://microsoft.github.io/presidio/
+— Presidio Analyzer API :https://microsoft.github.io/presidio/analyzer/
+— Presidio Anonymizer API :https://microsoft.github.io/presidio/anonymizer/
+— spaCy French Models :https://spacy.io/models/fr
+— Regex101 (test patterns) :https://regex101.com/
+5.4 Recognizers Personnalis´ es
+Entit´ es Marocaines Support´ ees :
+—CIN MAROC :Carte d’identit´ e (format : 1-2 lettres + 6 chiffres)
+—PHONE MA :T´ el´ ephone mobile (+212 ou 0) [5-7]XXXXXXXX
+—IBAN MA :IBAN bancaire (MA + 24 chiffres)
+—CNSS MA :Num´ ero s´ ecurit´ e sociale (10 chiffres)
+—PASSPORT MA :Passeport marocain
+—PERMIS MA :Permis de conduire
+5.5 Algorithme de D´ etection avec Score de Confiance
+17Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Algorithm 3D´ etection Multi-Pattern avec Score Pond´ er´ e
+Require:TextT, PatternsP, ContextC, Thresholdθ
+Ensure:List of Recognized Entities
+1:results←[]
+2:nlp artifacts←spaCy.process(T)
+3:foreachpatterninPdo
+4:matches←Regex.findAll(T,pattern.regex)
+5:foreachmatchinmatchesdo
+6:score pattern←pattern.base score
+7:score context←ComputeContextScore(match,C,nlp artifacts)
+8:score validation←ValidatePattern(match.text,pattern.validator)
+9:score final←0.5·score pattern+ 0.3·score context+ 0.2·score validation
+10:ifscore final≥θthen
+11:results.append({entity:pattern.type, start:match.start, end:
+match.end, score:score final})
+12:end if
+13:end for
+14:end for
+15:results←RemoveOverlaps(results)
+16:returnresults
+5.6 M´ etriques d’ ´Evaluation
+Formules :
+Precision =TP
+TP+FP(2)
+Recall =TP
+TP+FN(3)
+F1-Score = 2·Precision·Recall
+Precision + Recall(4)
+Accuracy =TP+TN
+TP+TN+FP+FN(5)
+Objectifs :
+— Precision>90%
+— Recall>85%
+— F1-Score>87%
+— Temps traitement<500ms/document
+5.7 Datasets de Test
+—Dataset Piilo :https://www.kaggle.com/datasets/lburleigh/piilo-dataset
+—Dataset Enron :https://www.kaggle.com/datasets/wcukierski/enron-email-dataset
+- Emails pour test contexte professionnel
+—Dataset MAPA :Cr´ eer un dataset synth´ etique marocain avec CIN, t´ el´ ephones,
+IBAN
+18Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+5.8 KPIs
+— Pr´ ecision d´ etection CIN :>95%
+— Taux faux positifs :<5%
+— Couverture patterns : 100% formats marocains
+— Performance API :<200ms response time
+5.9 Livrables
+1. Code source recognizers personnalis´ es
+2. Routes FastAPI pour analyse/anonymisation
+3. Dataset de test annot´ e (500+ exemples)
+4. Tests unitaires pytest (coverage>85%)
+5. Rapport de performance avec m´ etriques
+6. Documentation technique recognizers
+19Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+6 Tˆ ache 4 : Data Cleaning et Profiling
+6.1 Description
+D´ evelopper un pipeline complet de nettoyage et profilage des donn´ ees avec d´ etection
+automatique des anomalies.
+6.2 User Stories
+1.US-CLEAN-01 :En tant que Data Annotator, je veux uploader un CSV pour le
+nettoyer
+2.US-CLEAN-02 :En tant que Data Steward, je veux g´ en´ erer un rapport de profiling
+HTML
+3.US-CLEAN-03 :En tant que syst` eme, je veux appliquer automatiquement le
+pipeline de cleaning
+4.US-CLEAN-04 :En tant qu’utilisateur, je veux t´ el´ echarger le dataset nettoy´ e
+5.US-CLEAN-05 :En tant qu’Admin, je veux consulter les m´ etadonn´ ees dans Mon-
+goDB Compass
+6.US-CLEAN-06 :En tant que syst` eme, je veux d´ eclencher le cleaning via Airflow
+DAG
+6.3 Documentation de R´ ef´ erence
+— Pandas Documentation :https://pandas.pydata.org/docs/
+— ydata-profiling :https://docs.profiling.ydata.ai/
+— Scikit-learn Preprocessing :https://scikit-learn.org/stable/modules/preprocessing.
+html
+20Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+6.4 Pipeline de Nettoyage
+Raw Data
+Profiling Initial
+Remove Duplicates
+Handle Missing
+Remove Outliers
+Normalize
+Validate
+Clean Data
+Figure 3– Pipeline de Data Cleaning
+6.5 Algorithme de D´ etection d’Outliers IQR
+Algorithm 4D´ etection et Suppression Outliers (M´ ethode IQR)
+Require:DataFrameD, ColumnsC, Multiplierm= 1.5
+Ensure:Cleaned DataFrame
+1:foreachcolinCdo
+2:Q1←Quantile(D[col], 0.25)
+3:Q3←Quantile(D[col], 0.75)
+4:IQR←Q3−Q1
+5:lower bound←Q1−m·IQR
+6:upper bound←Q3 +m·IQR
+7:D←D[(D[col]≥lower bound)∧(D[col]≤upper bound)]
+8:end for
+9:returnD
+6.6 KPIs
+— Taux valeurs manquantes :<5%
+— Taux doublons : = 0%
+21Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+— Taux outliers :<2%
+— Score qualit´ e global :>85/100
+— Temps traitement :<10s pour 10k lignes
+6.7 Livrables
+1. Code Python pipeline cleaning
+2. Routes FastAPI upload/clean/download
+3. Rapport profiling HTML (ydata-profiling)
+4. Tests unitaires pytest
+5. Documentation technique
+6. DAG Airflow pour automatisation
+22Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+7 Tˆ ache 5 : Syst` eme de Classification Fine-Grained
+7.1 Description
+D´ evelopper un syst` eme de classification multi-niveaux des donn´ ees sensibles utilisant
+des mod` eles de Machine Learning et NLP.
+7.2 User Stories
+1.US-CLASS-01 :En tant que syst` eme, je veux classifier automatiquement chaque
+colonne d’un dataset
+2.US-CLASS-02 :En tant que Data Steward, je veux ajuster les seuils de classifi-
+cation
+3.US-CLASS-03 :En tant que d´ eveloppeur, je veux entraˆ ıner le mod` ele sur de
+nouvelles donn´ ees
+4.US-CLASS-04 :En tant qu’utilisateur, je veux visualiser la distribution des classes
+5.US-CLASS-05 :En tant que syst` eme, je veux int´ egrer la classification avec Apache
+Atlas
+7.3 Architecture du Classifieur
+Col. Data
+Stat.
+Feat.Patt.
+Feat.Sem.
+Feat.
+Feat. Vector
+RF
+ModelBERT
+Cls.Rule
+Engine
+Ens. Vote
+Classif. +
+Conf. Score
+Figure 4– Architecture compacte du classifieur avec abr´ eviations
+Abr´ eviations :
+—Col. Data: Column Data (donn´ ees de colonne)
+—Stat. Feat.: Statistical Features
+23Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+—Patt. Feat.: Pattern Features
+—Sem. Feat.: Semantic Features
+—Feat. Vector: Feature Vector
+—RF Model: Random Forest Model
+—BERT Cls.: BERT Classifier
+—Rule Engine: Classification par r` egles
+—Ens. Vote: Ensemble Voting Mechanism
+—Conf. Score: Confidence Score
+7.4 Mod` eles HuggingFace Recommand´ es
+—CamemBERT :https://huggingface.co/camembert-base- Mod` ele BERT fran¸ cais
+—FlauBERT :https://huggingface.co/flaubert/flaubert_base_cased- Al-
+ternative fran¸ caise
+—DistilBERT Multilingual :https://huggingface.co/distilbert-base-multilingual-cased
+- Plus l´ eger
+—RoBERTa-base :Pour fine-tuning sur classification PII
+Exemple de Fine-tuning :
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer
+model_name = "camembert-base"
+model = AutoModelForSequenceClassification.from_pretrained(
+model_name,
+num_labels=len(SENSITIVITY_CLASSES)
+)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+# Training avec dataset annot´ e
+trainer = Trainer(
+model=model,
+args=training_args,
+train_dataset=train_dataset,
+eval_dataset=eval_dataset
+)
+trainer.train()
+7.5 Algorithme de Classification Ensemble
+7.6 Classes de Sensibilit´ e
+Niveau Code Description
+0 PUBLIC Donn´ ees publiques, non sensibles
+24Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Niveau Code Description
+1 INTERNAL Donn´ ees internes, usage limit´ e
+2 CONFIDENTIAL Donn´ ees confidentielles
+3 PII Identifiants personnels
+4 SPI Donn´ ees personnelles sensibles
+5 CRITICAL Donn´ ees critiques (sant´ e, finance)
+7.7 KPIs
+— Accuracy globale :>92%
+— F1-Score par classe :>0.88
+— Temps classification :<2s par colonne
+— Taux review manuel :<10%
+7.8 Livrables
+1. Code mod` eles ML (Random Forest, BERT)
+2. Routes FastAPI classification
+3. Mod` eles entraˆ ın´ es (pickle/HuggingFace)
+4. Dataset d’entraˆ ınement annot´ e
+5. Rapport d’´ evaluation avec m´ etriques
+6. Int´ egration Atlas pour tagging automatique
+25Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Algorithm 5Classification Ensemble Multi-Mod` eles
+Require:ColumnC, ModelsM={M 1, M2, ..., M n}, WeightsW
+Ensure:Class Label, Confidence Score
+1:features←ExtractFeatures(C)
+2:predictions←[]
+3:foreachmodelinMdo
+4:pred, conf←model.predict(features)
+5:predictions.append({pred, conf, weight:W[model]})
+6:end for
+7:votes←WeightedVote(predictions)
+8:final class←argmax(votes)
+9:confidence←ComputeEnsembleConfidence(predictions,final class)
+10:ifconfidence < thresholdthen
+11:flag for manual review
+12:end if
+13:returnfinal class,confidence
+8 Tˆ ache 6 : Correction Automatique des Incoh´ erences
+(Data Quality V2)
+8.1 Description
+D´ evelopper un syst` eme intelligent de d´ etection et correction automatique des in-
+coh´ erences dans les donn´ ees, avec validation et apprentissage continu.
+8.2 User Stories
+1.US-CORR-01 :En tant que syst` eme, je veux d´ etecter automatiquement les in-
+coh´ erences
+2.US-CORR-02 :En tant que Data Steward, je veux d´ efinir des r` egles de correction
+personnalis´ ees
+3.US-CORR-03 :En tant que syst` eme, je veux proposer des corrections avec score
+de confiance
+4.US-CORR-04 :En tant que Data Annotator, je veux valider ou rejeter les correc-
+tions propos´ ees
+5.US-CORR-05 :En tant que syst` eme, je veux apprendre des validations pour
+am´ eliorer les futures corrections
+6.US-CORR-06 :En tant qu’utilisateur, je veux g´ en´ erer un rapport de correction
+avec tra¸ cabilit´ e
+8.3 Types d’Incoh´ erences D´ etect´ ees
+—Incoh´ erences de format :Ex : date ”32/13/2024”, t´ el´ ephone ”06-12-34”
+—Incoh´ erences de domaine :Ex : ˆ age = 250, temp´ erature = -300°C
+—Incoh´ erences r´ ef´ erentielles :Ex : ville=”Paris” + pays=”Maroc”
+—Incoh´ erences temporelles :Ex : date fin ¡ date debut
+26Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+—Incoh´ erences statistiques :Ex : valeurs aberrantes, distribution anormale
+—Incoh´ erences s´ emantiques :Ex : ”email” contient un num´ ero de t´ el´ ephone
+8.4 Architecture du Syst` eme de Correction
+DetectionEngine
+AnalyzeInconsistency
+SuggestCorrections
+ScoreConfidence
+Auto-apply ?
+ApplyCorrection ManualReview
+Learn fromFeedbackconf>0.9 conf<0.9
+Figure 5– Workflow de Correction Automatique
+8.5 Algorithme de Correction avec ML
+8.6 Mod` eles ML pour Correction
+Approches recommand´ ees :
+—Sequence-to-Sequence :Pour correction de texte (T5, BART)
+—Classification :Pour choisir la meilleure correction parmi candidates
+—Regression :Pour imputation de valeurs num´ eriques
+—Graph Neural Networks :Pour corrections r´ ef´ erentielles
+Mod` ele HuggingFace recommand´ e :
+from transformers import T5ForConditionalGeneration, T5Tokenizer
+model = T5ForConditionalGeneration.from_pretrained("t5-base")
+tokenizer = T5Tokenizer.from_pretrained("t5-base")
+27Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Algorithm 6Correction Automatique Intelligente
+Require:Rowr, InconsistenciesI, ML ModelM, RulesR
+Ensure:Corrected Row, Correction Log
+1:corrections←[]
+2:foreachinconsistencyinIdo
+3:candidates←[]
+4:// Rule-based suggestions
+5:foreachruleinR[inconsistency.type]do
+6:ifrule.matches(inconsistency)then
+7:suggestion←rule.apply(r,inconsistency)
+8:candidates.append({suggestion, score:rule.confidence})
+9:end if
+10:end for
+11:// ML-based suggestions
+12:features←ExtractFeatures(r,inconsistency)
+13:ml suggestion, ml score←M.predict(features)
+14:candidates.append({ml suggestion, ml score})
+15:// Select best correction
+16:best←argmax(candidates, key=score)
+17:ifbest.score≥0.9then
+18:r[inconsistency.field]←best.suggestion
+19:corrections.append({field, old value, new value, confidence:best.score, auto:
+True})
+20:else
+21:corrections.append({field, old value, candidates, auto:
+False, requires review:True})
+22:end if
+23:end for
+24:returnr,corrections
+28Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+# Format: "correct: <incorrect_value> context: <row_context>"
+input_text = "correct: 32/13/2024 context: date_naissance"
+input_ids = tokenizer(input_text, return_tensors="pt").input_ids
+outputs = model.generate(input_ids, max_length=50)
+corrected = tokenizer.decode(outputs[0], skip_special_tokens=True)
+8.7 KPIs
+— Taux d´ etection incoh´ erences :>95%
+— Pr´ ecision corrections auto :>90%
+— Taux auto-correction :>70%
+— Temps traitement :<5s pour 1000 lignes
+— Am´ elioration continue : +5% accuracy/mois
+8.8 Livrables
+1. Code Python syst` eme de correction
+2. Routes FastAPI detect/correct/validate
+3. Mod` ele ML entraˆ ın´ e pour corrections
+4. Base de r` egles de correction (YAML)
+5. Interface de validation pour Data Annotators
+6. Rapport de tra¸ cabilit´ e des corrections
+29Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+9 Tˆ ache 7 : Workflow de Validation Humaine
+9.1 Description
+D´ evelopper une interface et un workflow pour la validation humaine des annotations,
+classifications et corrections par les Data Labelers, Data Annotators et Data Stewards.
+9.2 User Stories
+1.US-VALID-01 :En tant que Data Labeler, je veux annoter les donn´ ees d´ etect´ ees
+par Presidio
+2.US-VALID-02 :En tant que Data Annotator, je veux valider les classifications
+automatiques
+3.US-VALID-03 :En tant que Data Steward, je veux approuver les corrections
+propos´ ees
+4.US-VALID-04 :En tant qu’utilisateur, je veux voir ma file d’attente de tˆ aches
+5.US-VALID-05 :En tant que syst` eme, je veux tracker les m´ etriques de qualit´ e des
+annotateurs
+6.US-VALID-06 :En tant qu’Admin, je veux assigner des tˆ aches selon la charge de
+travail
+9.3 Rˆ oles et Responsabilit´ es
+Rˆ ole Responsabilit´ es Permissions
+Data Labeler - Annoter les donn´ ees
+brutes - Confirmer/corriger
+d´ etections PII - Labelliser
+la sensibilit´ e- Lecture datasets -
+Cr´ eation annotations -
+Pas de modification struc-
+ture
+Data Annotator - Valider classifications auto
+- Enrichir m´ etadonn´ ees
+- Corriger anomalies
+d´ etect´ ees- Lecture + annotations -
+Modification m´ etadonn´ ees -
+Validation corrections
+Data Steward - Approuver corrections ma-
+jeures - D´ efinir r` egles de
+qualit´ e - G´ erer la taxonomie- Toutes permissions anno-
+tation - Modification taxo-
+nomie - Approbation finale
+30Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+9.4 Workflow de Validation
+Task Created
+Auto-assignby Role
+User Queue
+Review
+Approve Reject
+Update DB Reassign/Escalate
+Figure 6– Workflow de Validation Humaine
+9.5 Algorithme d’Assignment Intelligent
+9.6 M´ etriques de Qualit´ e des Annotateurs
+Formules de calcul :
+Inter-Annotator Agreement =Annotations concordantes
+Total annotations(6)
+Cohen’s Kappa =po−pe
+1−p e(7)
+Throughput =Tˆ aches compl´ et´ ees
+Temps travaill´ e(8)
+Quality Score = 0.5·Accuracy + 0.3·Kappa + 0.2·Speed (9)
+9.7 Documentation de R´ ef´ erence
+— Label Studio :https://labelstud.io/(inspiration interface)
+— Cohen’s Kappa :https://en.wikipedia.org/wiki/Cohen%27s_kappa
+31Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Algorithm 7Assignment Optimal des Tˆ aches
+Require:TaskT, UsersU, WorkloadW, SkillsS
+Ensure:Assigned User
+1:candidates←FilterByRole(U,T.required role)
+2:scores←[]
+3:foreachuserincandidatesdo
+4:score←0
+5:// Workload balance (lower is better)
+6:score←score−0.4·(W[user]/max(W))
+7:// Skill match
+8:skill match←S[user]∩T.required skills
+9:score←score+ 0.3·(|skill match|/|T.required skills|)
+10:// Historical performance
+11:perf←GetPerformance(user,T.type)
+12:score←score+ 0.3·perf
+13:scores.append({user, score})
+14:end for
+15:best user←argmax(scores, key=score)
+16:W[best user]←W[best user] + 1
+17:returnbest user
+9.8 KPIs
+— Inter-annotator agreement :>0.85
+— Temps moyen validation :<30s/item
+— Taux compl´ etion tˆ aches :>95%
+— Quality score annotateurs :>0.80
+9.9 Livrables
+1. Interface web de validation (FastAPI + HTML/JS)
+2. API gestion des tˆ aches et assignments
+3. Syst` eme de m´ etriques et reporting
+4. Dashboard pour Data Stewards
+5. Documentation utilisateur par rˆ ole
+32Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+10 Tˆ ache 8 : M´ etriques et Normes ISO - Data Quality
+Scoring
+10.1 Description
+Impl´ ementer un syst` eme complet d’´ evaluation de la qualit´ e des donn´ ees selon les
+normes ISO 8000, ISO 25012 et ISO/IEC 25024.
+10.2 User Stories
+1.US-QUAL-01 :En tant que Data Steward, je veux ´ evaluer la qualit´ e d’un dataset
+selon ISO 25012
+2.US-QUAL-02 :En tant que syst` eme, je veux calculer automatiquement les 6
+dimensions de qualit´ e
+3.US-QUAL-03 :En tant qu’utilisateur, je veux voir l’´ evolution de la qualit´ e dans
+le temps
+4.US-QUAL-04 :En tant qu’Admin, je veux d´ efinir les seuils de conformit´ e ISO
+5.US-QUAL-05 :En tant que syst` eme, je veux g´ en´ erer des recommandations d’am´ elioration
+6.US-QUAL-06 :En tant qu’utilisateur, je veux exporter un rapport de qualit´ e ISO
+10.3 Dimensions ISO 25012
+Dimension Description Poids Formule
+Exactitude (Ac-
+curacy)Conformit´ e aux valeurs
+r´ eelles25%V aleurs correctes
+Total
+Compl´ etude
+(Completeness)Pr´ esence de toutes les
+donn´ ees requises20%Non null
+Total cellules
+Coh´ erence
+(Consistency)Absence de contradictions 20%Checks passed
+Total checks
+Validit´ e (Vali-
+dity)Conformit´ e aux r` egles
+m´ etier15%R`egles respect´ees
+Total r`egles
+Unicit´ e (Unique-
+ness)Absence de doublons 10% 1−Doublons
+Total
+Actualit´ e (Time-
+liness)Fraˆ ıcheur des donn´ ees 10%Donn´ees r´ecentes
+Total
+10.4 Formule Globale de Qualit´ e
+Qglobal =6X
+i=1wi·Di (10)
+O` u :
+—D i= Score de la dimensioni∈[0,100]
+—w i= Poids de la dimensioni
+—Pwi= 1
+33Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Conformit´ e ISO :
+—Q global≥85 : Conforme ISO
+—Q global∈[70,85[ : Partiellement conforme
+—Q global <70 : Non conforme
+10.5 Algorithme de Calcul Multi-Dimensions
+Algorithm 8 ´Evaluation Qualit´ e ISO 25012
+Require:DataFrameD, ReferenceR, RulesRu, WeightsW
+Ensure:Quality Report
+1:// 1. Compl´ etude
+2:total cells← |D.rows| × |D.columns|
+3:non null←Count non-null values inD
+4:C completeness ←(non null/total cells)×100
+5:// 2. Unicit´ e
+6:duplicates←Count duplicate rows inD
+7:C uniqueness ←(1−duplicates/|D.rows|)×100
+8:// 3. Validit´ e
+9:rules passed←0
+10:foreachruleinRudo
+11:ifDsatisfiesrulethen
+12:rules passed←rules passed+ 1
+13:end if
+14:end for
+15:C validity ←(rules passed/|Ru|)×100
+16:// 4. Coh´ erence
+17:inconsistencies←DetectInconsistencies(D)
+18:C consistency ←(1− |inconsistencies|/total cells)×100
+19:// 5. Exactitude (si r´ ef´ erence disponible)
+20:ifRis not Nonethen
+21:matching←Count matching values inDandR
+22:C accuracy ←(matching/total cells)×100
+23:else
+24:C accuracy ←95.0 // Score par d´ efaut
+25:end if
+26:// 6. Actualit´ e
+27:recent←Count records with recent dates
+28:C timeliness ←(recent/|D.rows|)×100
+29:// Score global
+30:Q global←P
+iWi×C i
+31:iso compliant←(Q global≥85)
+32:// G´ en´ erer recommandations
+33:recommendations←GenerateRecommendations(C, threshold=70)
+34:return{scores :C, global :Q global, iso :iso compliant, recommendations}
+34Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+10.6 Documentation de R´ ef´ erence
+— ISO 8000 Data Quality :https://www.iso.org/standard/50798.html
+— ISO/IEC 25012 :2022 :https://www.iso.org/standard/81745.html
+— ISO/IEC 25024 :2015 :https://www.iso.org/standard/35747.html
+— DAMA-DMBOK :https://www.dama.org/cpages/body-of-knowledge
+10.7 KPIs
+— Score global ¿ 85/100 pour conformit´ e
+— Temps ´ evaluation ¡ 5s pour 10k lignes
+— Toutes les 6 dimensions calcul´ ees
+— Recommandations pertinentes g´ en´ er´ ees
+— Historique qualit´ e conserv´ e (´ evolution)
+10.8 Livrables
+1. Code Python ´ evaluation ISO
+2. Routes FastAPI evaluate/report
+3. Dashboard visualisation qualit´ e
+4. Export PDF rapport ISO
+5. Int´ egration MongoDB pour historique
+6. Tests conformit´ e ISO
+35Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+11 Tˆ ache 9 : EthiMask - Framework de Masquage
+Contextuel
+11.1 Description
+D´ evelopper un syst` eme intelligent de masquage adaptatif bas´ e sur le contexte d’acc` es,
+le rˆ ole utilisateur et la sensibilit´ e des donn´ ees, utilisant un perceptron multi-facteurs.
+11.2 User Stories
+1.US-MASK-01 :En tant que syst` eme, je veux calculer automatiquement le niveau
+de masquage appropri´ e
+2.US-MASK-02 :En tant qu’utilisateur, je veux acc´ eder aux donn´ ees avec le mas-
+quage adapt´ e ` a mon rˆ ole
+3.US-MASK-03 :En tant qu’Admin, je veux configurer les poids du perceptron
+4.US-MASK-04 :En tant que Data Steward, je veux auditer les d´ ecisions de mas-
+quage
+5.US-MASK-05 :En tant que syst` eme, je veux appliquer le chiffrement homomor-
+phique pour niveau 1
+6.US-MASK-06 :En tant que syst` eme, je veux apprendre des patterns d’acc` es pour
+am´ eliorer les d´ ecisions
+11.3 Architecture du Perceptron V0.1
+Le score de confiance normalis´ eT′(u, p, s, h)∈[0,1] est calcul´ e selon :
+T′(u, p, s, h) =σ(w rR(u) +w pP(p) +w sS(s) +w hcHc(u) +w hfHf(u) +w hvHv(u) +b T)
+(11)
+Composantes :
+—R(u) : Score du rˆ ole utilisateur∈[0,1]
+—P(p) : L´ egitimit´ e de la finalit´ e d’acc` es∈[0,1]
+—S(s) : Sensibilit´ e de l’attribut∈[0,1]
+—H c(u) : Conformit´ e historique∈[0,1]
+—H f(u) : Fr´ equence d’acc` es normalis´ ee∈[0,1]
+—H v(u) : P´ enalit´ e violations∈[0,1]
+—w ∗: Poids configurables (somme = 1)
+—b T: Biais organisationnel
+—σ: Fonction sigmo¨ ıdeσ(x) =1
+1+e−x
+11.4 Mapping Score→Niveau de Masquage
+36Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Score T’ Niveau Action
+[0.85,1.0] Niveau 0 : Full Access Acc` es complet aux donn´ ees non
+masqu´ ees
+[0.65,0.85[ Niveau 1 : Anonymization Remplacement par identifiants chiffr´ es
+(HE)
+[0.45,0.65[ Niveau 2 : G´ en´ eralisation Agr´ egation (ˆ age→tranche, ville→
+r´ egion)
+[0.25,0.45[ Niveau 3 : Privacy Diff´ erentielle Ajout de bruit contrˆ ol´ e (ϵ-DP)
+[0,0.25[ Niveau 4 : Suppression Valeur remplac´ ee par NULL ou ”***”
+11.5 Architecture D´ etaill´ ee
+11.6 Chiffrement Homomorphique (Niveau 1)
+Pour le niveau Anonymization, utilisation deTenSEALouConcrete-ML:
+Avantages :
+— Calculs arithm´ etiques sur donn´ ees chiffr´ ees (addition, multiplication)
+— Entraˆ ınement de mod` eles ML sans d´ echiffrement
+— Conservation des propri´ et´ es statistiques
+— Conformit´ e RGPD renforc´ ee
+Librairies Python :
+— TenSEAL :https://github.com/OpenMined/TenSEAL
+— Concrete-ML :https://docs.zama.ai/concrete-ml
+— PySyft :https://github.com/OpenMined/PySyft
+Exemple d’impl´ ementation TenSEAL :
+import tenseal as ts
+# Contexte homomorphique
+context = ts.context(
+ts.SCHEME_TYPE.CKKS,
+poly_modulus_degree=8192,
+coeff_mod_bit_sizes=[60, 40, 40, 60]
+)
+context.global_scale = 2**40
+# Chiffrement
+value = 42.5
+encrypted = ts.ckks_vector(context, [value])
+# Calculs sur donn´ ees chiffr´ ees
+result = encrypted * 2 + 10 # = 95.0
+# D´ echiffrement (uniquement autoris´ es)
+decrypted = result.decrypt()[0]
+37Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+11.7 Privacy Diff´ erentielle (Niveau 3)
+Pour le niveau 3, application du m´ ecanisme de Laplace :
+˜x=x+ Lap∆f
+ϵ
+(12)
+O` u :
+—x: Valeur originale
+— ˜x: Valeur bruit´ ee
+— ∆f: Sensibilit´ e de la fonction
+—ϵ: Budget de privacy (typiquementϵ∈[0.1,1.0])
+— Lap(λ) : Distribution de Laplace de param` etreλ
+Librairie recommand´ ee :
+— Google DP :https://github.com/google/differential-privacy
+— Opacus (PyTorch) :https://opacus.ai/
+— Diffprivlib (IBM) :https://github.com/IBM/differential-privacy-library
+11.8 Algorithme de Masquage Adaptatif
+11.9 ´Evolution vers V1 (R´ eseau de Neurones)
+Am´ eliorations pr´ evues :
+1. Transformation de chaque facteur (R, P, S, H) en sous-r´ eseau fully-connected
+2. Architecture sugg´ er´ ee pour chaque facteur : Input→[8-16 neurones]→ReLU→
+Output
+3. R´ eseau H(u) : 3 inputs (Hc, Hf, Hv)→8 neurones cach´ es→ReLU→1 output
+4. Fonction de perte composite :
+L=α·L privacy + (1−α)·L utility (13)
+5. Entraˆ ınement par r´ etro-propagation avec dataset d’acc` es valid´ es
+6. R´ egularisation L2 pour ´ eviter l’overfitting
+Framework recommand´ e :PyTorch ou TensorFlow
+11.10 Documentation de R´ ef´ erence
+— Differential Privacy Book :https://www.cis.upenn.edu/ ~aaroth/Papers/privacybook.
+pdf
+— Homomorphic Encryption :https://en.wikipedia.org/wiki/Homomorphic_encryption
+— GDPR Anonymization Guide :https://www.cnil.fr/sites/default/files/atoms/
+files/cnil_guide_securite_des_donnees_personnelles-2023.pdf
+— TenSEAL Tutorial :https://github.com/OpenMined/TenSEAL/tree/main/tutorials
+38Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Algorithm 9Masquage Contextuel EthiMask
+Require:Useru, Purposep, Attributea, HistoryH, WeightsW
+Ensure:Masked Value
+1:// Calculer les facteurs
+2:R←ComputeRoleScore(u.role)
+3:P←ComputePurposeScore(p,a.allowed purposes)
+4:S←GetSensitivity(a)
+5:H c←ComputeCompliance(u,H)
+6:H f←ComputeFrequency(u,a,H)
+7:H v←ComputeViolationPenalty(u,H)
+8:// Calcul score de confiance
+9:linear←W r·R+W p·P+W s·S
+10:linear←linear+W hc·Hc+W hf·Hf+W hv·Hv
+11:linear←linear+bias
+12:T′←σ(linear)
+13:// D´ eterminer niveau de masquage
+14:ifT′≥0.85then
+15:level←0 // Full access
+16:else ifT′≥0.65then
+17:level←1 // HE encryption
+18:else ifT′≥0.45then
+19:level←2 // Generalization
+20:else ifT′≥0.25then
+21:level←3 // Differential privacy
+22:else
+23:level←4 // Suppression
+24:end if
+25:// Appliquer masquage
+26:masked value←ApplyMasking(a.value,level)
+27:// Logger la d´ ecision
+28:LogAccess(u,a,level,T′, timestamp)
+29:returnmasked value
+39Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+11.11 KPIs
+— Pr´ ecision d´ ecisions :>92%
+— Temps calcul masquage : ¡ 50ms
+— Taux de privacy breaches : = 0
+— Satisfaction utilisateurs :>80%
+— Am´ elioration continue : +3% accuracy/trimestre
+11.12 Livrables
+1. Code Python EthiMask V0.1 et V1
+2. Routes FastAPI pour masquage contextuel
+3. Mod` ele PyTorch entraˆ ın´ e (V1)
+4. Interface configuration poids
+5. Dashboard audit d´ ecisions
+6. Benchmark performance masquage
+7. Documentation technique compl` ete
+40Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+12 Int´ egration Apache Atlas et Apache Ranger
+12.1 Description
+Int´ egrer les outils de gouvernance Big Data Apache Atlas (m´ etadonn´ ees et lignage) et
+Apache Ranger (contrˆ ole d’acc` es) avec l’architecture microservices.
+12.2 Architecture d’Int´ egration
+FastAPIMicroservices
+Apache AtlasMetadata & Lineage Apache RangerAccess Control
+MongoDB
+HDP Sandbox(VMware)REST API REST API
+Figure 7– Architecture d’Int´ egration avec HDP Sandbox
+12.3 Configuration Apache Atlas
+Cas d’usage :
+—Catalogage :Enregistrer tous les datasets et leurs m´ etadonn´ ees
+—Lignage :Tracer les transformations de donn´ ees (pipeline Airflow)
+—Classification :Appliquer tags PII/SPI automatiquement
+—Recherche :Permettre la d´ ecouverte de donn´ ees par les Data Stewards
+—Audit :Logger toutes les modifications de m´ etadonn´ ees
+Entit´ es Atlas ` a cr´ eer :
+- data_source (MongoDB collections)
+- dataset (fichiers CSV upload´ es)
+- data_attribute (colonnes/champs)
+- pipeline (DAGs Airflow)
+- process (transformations)
+API Atlas REST :
+— POST /api/atlas/v2/entity - Cr´ eer entit´ e
+— GET /api/atlas/v2/entity/guid/{guid}- Lire entit´ e
+— PUT /api/atlas/v2/entity - Mettre ` a jour
+— POST /api/atlas/v2/search/basic - Rechercher
+— GET /api/atlas/v2/lineage/{guid}- Obtenir lignage
+41Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+12.4 Configuration Apache Ranger
+Cas d’usage :
+—Policies par rˆ ole :Admin, Data Steward, Annotator, Labeler
+—Policies par tag :PII→masquage, SPI→acc` es restreint
+—Masking dynamique :Selon le niveau de sensibilit´ e
+—Row-level filtering :Filtrer les donn´ ees sensibles
+—Audit trail :Logger tous les acc` es
+Types de policies :
+1.Access policies :Allow/Deny sur ressources
+2.Masking policies :Masquer colonnes (MASK, HASH, NULLIFY)
+3.Row filter policies :SQL WHERE clause dynamique
+Exemple de policy JSON :
+{
+"policyType": "1",
+"name": "pii-masking-policy",
+"isEnabled": true,
+"resources": {
+"database": {"values": ["sensitive_data_db"]},
+"table": {"values": ["users"]},
+"column": {"values": ["cin", "phone", "email"]}
+},
+"policyItems": [
+{
+"accesses": [{"type": "select", "isAllowed": true}],
+"users": ["data_labeler"],
+"dataMaskInfo": {
+"dataMaskType": "MASK",
+"conditionExpr": "",
+"valueExpr": ""
+}
+}
+]
+}
+12.5 Workflow d’Int´ egration
+Sc´ enario : Upload et Classification d’un Dataset
+1. Utilisateur uploade CSV via FastAPI
+2. FastAPI→Profiling et Cleaning
+3. FastAPI→Presidio d´ etection PII
+4. FastAPI→Classification sensibilit´ e
+5.FastAPI→Atlas :Enregistrer dataset + m´ etadonn´ ees + tags
+6.FastAPI→Ranger :Cr´ eer policies selon classifications
+42Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+7. MongoDB : Stocker r´ esultats
+8. Airflow : Logger le workflow complet
+9.Atlas :Cr´ eer lignage complet du pipeline
+Sc´ enario : Acc` es ` a une Donn´ ee Sensible
+1. Utilisateur requˆ ete donn´ ee via FastAPI
+2. FastAPI : Valider JWT→Extraire rˆ ole
+3.FastAPI→Ranger :V´ erifier policy d’acc` es
+4.Ranger→FastAPI :Retourner d´ ecision (allow + masking level)
+5. FastAPI→EthiMask : Calculer masquage contextuel
+6. FastAPI : Appliquer masquage
+7. FastAPI→MongoDB : Logger acc` es
+8.FastAPI→Atlas :Logger ´ ev´ enement d’acc` es
+9. FastAPI→Utilisateur : Retourner donn´ ees (masqu´ ees)
+12.6 Librairies Python
+—apache-atlas :Client Python pour Atlas
+pip install apache-atlas
+—requests :Pour appels REST API Ranger
+—pyatlasclient :Alternative pour Atlashttps://github.com/jpoullet2000/pyatlasclient
+12.7 Documentation de R´ ef´ erence
+— Apache Atlas :https://atlas.apache.org/
+— Atlas REST API :https://atlas.apache.org/api/v2/index.html
+— Apache Ranger :https://ranger.apache.org/
+— Ranger REST API :https://ranger.apache.org/apidocs/index.html
+— HDP Sandbox :https://www.cloudera.com/downloads/hortonworks-sandbox.
+html
+12.8 KPIs
+— Temps r´ eponse Atlas API : ¡ 200ms
+— Temps r´ eponse Ranger API : ¡ 150ms
+— Taux de synchronisation : 100%
+— Couverture lignage : 100% des pipelines
+— Audit trail complet : 100% des acc` es
+43Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+12.9 Livrables
+1. Code int´ egration Atlas (Python)
+2. Code int´ egration Ranger (Python)
+3. Scripts cr´ eation entit´ es Atlas
+4. Policies Ranger (JSON)
+5. Documentation configuration HDP Sandbox
+6. Dashboard visualisation lignage
+44Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+12.10 Cr´ eation du Dataset MAPA (Moroccan Personal Infor-
+mation)
+Contenu recommand´ e (5000+ enregistrements) :
+—Identit´ e :CIN, nom, pr´ enom, date naissance, lieu naissance
+—Contact :T´ el´ ephone (mobile/fixe), email, adresse compl` ete
+—Finance :IBAN MA, RIB, num´ ero compte
+—Sant´ e :CNSS, groupe sanguin, allergies
+—Professionnel :Employeur, salaire, fonction
+—Administratif :Passeport, permis, carte RAMED
+G´ en´ eration avec Faker :
+from faker import Faker
+import pandas as pd
+fake = Faker(’fr_FR’)
+Faker.seed(42)
+def generate_cin():
+letters = fake.random_uppercase_letter() +
+fake.random_uppercase_letter()
+numbers = fake.random_number(digits=6, fix_len=True)
+return f"{letters}{numbers}"
+def generate_phone_ma():
+prefix = fake.random_element([’06’, ’07’, ’05’])
+number = fake.random_number(digits=8, fix_len=True)
+return f"{prefix}{number}"
+def generate_iban_ma():
+return f"MA{fake.random_number(digits=24, fix_len=True)}"
+# G´ en´ erer 5000 enregistrements
+data = []
+for _ in range(5000):
+record = {
+’cin’: generate_cin(),
+’nom’: fake.last_name(),
+’prenom’: fake.first_name(),
+’telephone’: generate_phone_ma(),
+’email’: fake.email(),
+’iban’: generate_iban_ma(),
+’cnss’: fake.random_number(digits=10, fix_len=True),
+# ... autres champs
+}
+data.append(record)
+45Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+df = pd.DataFrame(data)
+df.to_csv(’mapa_dataset.csv’, index=False)
+12.11 M´ etriques d’ ´Evaluation
+Pour chaque tˆ ache :
+— Accuracy, Precision, Recall, F1-Score
+— Temps de traitement (latency, throughput)
+— Utilisation ressources (CPU, RAM)
+— Taux d’erreur et types d’erreurs
+´Evaluation globale du syst` eme :
+— End-to-end processing time
+— Data quality score ´ evolution
+— Privacy preservation effectiveness
+— User satisfaction (Data Stewards, Annotators)
+12.12 Livrables
+1. Dataset MAPA synth´ etique (CSV)
+2. Scripts g´ en´ eration donn´ ees
+3. Annotations gold standard (500+ samples)
+4. Rapports d’´ evaluation par tˆ ache
+5. Benchmark comparatif
+46Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+13 Planning et Organisation
+13.1 R´ epartition des Tˆ aches
+Phase 1 - Infrastructure (Semaines 1-3) :
+— Setup environnement (Python, FastAPI, MongoDB, Airflow)
+— Configuration HDP Sandbox (VMware)
+— Architecture microservices de base
+— Tˆ ache 1 : Authentification et rˆ oles
+Phase 2 - D´ etection et Classification (Semaines 4-7) :
+— Tˆ ache 2 : Taxonomie fine-grained PII/SPI
+— Tˆ ache 3 : Personnalisation Presidio
+— Tˆ ache 5 : Classification fine-grained
+— Int´ egration Apache Atlas
+Phase 3 - Qualit´ e et Correction (Semaines 8-11) :
+— Tˆ ache 4 : Data Cleaning pipeline
+— Tˆ ache 6 : Correction automatique incoh´ erences
+— Tˆ ache 8 : M´ etriques ISO
+— Int´ egration Apache Ranger
+Phase 4 - Privacy et Validation (Semaines 12-15) :
+— Tˆ ache 9 : EthiMask framework
+— Tˆ ache 7 : Workflow validation humaine
+— Orchestration Airflow compl` ete
+— Tests d’int´ egration
+Phase 5 - Finalisation (Semaines 16-18) :
+— Tests end-to-end
+— Documentation compl` ete
+—´Evaluation sur datasets
+— Rapport final et pr´ esentation
+47Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+13.2 Diagramme de Gantt
+Semaines
+Tˆ aches1 3 6 9 12 15 18
+Phase 1
+Phase 2
+Phase 3
+Phase 4
+Phase 5
+Auth OK Detection OK Quality OK Privacy OK Final
+Figure 8– Planning Projet (18 semaines)
+13.3 Crit` eres de Succ` es
+Crit` eres techniques :
+— Toutes les 9 tˆ aches compl´ et´ ees et fonctionnelles
+— Architecture microservices op´ erationnelle
+— Int´ egration Airflow + Atlas + Ranger r´ eussie
+— Tests unitaires coverage>80%
+— Performance conforme aux KPIs d´ efinis
+Crit` eres qualit´ e :
+— Documentation technique compl` ete
+— Code comment´ e et structur´ e
+— Rapports d’´ evaluation avec m´ etriques
+— Conformit´ e RGPD et Loi 09-08 v´ erifi´ ee
+— D´ emonstration end-to-end r´ eussie
+13.4 Livrables Finaux
+1.Code source complet :
+— Repository Git structur´ e
+— README avec instructions
+— Requirements.txt
+— Scripts de d´ eploiement
+2.Documentation :
+— Rapport technique (ce document)
+48Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+— Documentation API (Swagger)
+— Guide d’installation
+— Guide utilisateur par rˆ ole
+— Documentation architecture
+3.Datasets et Mod` eles :
+— Dataset MAPA synth´ etique
+— Mod` eles ML entraˆ ın´ es
+— Collections MongoDB export´ ees
+— Policies Atlas/Ranger
+4.Tests et ´Evaluation :
+— Suite de tests (pytest)
+— Rapports de performance
+— Benchmark comparatif
+— R´ esultats ´ evaluation ISO
+49Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+14 Ressources et R´ ef´ erences
+14.1 Documentation Technique
+Frameworks et Biblioth` eques :
+— FastAPI :https://fastapi.tiangolo.com/
+— MongoDB :https://www.mongodb.com/docs/
+— Beanie ODM :https://beanie-odm.dev/
+— Apache Airflow :https://airflow.apache.org/docs/
+— Presidio :https://microsoft.github.io/presidio/
+— spaCy :https://spacy.io/
+— Pandas :https://pandas.pydata.org/docs/
+— Scikit-learn :https://scikit-learn.org/
+— HuggingFace :https://huggingface.co/docs
+— PyTorch :https://pytorch.org/docs/
+Gouvernance et Privacy :
+— Apache Atlas :https://atlas.apache.org/
+— Apache Ranger :https://ranger.apache.org/
+— TenSEAL :https://github.com/OpenMined/TenSEAL
+— Opacus :https://opacus.ai/
+14.2 R´ eglementations
+RGPD et Privacy :
+— RGPD officiel :https://gdpr-info.eu/
+— Guide CNIL s´ ecurit´ e :https://www.cnil.fr/sites/default/files/atoms/files/
+cnil_guide_securite_des_donnees_personnelles-2023.pdf
+— Loi 09-08 Maroc :https://www.dgssi.gov.ma/fr/loi-09-08-relative-la-protection-des-personnes-physiques-legard-du-traitement-des
+— NIST Privacy Framework :https://www.nist.gov/privacy-framework
+Normes ISO :
+— ISO 8000 Data Quality :https://www.iso.org/standard/50798.html
+— ISO/IEC 25012 :2022 : https ://www.iso.org/standard/81745.html
+— ISO/IEC 25024 :2015 :https://www.iso.org/standard/35747.html
+— ISO/IEC 29100 :2024https://www.iso.org/standard/85938.html
+14.3 Tutoriels et Guides
+FastAPI + MongoDB :
+— FastAPI + Beanie Tutorial :https://github.com/BeanieODM/beanie
+— Async Python :https://realpython.com/async-io-python/
+— JWT Authentication :https://testdriven.io/blog/fastapi-jwt-auth/
+50Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+Apache Airflow :
+— Airflow Fundamentals :https://airflow.apache.org/docs/apache-airflow/stable/
+tutorial/fundamentals.html
+— Building DAGs :https://airflow.apache.org/docs/apache-airflow/stable/
+core-concepts/dags.html
+— Custom Operators :https://airflow.apache.org/docs/apache-airflow/stable/
+howto/custom-operator.html
+Machine Learning NLP :
+— HuggingFace Course :https://huggingface.co/learn/nlp-course/chapter1/1
+— Fine-tuning BERT :https://huggingface.co/docs/transformers/training
+— spaCy Training :https://spacy.io/usage/training
+14.4 Repositories GitHub Inspirants
+—Presidio Samples :https://github.com/microsoft/presidio/tree/main/docs/
+samples
+—FastAPI Best Practices :https://github.com/zhanymkanov/fastapi-best-practices
+—Differential Privacy :https://github.com/google/differential-privacy
+51Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+15 Annexes
+15.1 Annexe A : Structure Compl` ete du Projet
+projet_federateur/
+README.md
+requirements.txt
+.env
+.gitignore
+setup.py
+app/
+main.py
+config.py
+database.py
+models/
+__init__.py
+user.py
+taxonomy.py
+dataset.py
+quality_metrics.py
+annotation.py
+audit_log.py
+schemas/
+__init__.py
+user.py
+taxonomy.py
+presidio.py
+cleaning.py
+quality.py
+routers/
+__init__.py
+auth.py
+taxonomy.py
+presidio.py
+data_cleaning.py
+classification.py
+correction.py
+quality.py
+ethimask.py
+annotation.py
+services/
+__init__.py
+auth_service.py
+taxonomy_service.py
+52Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+quality_service.py
+classification_service.py
+correction_service.py
+ethimask_service.py
+atlas_service.py
+ranger_service.py
+middleware/
+__init__.py
+auth.py
+logging.py
+utils/
+__init__.py
+validators.py
+helpers.py
+presidio_custom/
+__init__.py
+recognizers/
+cin_recognizer.py
+phone_ma_recognizer.py
+iban_ma_recognizer.py
+cnss_recognizer.py
+analyzer_engine.py
+anonymizer_engine.py
+data_cleaning/
+__init__.py
+pipeline.py
+validators.py
+profiler.py
+ml_models/
+__init__.py
+classification/
+train.py
+predict.py
+model.py
+correction/
+correction_model.py
+ethimask/
+perceptron.py
+neural_network.py
+airflow/
+dags/
+data_processing_pipeline.py
+53Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+quality_assessment_dag.py
+ethimask_application_dag.py
+config/
+pipeline_config.yaml
+plugins/
+custom_operators.py
+atlas_integration/
+__init__.py
+entities.py
+lineage.py
+sync.py
+ranger_integration/
+__init__.py
+policies.py
+access_control.py
+tests/
+__init__.py
+test_auth.py
+test_taxonomy.py
+test_presidio.py
+test_cleaning.py
+test_classification.py
+test_correction.py
+test_quality.py
+test_ethimask.py
+test_integration.py
+datasets/
+mapa_synthetic/
+test_data/
+annotations/
+docs/
+architecture.md
+api_documentation.md
+user_guides/
+technical_specs/
+scripts/
+populate_taxonomy.py
+generate_mapa_dataset.py
+setup_atlas.py
+setup_ranger.py
+deploy.sh
+54Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+15.2 Annexe B : Configuration Airflow YAML
+Exemple de configuration compl` ete pour un DAG :
+dag_config:
+dag_id: "complete_data_processing"
+description: "Pipeline complet de traitement des donn´ ees sensibles"
+schedule_interval: "0 2 * * *" # Daily at 2AM
+start_date: "2024-01-01"
+catchup: false
+max_active_runs: 1
+default_args:
+owner: "data_governance_team"
+depends_on_past: false
+email_on_failure: true
+email_on_retry: false
+retries: 3
+retry_delay: 300 # 5 minutes
+services:
+base_url: "http://localhost:8000/api/v1"
+timeout: 300
+verify_ssl: true
+tasks:
+- task_id: "upload_dataset"
+service: "cleaning"
+endpoint: "/upload"
+method: "POST"
+dependencies: []
+params:
+file_type: "csv"
+validate: true
+retry_on_http_codes: [500, 502, 503]
+- task_id: "profile_data"
+service: "cleaning"
+endpoint: "/profile/{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+method: "GET"
+dependencies: ["upload_dataset"]
+- task_id: "clean_data"
+service: "cleaning"
+endpoint: "/clean/{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+method: "POST"
+dependencies: ["profile_data"]
+params:
+remove_duplicates: true
+55Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+handle_missing: "mean"
+remove_outliers: true
+outlier_method: "iqr"
+normalize: false
+- task_id: "detect_pii"
+service: "presidio"
+endpoint: "/analyze"
+method: "POST"
+dependencies: ["clean_data"]
+params:
+entities: ["CIN_MAROC", "PHONE_MA", "IBAN_MA", "CNSS_MA"]
+score_threshold: 0.5
+- task_id: "classify_sensitivity"
+service: "classification"
+endpoint: "/classify/{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+method: "POST"
+dependencies: ["detect_pii"]
+- task_id: "quality_assessment"
+service: "quality"
+endpoint: "/evaluate/{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+method: "POST"
+dependencies: ["clean_data"]
+- task_id: "detect_inconsistencies"
+service: "correction"
+endpoint: "/detect/{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+method: "POST"
+dependencies: ["quality_assessment"]
+- task_id: "apply_corrections"
+service: "correction"
+endpoint: "/correct/{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+method: "POST"
+dependencies: ["detect_inconsistencies"]
+params:
+auto_apply_threshold: 0.9
+- task_id: "apply_ethimask"
+service: "ethimask"
+endpoint: "/mask/{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+method: "POST"
+dependencies: ["classify_sensitivity", "apply_corrections"]
+- task_id: "sync_atlas"
+service: "atlas"
+56Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+endpoint: "/sync/{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+method: "POST"
+dependencies: ["classify_sensitivity"]
+- task_id: "create_ranger_policies"
+service: "ranger"
+endpoint: "/create_policies"
+method: "POST"
+dependencies: ["classify_sensitivity"]
+params:
+dataset_id: "{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+- task_id: "final_quality_report"
+service: "quality"
+endpoint: "/report/{{ ti.xcom_pull(task_ids=’upload_dataset’)[’dataset_id’] }}"
+method: "GET"
+dependencies: ["apply_ethimask", "sync_atlas", "create_ranger_policies"]
+notifications:
+on_success:
+- type: "email"
+recipients: ["data-stewards@example.com"]
+subject: "Pipeline Success: {{ dag_run.dag_id }}"
+on_failure:
+- type: "email"
+recipients: ["admin@example.com"]
+subject: "Pipeline Failed: {{ dag_run.dag_id }}"
+- type: "slack"
+webhook_url: "${SLACK_WEBHOOK_URL}"
+monitoring:
+sla: 3600 # 1 hour
+alert_on_sla_miss: true
+track_performance: true
+15.3 Annexe C : Glossaire
+PIIPersonally Identifiable Information - Donn´ ees permettant d’identifier directement ou
+indirectement une personne
+SPISensitive Personal Information - Donn´ ees personnelles sensibles (sant´ e, origine, reli-
+gion, etc.)
+RGPDR` eglement G´ en´ eral sur la Protection des Donn´ ees (GDPR en anglais)
+ISO 25012Norme internationale pour le mod` ele de qualit´ e des donn´ ees
+HEHomomorphic Encryption - Chiffrement permettant des calculs sur donn´ ees chiffr´ ees
+DPDifferential Privacy - Technique de protection de la vie priv´ ee par ajout de bruit
+DAGDirected Acyclic Graph - Graphe utilis´ e dans Airflow pour d´ efinir les workflows
+57Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+ODMObject-Document Mapper - Interface entre code Python et MongoDB
+JWTJSON Web Token - Standard pour les tokens d’authentification
+RESTRepresentational State Transfer - Architecture pour APIs web
+NLPNatural Language Processing - Traitement automatique du langage naturel
+MLMachine Learning - Apprentissage automatique
+ETLExtract, Transform, Load - Processus de traitement de donn´ ees
+CRUDCreate, Read, Update, Delete - Op´ erations de base sur donn´ ees
+58Data Governance & Privacy Projet F´ ed´ erateur 2024-2025
+16 Conclusion
+Ce projet f´ ed´ erateur propose un syst` eme complet et moderne de gouvernance des
+donn´ ees sensibles, int´ egrant les meilleures pratiques en mati` ere de protection de la vie
+priv´ ee, de qualit´ e des donn´ ees et de conformit´ e r´ eglementaire.
+Points cl´ es du projet :
+—Architecture extensible :Microservices + Airflow permettant d’ajouter de nou-
+veaux modules sans modification du core
+—Conformit´ e r´ eglementaire :RGPD et Loi 09-08 marocaine int´ egr´ es d` es la concep-
+tion
+—Intelligence artificielle :ML/NLP pour d´ etection, classification et correction au-
+tomatiques
+—Privacy by design :EthiMask avec masquage contextuel et chiffrement homo-
+morphique
+—Gouvernance Big Data :Int´ egration Atlas/Ranger pour tra¸ cabilit´ e et contrˆ ole
+d’acc` es
+—Qualit´ e ISO : ´Evaluation selon normes ISO 8000 et ISO 25012
+—Validation humaine :Workflow complet pour Data Labelers, Annotators et Ste-
+wards
+Impact attendu :
+— R´ eduction des risques de fuite de donn´ ees sensibles
+— Am´ elioration de la qualit´ e des donn´ ees (>85/100)
+— Automatisation des tˆ aches de gouvernance (gain 60% de temps)
+— Conformit´ e d´ emontrable aux audits RGPD
+— Base solide pour extension future (nouveaux modules, nouvelles r´ eglementations)
+59

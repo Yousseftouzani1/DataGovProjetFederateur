@@ -1,0 +1,372 @@
+{
+  "metadata": {
+    "version": "1.1",
+    "context": "Maroc",
+    "last_updated": "2025-12-02",
+    "description": "Taxonomie complète marocaine pour la classification fine-grained des données personnelles et sensibles (sans référence GDPR)"
+  },
+  "categories": [
+    {
+      "class": "IDENTITE_PERSONNELLE",
+      "class_en": "PERSONAL_IDENTITY",
+      "type": "PII",
+      "subclasses": [
+        {
+          "name": "Nom complet",
+          "name_en": "Full name",
+          "synonyms_fr": ["nom et prénom", "identité civile", "nom patronymique"],
+          "synonyms_en": ["full legal name", "civil identity", "personal name"],
+          "acronyms_fr": ["NOM"],
+          "acronyms_en": ["FN"],
+          "regex_patterns": [
+            "\\b[A-Z][a-zàâçéèêëïîôùûü-]+\\s+[A-Z][a-zàâçéèêëïîôùûü-]+\\b",
+            "\\b[A-Z][A-Z\\s]+\\b"
+          ],
+          "sensitivity_level": "high"
+        },
+        {
+          "name": "CIN - Carte d'Identité Nationale",
+          "name_en": "National Identity Card",
+          "synonyms_fr": ["carte nationale", "pièce d'identité", "CNI"],
+          "synonyms_en": ["ID card", "national ID"],
+          "acronyms_fr": ["CIN", "CNI"],
+          "acronyms_en": ["NIC"],
+          "regex_patterns": [
+            "\\b[A-Z]{1,2}\\d{5,8}\\b",
+            "\\bCIN[:\\s]*[A-Z]{1,2}\\d{5,8}\\b"
+          ],
+          "format": "1-2 lettres + 5-8 chiffres",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Numéro de passeport",
+          "name_en": "Passport number",
+          "synonyms_fr": ["passeport", "document de voyage"],
+          "synonyms_en": ["passport ID", "travel document"],
+          "acronyms_fr": ["PP"],
+          "acronyms_en": ["PP"],
+          "regex_patterns": ["\\b[A-Z]{1,2}\\d{6,9}\\b", "\\b\\d{8,9}\\b"],
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Date de naissance",
+          "name_en": "Date of birth",
+          "synonyms_fr": ["né(e) le", "date naissance", "DDN"],
+          "synonyms_en": ["DOB", "birthdate"],
+          "acronyms_fr": ["DDN"],
+          "acronyms_en": ["DOB"],
+          "regex_patterns": [
+            "\\b(0[1-9]|[12][0-9]|3[01])[-/](0[1-9]|1[0-2])[-/](19|20)\\d{2}\\b",
+            "\\b(19|20)\\d{2}[-/](0[1-9]|1[0-2])[-/](0[1-9]|[12][0-9]|3[01])\\b"
+          ],
+          "sensitivity_level": "high"
+        },
+        {
+          "name": "Lieu de naissance",
+          "name_en": "Place of birth",
+          "synonyms_fr": ["né(e) à", "ville de naissance"],
+          "synonyms_en": ["birthplace"],
+          "acronyms_fr": ["LN"],
+          "acronyms_en": ["POB"],
+          "regex_patterns": ["\\bné(e)?\\s+(à|au|aux)\\s+[A-Z][a-zàâçéèêëïîôùûü-]+\\b"],
+          "sensitivity_level": "medium"
+        },
+        {
+          "name": "Nationalité",
+          "name_en": "Nationality",
+          "synonyms_fr": ["citoyenneté", "origine nationale"],
+          "synonyms_en": ["citizenship"],
+          "regex_patterns": ["\\b(marocain|marocaine|français|française|algérien|algérienne|tunisien|tunisienne|espagnol|espagnole)\\b"],
+          "sensitivity_level": "high"
+        }
+      ]
+    },
+
+    {
+      "class": "COORDONNEES",
+      "class_en": "CONTACT_INFORMATION",
+      "type": "PII",
+      "subclasses": [
+        {
+          "name": "Adresse postale",
+          "name_en": "Postal address",
+          "synonyms_fr": ["adresse domicile", "résidence"],
+          "regex_patterns": ["\\d+[,\\s]+[A-Za-zàâçéèêëïîôùûü\\s-]+[,\\s]+\\d{5}[,\\s]+[A-Za-zàâçéèêëïîôùûü\\s-]+"],
+          "sensitivity_level": "high"
+        },
+        {
+          "name": "Numéro de téléphone",
+          "name_en": "Phone number",
+          "synonyms_fr": ["mobile", "portable", "GSM", "téléphone fixe"],
+          "regex_patterns": [
+            "\\b(\\+212|0)[5-7]\\d{8}\\b",
+            "\\b0\\d{9}\\b",
+            "\\b(\\+212|0)\\s?[5-7]\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}\\b"
+          ],
+          "format": "+212 6XX XXX XXX ou 06XX XXX XXX",
+          "sensitivity_level": "high"
+        },
+        {
+          "name": "Adresse email",
+          "name_en": "Email address",
+          "regex_patterns": ["\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b"],
+          "sensitivity_level": "high"
+        }
+      ]
+    },
+
+    {
+      "class": "DONNEES_FINANCIERES",
+      "class_en": "FINANCIAL_DATA",
+      "type": "SPI",
+      "subclasses": [
+        {
+          "name": "RIB / IBAN",
+          "name_en": "Bank account (IBAN)",
+          "synonyms_fr": ["coordonnées bancaires", "compte bancaire"],
+          "regex_patterns": ["\\bMA64\\d{4}[A-Z0-9]{16}\\b", "\\bMA\\d{2}[A-Z0-9]{22}\\b"],
+          "format": "MA + 24 caractères",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Numéro de carte bancaire",
+          "name_en": "Credit/Debit card number",
+          "regex_patterns": ["\\b(?:\\d{4}[ -]?){3}\\d{4}\\b", "\\b\\d{13,19}\\b"],
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "CVV / CVC",
+          "name_en": "Card verification code",
+          "regex_patterns": ["\\b\\d{3,4}\\b"],
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Identifiant fiscal (IF)",
+          "name_en": "Tax identification number",
+          "regex_patterns": ["\\b\\d{8,15}\\b"],
+          "sensitivity_level": "critical"
+        }
+      ]
+    },
+
+    {
+      "class": "SECURITE_SOCIALE",
+      "class_en": "SOCIAL_SECURITY",
+      "type": "PII",
+      "subclasses": [
+        {
+          "name": "Numéro CNSS",
+          "name_en": "CNSS number",
+          "regex_patterns": ["\\b\\d{9,10}\\b", "\\bCNSS[:\\s]*\\d{9,10}\\b"],
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Numéro AMO / RAMED",
+          "name_en": "Health insurance number",
+          "regex_patterns": ["\\b[A-Z]{2}\\d{8}\\b"],
+          "sensitivity_level": "critical"
+        }
+      ]
+    },
+
+    {
+      "class": "DONNEES_BIOMETRIQUES",
+      "class_en": "BIOMETRIC_DATA",
+      "type": "SPI",
+      "subclasses": [
+        {
+          "name": "Empreintes digitales",
+          "name_en": "Fingerprints",
+          "synonyms_fr": ["empreintes", "dactyloscopie"],
+          "data_format": "image, template, minutiae",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Reconnaissance faciale",
+          "name_en": "Facial recognition",
+          "synonyms_fr": ["biométrie faciale", "visage"],
+          "data_format": "photo, vecteurs faciaux, embeddings",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Scan de l'iris",
+          "name_en": "Iris scan",
+          "data_format": "image, code iris",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Empreinte vocale",
+          "name_en": "Voice biometrics",
+          "synonyms_fr": ["reconnaissance vocale biométrique"],
+          "data_format": "audio, voiceprint",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "ADN / Données génétiques",
+          "name_en": "DNA / Genetic data",
+          "data_format": "séquence génétique, profil ADN",
+          "sensitivity_level": "critical"
+        }
+      ]
+    },
+
+    {
+      "class": "DONNEES_SANTE",
+      "class_en": "HEALTH_DATA",
+      "type": "SPI",
+      "subclasses": [
+        {
+          "name": "Dossier médical",
+          "name_en": "Medical records",
+          "synonyms_fr": ["historique médical", "dossier patient"],
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Diagnostic médical",
+          "name_en": "Medical diagnosis",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Ordonnance médicale",
+          "name_en": "Prescription",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Groupe sanguin",
+          "name_en": "Blood type",
+          "regex_patterns": ["\\b(A|B|AB|O)[+−-]\\b"],
+          "sensitivity_level": "high"
+        },
+        {
+          "name": "Handicap / Situation de handicap",
+          "name_en": "Disability status",
+          "sensitivity_level": "critical"
+        }
+      ]
+    },
+
+    {
+      "class": "EDUCATION",
+      "class_en": "EDUCATION",
+      "type": "PII",
+      "subclasses": [
+        {
+          "name": "Code Massar",
+          "name_en": "Massar student code",
+          "regex_patterns": ["\\b[MPTJ]\\d{9}\\b", "\\b[A-Z]\\d{9}\\b"],
+          "format": "1 lettre + 9 chiffres",
+          "sensitivity_level": "high"
+        },
+        {
+          "name": "CNE - Code National Étudiant",
+          "name_en": "National student code",
+          "regex_patterns": ["\\b[A-Z]\\d{9}\\b"],
+          "sensitivity_level": "high"
+        },
+        {
+          "name": "Relevé de notes",
+          "name_en": "Academic transcript",
+          "synonyms_fr": ["bulletin scolaire", "relevé de notes"],
+          "sensitivity_level": "high"
+        },
+        {
+          "name": "Diplôme / Attestation",
+          "name_en": "Degree / Certificate",
+          "sensitivity_level": "medium"
+        }
+      ]
+    },
+
+    {
+      "class": "EMPLOI",
+      "class_en": "EMPLOYMENT",
+      "type": "PII",
+      "subclasses": [
+        {
+          "name": "Matricule employé",
+          "name_en": "Employee ID",
+          "regex_patterns": ["\\b[A-Z]{2,4}\\d{4,8}\\b"],
+          "sensitivity_level": "medium"
+        },
+        {
+          "name": "Bulletin de paie",
+          "name_en": "Payslip",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Contrat de travail",
+          "name_en": "Employment contract",
+          "sensitivity_level": "high"
+        }
+      ]
+    },
+
+    {
+      "class": "DONNEES_JUDICIAIRES",
+      "class_en": "JUDICIAL_DATA",
+      "type": "SPI",
+      "subclasses": [
+        {
+          "name": "Casier judiciaire",
+          "name_en": "Criminal record",
+          "synonyms_fr": ["extrait de casier judiciaire", "B3"],
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Jugement / Décision judiciaire",
+          "name_en": "Court judgment",
+          "sensitivity_level": "critical"
+        }
+      ]
+    },
+
+    {
+      "class": "DONNEES_VEHICULES",
+      "class_en": "VEHICLE_DATA",
+      "type": "PII",
+      "subclasses": [
+        {
+          "name": "Immatriculation véhicule",
+          "name_en": "License plate",
+          "regex_patterns": ["\\b\\d{1,6}\\s?[أب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي]\\s?\\d{1,4}\\b"],
+          "format": "Chiffres + lettre arabe + chiffres",
+          "sensitivity_level": "medium"
+        },
+        {
+          "name": "Permis de conduire",
+          "name_en": "Driver's license",
+          "regex_patterns": ["\\b\\d{6,10}\\b"],
+          "sensitivity_level": "high"
+        }
+      ]
+    },
+
+    {
+      "class": "ORIGINE_ETHNIQUE_RELIGION",
+      "class_en": "ETHNIC_ORIGIN_RELIGION",
+      "type": "SPI",
+      "subclasses": [
+        {
+          "name": "Origine ethnique / raciale",
+          "name_en": "Ethnic or racial origin",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Religion / Croyances",
+          "name_en": "Religion / Beliefs",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Opinions politiques",
+          "name_en": "Political opinions",
+          "sensitivity_level": "critical"
+        },
+        {
+          "name": "Orientation sexuelle",
+          "name_en": "Sexual orientation",
+          "sensitivity_level": "critical"
+        }
+      ]
+    }
+  ]
+}

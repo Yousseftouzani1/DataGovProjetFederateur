@@ -1,0 +1,92 @@
+Guide de Qualité pour le Projet Fédérateur
+Introduction
+Cedocumentprésentelesbonnespratiquesàsuivrepourdévelopperl’application
+de gouvernance de données dans le cadre du projet fédérateur.
+1 Organisation des Branches Git
+Pour garantir un dépôt GitHub propre et contrôlé, il faut respecter la struc-
+ture suivante :
+•main: contient uniquement du code stable et prêt à être déployé.
+•develop: branche d’intégration, reçoit les fonctionnalités validées.
+•feature/<nom>: branche pour travailler une nouvelle fonctionnal-
+ité.
+2 Workflow de Développement
+Chaque contribution doit suivre les étapes suivantes :
+1. Créer une branchefeature/depuisdevelop.
+2. Développer et tester localement la fonctionnalité.
+3. Respecter les conventions de codage (PEP8, typage, style).
+4. Pousser la branche sur GitHub.
+5. Ouvrir une Pull Request versdevelop.
+6. Vérifier que tous les tests CI passent.
+17. Faire relire le code (code review).
+8. Fusionner uniquement après validation.
+Aucun commit direct ne doit être réalisé surmainoudevelop.
+3 Bibliothèques Python Recommandées
+Pour structurer correctement un projet FastAPI, les bibliothèques suivantes
+sont obligatoires :
+Back-end FastAPI
+•fastapi: framework principal.
+•uvicorn: serveur ASGI pour exécuter FastAPI.
+•pydantic: validation des données et modèles.
+Sécurité et Authentification
+•python-jose: génération et validation JWT.
+•passlib: hashage des mots de passe.
+•bcrypt: hashing sécurisé.
+Tests
+•pytest: framework de tests.
+•pytest-asyncio: tests asynchrones.
+•httpx: client HTTP pour tester les endpoints FastAPI.
+Qualité du Code
+•black: formateur de code.
+•flake8: vérification stylistique.
+•isort: organisation des imports.
+•mypy: vérification des types.
+24 StructureRecommandéed’unProjetFastAPI
+app/
+main.py
+config.py
+database.py
+routers/
+users.py
+auth.py
+models/
+user.py
+schemas/
+user_schema.py
+core/
+security.py
+auth.py
+tests/
+test_users.py
+test_auth.py
+5 Tests Automatisés
+Chaque fonctionnalité doit être testée :
+•Tests unitaires (pytest)
+•Tests d’intégration avec FastAPI TestClient
+•Tests asynchrones avecpytest-asyncio
+Les tests doivent s’exécuter automatiquement via GitHub Actions.
+6 Intégration Continue (CI)
+GitHub Actions doit vérifier :
+3•Lancement des tests PyTest
+•Analyse du code (flake8, black –check, isort –check)
+•Vérification du typage (mypy)
+•Build du projet
+Toute Pull Request doit afficher un statutvertavant d’être fusionnée.
+7 Bonnes Pratiques de Développement
+•Respecter la norme PEP8.
+•Utiliser des noms de variables explicites.
+•Documenter chaque fonction (docstring).
+•Utiliser le typage Python (typing) obligatoirement.
+•Garder les fichiers courts et lisibles.
+•Un commit doit être petit et clair.
+•Un commit = une idée, une modification cohérente.
+•Ne pas versionner : fichiers temporaires, venv, données brutes.
+•Utiliser un.gitignorecomplet.
+8 Bonnes Pratiques Git / GitHub
+•Rédiger des messages de commit lisibles :
+–feat: ajout du système d’authentification
+–fix: correction du hashage des mots de passe
+•Toujours créer une Pull Request pour fusionner.
+•Ne jamais travailler directement dansmain.
+•Écrire une description claire de la PR.
+•Utiliser les issues GitHub pour organiser le travail.
+4

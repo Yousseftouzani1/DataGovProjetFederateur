@@ -1,0 +1,43 @@
+pipeline:
+  name: "data_processing_pipeline"
+  schedule_interval: "0 2 * * *"  # Daily at 2AM
+  
+services:
+  base_url: "http://localhost:8000/api/v1"
+  timeout: 300
+
+tasks:
+  - task_id: "upload_dataset"
+    service: "cleaning"
+    endpoint: "/upload"
+    method: "POST"
+    
+  - task_id: "profile_data"
+    service: "cleaning"
+    endpoint: "/profile/{dataset_id}"
+    depends_on: ["upload_dataset"]
+    
+  - task_id: "clean_data"
+    service: "cleaning"
+    endpoint: "/clean/{dataset_id}"
+    depends_on: ["profile_data"]
+    
+  - task_id: "detect_pii"
+    service: "presidio"
+    endpoint: "/analyze"
+    depends_on: ["clean_data"]
+    
+  - task_id: "classify_sensitivity"
+    service: "classification"
+    endpoint: "/classify/{dataset_id}"
+    depends_on: ["detect_pii"]
+    
+  - task_id: "quality_assessment"
+    service: "quality"
+    endpoint: "/evaluate/{dataset_id}"
+    depends_on: ["clean_data"]
+    
+  - task_id: "apply_ethimask"
+    service: "ethimask"
+    endpoint: "/mask/{dataset_id}"
+    depends_on: ["classify_sensitivity", "quality_assessment"]

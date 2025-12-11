@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataGov - PII Detection Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/lucide-static@0.263.1/font/lucide.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --critical: #dc2626;
+            --bg-dark: #0a0a0f;
+            --bg-card: #111118;
+            --bg-card-hover: #1a1a24;
+            --bg-input: #0d0d12;
+            --text: #e4e4e7;
+            --text-muted: #71717a;
+            --text-dim: #52525b;
+            --border: #27272a;
+            --border-light: #3f3f46;
+            --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-2: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+        }
+
+        .status-dot.online {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Main Layout */
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+            min-height: calc(100vh - 65px);
+        }
+
+        @media (max-width: 1200px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+
+        /* Content Area */
+        .content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Sidebar - Process Flow */
+        .sidebar {
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .card-title svg {
+            width: 18px;
+            height: 18px;
+            color: var(--primary-light);
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        /* Input Area */
+        .input-container {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: all 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        textarea::placeholder {
+            color: var(--text-dim);
+        }
+
+        /* Sample Buttons */
+        .samples {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .sample-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sample-btn:hover {
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
+        .sample-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        select {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            color: var(--text);
+            font-size: 0.85rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            color: var(--text);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .stat-value.critical {
+            color: var(--critical);
+        }
+
+        .stat-value.success {
+            color: var(--success);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        /* Detection Results */
+        .detection-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .detection-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--primary);
+            transition: all 0.2s;
+        }
+
+        .detection-item:hover {
+            background: var(--bg-card-hover);
+            border-left-color: var(--primary-light);
+        }
+
+        .detection-item.critical {
+            border-left-color: var(--critical);
+        }
+
+        .detection-item.high {
+            border-left-color: var(--warning);
+        }
+
+        .detection-item.medium {
+            border-left-color: #eab308;
+        }
+
+        .detection-item.low {
+            border-left-color: var(--success);
+        }
+
+        .detection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .detection-type {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detection-type svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-critical {
+            background: rgba(220, 38, 38, 0.15);
+            color: #fca5a5;
+        }
+
+        .badge-high {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fcd34d;
+        }
+
+        .badge-medium {
+            background: rgba(234, 179, 8, 0.15);
+            color: #fde047;
+        }
+
+        .badge-low {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+        }
+
+        .source-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-light);
+            margin-left: 0.5rem;
+        }
+
+        .detection-value {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.35rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin: 0.5rem 0;
+            word-break: break-all;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .detection-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .detection-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .detection-meta svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* Process Flow */
+        .flow-container {
+            position: relative;
+        }
+
+        .flow-step {
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            position: relative;
+        }
+
+        .flow-step:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 40px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .flow-step.active::before {
+            background: var(--primary);
+        }
+
+        .flow-step.completed::before {
+            background: var(--success);
+        }
+
+        .flow-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--bg-input);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
+        .flow-icon svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+        }
+
+        .flow-step.active .flow-icon {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .flow-step.active .flow-icon svg {
+            color: var(--primary-light);
+        }
+
+        .flow-step.completed .flow-icon {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .flow-step.completed .flow-icon svg {
+            color: var(--success);
+        }
+
+        .flow-content {
+            flex: 1;
+        }
+
+        .flow-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.15rem;
+        }
+
+        .flow-desc {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .flow-count {
+            font-size: 0.7rem;
+            background: var(--bg-input);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-dim);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        /* Anonymized */
+        .anonymized-box {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab:hover {
+            color: var(--text);
+        }
+
+        .tab.active {
+            color: var(--primary-light);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Engine Info */
+        .engine-info {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .engine-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.6rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        .engine-chip svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .engine-chip.enabled {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .engine-chip.disabled {
+            border-color: var(--text-dim);
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <span class="logo-text">DataGov PII Detection</span>
+        </div>
+        <div class="header-status">
+            <div class="engine-info" id="engineInfo"></div>
+            <div class="status-badge">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="content">
+            <!-- Input Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i data-lucide="file-text"></i>
+                        Text Analysis
+                    </div>
+                    <select id="language">
+                        <option value="fr">French</option>
+                        <option value="en">English</option>
+                        <option value="ar">Arabic</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="samples">
+                        <button class="sample-btn" onclick="loadSample('identity')">
+                            <i data-lucide="id-card"></i> Identity
+                        </button>
+                        <button class="sample-btn" onclick="loadSample('medical')">
+                            <i data-lucide="heart-pulse"></i> Medical
+                        </button>
+                        <button class="sample-btn" onclick="loadSample('financial')">
+                            <i data-lucide="credit-card"></i> Financial
+                        </button>
+                        <button class="sample-btn" onclick="loadSample('professional')">
+                            <i data-lucide="briefcase"></i> Professional
+                        </button>
+                        <button class="sample-btn" onclick="loadSample('arabic')">
+                            <i data-lucide="languages"></i> Arabic
+                        </button>
+                        <button class="sample-btn" onclick="loadSample('mixed')">
+                            <i data-lucide="shuffle"></i> Mixed
+                        </button>
+                    </div>
+
+                    <div class="input-container">
+                        <textarea id="inputText" placeholder="Enter text to analyze for sensitive data..."></textarea>
+                    </div>
+
+                    <div class="controls">
+                        <div class="control-group">
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" id="anonymize" checked>
+                                <span>Anonymize</span>
+                            </label>
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" id="detectNames" checked>
+                                <span>Detect Names</span>
+                            </label>
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" id="usePresidio" checked>
+                                <span>Use Presidio NER</span>
+                            </label>
+                        </div>
+                        <div class="control-group" style="margin-left: auto;">
+                            <button class="btn btn-secondary" onclick="clearAll()">
+                                <i data-lucide="trash-2"></i> Clear
+                            </button>
+                            <button class="btn btn-primary" onclick="analyzeText()" id="analyzeBtn">
+                                <i data-lucide="scan"></i> Analyze
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            <div class="card" id="resultsCard" style="display: none;">
+                <div class="card-header">
+                    <div class="card-title">
+                        <i data-lucide="bar-chart-2"></i>
+                        Analysis Results
+                    </div>
+                    <span id="executionTime" style="font-size: 0.8rem; color: var(--text-muted);"></span>
+                </div>
+                <div class="card-body">
+                    <div class="stats-grid" id="statsGrid"></div>
+
+                    <div class="tabs">
+                        <div class="tab active" data-tab="detections">
+                            <i data-lucide="list"></i> Detections
+                        </div>
+                        <div class="tab" data-tab="anonymized">
+                            <i data-lucide="eye-off"></i> Anonymized
+                        </div>
+                        <div class="tab" data-tab="summary">
+                            <i data-lucide="pie-chart"></i> Summary
+                        </div>
+                    </div>
+
+                    <div class="tab-content active" id="detectionsTab">
+                        <div class="detection-list" id="detectionsList"></div>
+                    </div>
+
+                    <div class="tab-content" id="anonymizedTab">
+                        <div class="anonymized-box" id="anonymizedText"></div>
+                    </div>
+
+                    <div class="tab-content" id="summaryTab">
+                        <div id="summaryContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar - Process Flow -->
+        <aside class="sidebar">
+            <div class="sidebar-title">
+                <i data-lucide="activity"></i>
+                Processing Pipeline
+            </div>
+
+            <div class="flow-container" id="flowContainer">
+                <div class="flow-step" id="step-input">
+                    <div class="flow-icon"><i data-lucide="file-input"></i></div>
+                    <div class="flow-content">
+                        <div class="flow-title">Input Text</div>
+                        <div class="flow-desc">Waiting for input...</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" id="step-moroccan">
+                    <div class="flow-icon"><i data-lucide="regex"></i></div>
+                    <div class="flow-content">
+                        <div class="flow-title">Moroccan Patterns<span class="flow-count" id="moroccan-count">0</span>
+                        </div>
+                        <div class="flow-desc">CIN, CNSS, Massar, IBAN...</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" id="step-arabic">
+                    <div class="flow-icon"><i data-lucide="languages"></i></div>
+                    <div class="flow-content">
+                        <div class="flow-title">Arabic Detection<span class="flow-count" id="arabic-count">0</span>
+                        </div>
+                        <div class="flow-desc">Arabic text patterns</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" id="step-presidio">
+                    <div class="flow-icon"><i data-lucide="brain"></i></div>
+                    <div class="flow-content">
+                        <div class="flow-title">Presidio NER<span class="flow-count" id="presidio-count">0</span></div>
+                        <div class="flow-desc">AI-powered entity recognition</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" id="step-merge">
+                    <div class="flow-icon"><i data-lucide="git-merge"></i></div>
+                    <div class="flow-content">
+                        <div class="flow-title">Merge & Dedupe</div>
+                        <div class="flow-desc">Combine and prioritize</div>
+                    </div>
+                </div>
+
+                <div class="flow-step" id="step-output">
+                    <div class="flow-icon"><i data-lucide="check-circle"></i></div>
+                    <div class="flow-content">
+                        <div class="flow-title">Results<span class="flow-count" id="total-count">0</span></div>
+                        <div class="flow-desc">Final detections</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                <div class="sidebar-title">
+                    <i data-lucide="database"></i>
+                    Domains Loaded
+                </div>
+                <div id="domainsList" style="font-size: 0.8rem; color: var(--text-muted);"></div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8001';
+
+        const sampleTexts = {
+            identity: `Personal Information:
+- Name: Ahmed BENNANI
+- CIN: AB123456
+- Date of Birth: 15/03/1985
+- Nationality: Moroccan
+- Passport: AA1234567
+- Address: 123 Rue Mohammed V, 20000 Casablanca`,
+
+            medical: `Patient Medical Record #MED-2024-001
+Primary Diagnosis: Type 2 Diabetes (E11.9)
+Blood Type: O+
+Serological Tests: HIV negative, Hepatitis B negative
+Current Treatment: Metformin 500mg x2/day
+Health Insurance AMO: AM12345678
+Last BP Reading: 130/85 mmHg
+SpO2: 98%`,
+
+            financial: `Banking Information:
+IBAN: MA64011519000001205000534
+Credit Card: 4532 1234 5678 9012
+CVV: 123 (DO NOT STORE!)
+Monthly Salary: 25000 MAD
+Tax ID (IF): 12345678
+Check Number: 0012345678`,
+
+            professional: `Employee Record:
+- ID: EMP-12345
+- CNSS Number: 123456789012
+- Contract: CDI since 01/06/2020
+- Gross Salary: 35000 MAD
+- Net Salary: 28000 MAD
+- Work Email: ahmed.bennani@company.ma
+- Performance Rating: 4/5`,
+
+            arabic: `معلومات شخصية:
+الاسم الكامل: أحمد بن علي
+رقم البطاقة الوطنية: AB123456
+الهاتف: 0612345678
+البريد الإلكتروني: ahmed.benali@gmail.com
+العنوان: 15 شارع محمد الخامس، الدار البيضاء
+رقم الضمان الاجتماعي CNSS: 123456789012`,
+
+            mixed: `Hello, I am Ahmed BENNANI (CIN: AB123456).
+Email: ahmed.bennani@gmail.com, Phone: +212612345678
+CNSS: 123456789012, IBAN: MA64011519000001205000534
+Student Massar Code: M123456789
+Blood Type: A+, Medical File: MED-2024-5678
+
+بيانات إضافية:
+رقم جواز السفر: AA1234567
+الحالة الاجتماعية: متزوج`
+        };
+
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            checkApiStatus();
+            loadDomains();
+            setupTabs();
+        });
+
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
+                });
+            });
+        }
+
+        async function checkApiStatus() {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            const engineInfo = document.getElementById('engineInfo');
+
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    dot.classList.add('online');
+                    text.textContent = 'Connected';
+
+                    engineInfo.innerHTML = `
+                        <div class="engine-chip ${data.presidio_available ? 'enabled' : 'disabled'}">
+                            <i data-lucide="brain"></i>
+                            Presidio ${data.presidio_available ? 'ON' : 'OFF'}
+                        </div>
+                        <div class="engine-chip enabled">
+                            <i data-lucide="database"></i>
+                            ${data.domains_count} Domains
+                        </div>
+                        <div class="engine-chip enabled">
+                            <i data-lucide="regex"></i>
+                            ${data.custom_patterns} Patterns
+                        </div>
+                    `;
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                dot.classList.remove('online');
+                text.textContent = 'Offline';
+                engineInfo.innerHTML = '<div class="engine-chip disabled">API Unavailable</div>';
+            }
+        }
+
+        async function loadDomains() {
+            try {
+                const response = await fetch(`${API_URL}/domains`);
+                const data = await response.json();
+
+                document.getElementById('domainsList').innerHTML = data.domains.map(d => `
+                    <div style="padding: 0.35rem 0; border-bottom: 1px solid var(--border);">
+                        ${d.domain_name.replace(/_/g, ' ')}
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('domainsList').innerHTML = '<div style="color: var(--danger);">Failed to load</div>';
+            }
+        }
+
+        function loadSample(type) {
+            document.getElementById('inputText').value = sampleTexts[type];
+            document.getElementById('language').value = type === 'arabic' ? 'ar' : 'fr';
+            resetFlow();
+        }
+
+        function resetFlow() {
+            document.querySelectorAll('.flow-step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            ['moroccan', 'arabic', 'presidio', 'total'].forEach(id => {
+                document.getElementById(id + '-count').textContent = '0';
+            });
+        }
+
+        function updateFlow(step, status, count = null) {
+            const el = document.getElementById('step-' + step);
+            el.classList.remove('active', 'completed');
+            el.classList.add(status);
+
+            if (count !== null) {
+                const countEl = document.getElementById(step.replace('step-', '') + '-count');
+                if (countEl) countEl.textContent = count;
+            }
+
+            lucide.createIcons();
+        }
+
+        async function analyzeText() {
+            const text = document.getElementById('inputText').value.trim();
+            if (!text) return alert('Please enter text to analyze');
+
+            const btn = document.getElementById('analyzeBtn');
+            const resultsCard = document.getElementById('resultsCard');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader"></i> Analyzing...';
+            lucide.createIcons();
+
+            resetFlow();
+            resultsCard.style.display = 'block';
+            document.getElementById('detectionsList').innerHTML = '<div class="loading"><div class="spinner"></div>Processing...</div>';
+
+            // Simulate flow steps
+            updateFlow('input', 'completed');
+            await delay(200);
+            updateFlow('moroccan', 'active');
+            await delay(300);
+
+            try {
+                const response = await fetch(`${API_URL}/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        language: document.getElementById('language').value,
+                        anonymize: document.getElementById('anonymize').checked,
+                        detect_names: document.getElementById('detectNames').checked,
+                        use_presidio: document.getElementById('usePresidio').checked,
+                        confidence_threshold: 0.5
+                    })
+                });
+
+                const data = await response.json();
+
+                // Update flow with actual counts
+                const customCount = data.detections.filter(d => d.source === 'custom').length;
+                const arabicCount = data.detections.filter(d => d.source === 'arabic').length;
+                const presidioCount = data.detections.filter(d => d.source === 'presidio').length;
+
+                updateFlow('moroccan', 'completed', customCount);
+                await delay(200);
+                updateFlow('arabic', 'completed', arabicCount);
+                await delay(200);
+                updateFlow('presidio', 'completed', presidioCount);
+                await delay(200);
+                updateFlow('merge', 'completed');
+                await delay(200);
+                updateFlow('output', 'completed', data.detections_count);
+
+                displayResults(data);
+
+            } catch (error) {
+                document.getElementById('detectionsList').innerHTML = `
+                    <div class="empty-state" style="color: var(--danger);">
+                        <i data-lucide="alert-circle"></i>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+                lucide.createIcons();
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="scan"></i> Analyze';
+                lucide.createIcons();
+            }
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function displayResults(data) {
+            document.getElementById('executionTime').textContent = `${data.execution_time_ms.toFixed(1)}ms | ${data.engine_mode} mode`;
+
+            const criticalCount = data.detections.filter(d => d.sensitivity_level === 'critical').length;
+            const highCount = data.detections.filter(d => d.sensitivity_level === 'high').length;
+
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${data.detections_count}</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value critical">${criticalCount}</div>
+                    <div class="stat-label">Critical</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--warning);">${highCount}</div>
+                    <div class="stat-label">High</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value success">${Object.keys(data.sources_summary || {}).length}</div>
+                    <div class="stat-label">Sources</div>
+                </div>
+            `;
+
+            if (data.detections_count === 0) {
+                document.getElementById('detectionsList').innerHTML = `
+                    <div class="empty-state">
+                        <i data-lucide="check-circle"></i>
+                        <p>No sensitive data detected</p>
+                    </div>
+                `;
+            } else {
+                document.getElementById('detectionsList').innerHTML = data.detections.map(d => `
+                    <div class="detection-item ${d.sensitivity_level}">
+                        <div class="detection-header">
+                            <span class="detection-type">
+                                <i data-lucide="${getEntityIcon(d.category)}"></i>
+                                ${d.entity_type}
+                                <span class="source-badge">${d.source}</span>
+                            </span>
+                            <span class="badge badge-${d.sensitivity_level}">${d.sensitivity_level}</span>
+                        </div>
+                        <div class="detection-value">${escapeHtml(d.value)}</div>
+                        <div class="detection-meta">
+                            <span><i data-lucide="folder"></i> ${d.category}</span>
+                            <span><i data-lucide="layers"></i> ${d.domain || 'N/A'}</span>
+                            <span><i data-lucide="percent"></i> ${(d.confidence_score * 100).toFixed(0)}%</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('anonymizedText').textContent = data.anonymized_text || 'Anonymization not enabled';
+
+            document.getElementById('summaryContent').innerHTML = `
+                <h4 style="margin-bottom: 1rem; font-size: 0.9rem;">By Category</h4>
+                ${Object.entries(data.summary || {}).map(([k, v]) => `
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+                        <span>${k}</span>
+                        <span style="font-weight: 600;">${v}</span>
+                    </div>
+                `).join('')}
+                
+                <h4 style="margin: 1.5rem 0 1rem; font-size: 0.9rem;">By Source</h4>
+                ${Object.entries(data.sources_summary || {}).map(([k, v]) => `
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+                        <span>${k}</span>
+                        <span style="font-weight: 600;">${v}</span>
+                    </div>
+                `).join('')}
+            `;
+
+            lucide.createIcons();
+        }
+
+        function getEntityIcon(category) {
+            const icons = {
+                'IDENTITE': 'id-card',
+                'COORDONNEES': 'phone',
+                'FINANCIER': 'credit-card',
+                'MEDICAL': 'heart-pulse',
+                'PROFESSIONNEL': 'briefcase',
+                'EDUCATION': 'graduation-cap',
+                'BIOMETRIQUE': 'fingerprint',
+                'JURIDIQUE': 'scale',
+                'VEHICULE': 'car'
+            };
+            for (const [key, icon] of Object.entries(icons)) {
+                if (category.toUpperCase().includes(key)) return icon;
+            }
+            return 'file-text';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('resultsCard').style.display = 'none';
+            resetFlow();
+        }
+
+        setInterval(checkApiStatus, 15000);
+    </script>
+</body>
+
+</html>
