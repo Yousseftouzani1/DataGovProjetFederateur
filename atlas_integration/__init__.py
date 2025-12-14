@@ -1,7 +1,9 @@
+# atlas_integration/__init__.py
 """
 Apache Atlas Integration Module
-Handles metadata cataloging, lineage, and classification sync.
+Data Governance & Privacy Platform
 """
+
 
 # TODO: Implement Atlas entity creation
 # TODO: Implement lineage tracking
