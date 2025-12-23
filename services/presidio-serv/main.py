@@ -79,40 +79,43 @@ class MoroccanPresidioEngine:
             print("❌ Presidio not available")
             return
         
-        # Initialize registry with custom recognizers
-        registry = RecognizerRegistry()
-        registry.load_predefined_recognizers()
-        
-        # Add Moroccan recognizers
-        registry.add_recognizer(MoroccanCINRecognizer())
-        registry.add_recognizer(MoroccanPhoneRecognizer())
-        registry.add_recognizer(MoroccanIBANRecognizer())
-        registry.add_recognizer(MoroccanCNSSRecognizer())
-        
-        # Try to initialize with French NLP
         try:
+            # Initialize registry with custom recognizers
+            registry = RecognizerRegistry()
+            registry.load_predefined_recognizers()
+            
+            # Add Moroccan recognizers
+            registry.add_recognizer(MoroccanCINRecognizer())
+            registry.add_recognizer(MoroccanPhoneRecognizer())
+            registry.add_recognizer(MoroccanIBANRecognizer())
+            registry.add_recognizer(MoroccanCNSSRecognizer())
+            
+            # Use only English model (pre-downloaded in Dockerfile)
             config = {
                 "nlp_engine_name": "spacy",
                 "models": [
                     {"lang_code": "en", "model_name": "en_core_web_sm"},
-                    {"lang_code": "fr", "model_name": "fr_core_news_sm"},
                 ]
             }
             provider = NlpEngineProvider(nlp_configuration=config)
             nlp_engine = provider.create_engine()
+            
             self.analyzer = AnalyzerEngine(
                 registry=registry,
                 nlp_engine=nlp_engine,
-                supported_languages=["en", "fr"]
+                supported_languages=["en"]
             )
+            
+            self.anonymizer = AnonymizerEngine()
+            
+            print("✅ Moroccan Presidio Engine initialized")
+            print("   Custom recognizers: CIN_MAROC, PHONE_MA, IBAN_MA, CNSS_MA")
+            
         except Exception as e:
-            print(f"⚠️ French NLP not available: {e}")
-            self.analyzer = AnalyzerEngine(registry=registry)
-        
-        self.anonymizer = AnonymizerEngine()
-        
-        print("✅ Moroccan Presidio Engine initialized")
-        print(f"   Custom recognizers: CIN_MAROC, PHONE_MA, IBAN_MA, CNSS_MA")
+            print(f"⚠️ Presidio initialization error: {e}")
+            print("   Service will run with limited functionality")
+            self.analyzer = None
+            self.anonymizer = None
     
     def analyze(self, text: str, language: str = "fr", 
                 entities: Optional[List[str]] = None,
@@ -261,4 +264,4 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("🔒 PRESIDIO MOROCCO SERVICE - Tâche 3")
     print("="*60)
-    uvicorn.run(app, host="0.0.0.0", port=8003, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8003, reload=True)

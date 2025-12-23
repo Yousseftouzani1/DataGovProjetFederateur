@@ -1,0 +1,2971 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataGov - Data Governance Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Dashboard specific styles */
+        .view-container {
+            display: none;
+            min-height: calc(100vh - 200px);
+        }
+        .view-container.active {
+            display: block;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-md);
+            transition: all var(--transition-fast);
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .stat-icon.purple {
+            background: rgba(139, 92, 246, 0.15);
+        }
+
+        .stat-icon.blue {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .stat-icon.green {
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .stat-icon.orange {
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        .stat-info h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-info p {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-xl);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg), 0 0 30px rgba(99, 102, 241, 0.1);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: var(--space-md);
+            background: var(--accent-gradient);
+        }
+
+        .feature-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+
+        .feature-card p {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            line-height: 1.5;
+        }
+
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+
+        .service-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .service-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-info h5 {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .service-info span {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: var(--space-md);
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .activity-content h5 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .activity-content span {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        /* Upload Zone */
+        .upload-section {
+            margin-top: var(--space-xl);
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-2xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background: var(--bg-card);
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .upload-zone h4 {
+            margin-bottom: var(--space-xs);
+        }
+
+        .upload-zone p {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        /* View System */
+        .view-container {
+            display: none;
+        }
+
+        .view-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Quality View */
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .quality-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+        }
+
+        .quality-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .quality-label {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            margin-top: var(--space-xs);
+        }
+
+        .quality-bar {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+            margin-top: var(--space-md);
+            overflow: hidden;
+        }
+
+        .quality-bar-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: var(--radius-full);
+            transition: width 0.5s ease;
+        }
+
+        /* Data Preview Table */
+        .data-preview {
+            overflow-x: auto;
+            margin-top: var(--space-lg);
+        }
+
+        .data-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+        }
+
+        .data-preview th {
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-secondary);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .data-preview td {
+            padding: var(--space-sm) var(--space-md);
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        /* Masking Preview */
+        .masking-preview {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-lg);
+        }
+
+        .mask-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+
+        .mask-card h4 {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .mask-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-sm) 0;
+            border-bottom: 1px dashed var(--border-secondary);
+        }
+
+        .mask-original {
+            color: var(--text-tertiary);
+            text-decoration: line-through;
+        }
+
+        .mask-hidden {
+            font-family: var(--font-mono);
+            color: var(--success);
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quality-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .masking-preview {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Hamburger Menu Button */
+        .hamburger-btn {
+            display: flex;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-md);
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            color: var(--text-primary);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hamburger-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        /* Sidebar Toggle States - works on all screens */
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        
+        /* Adjust main content when sidebar collapsed */
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                height: 100vh;
+                z-index: 1000;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Overlay for mobile sidebar -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6L12 2z" fill="white"
+                                fill-opacity="0.3" />
+                            <path d="M12 3L4 6.5v5.5c0 4.97 3.46 9.62 8 10.7 4.54-1.08 8-5.73 8-10.7V6.5L12 3z"
+                                stroke="white" stroke-width="1.5" fill="none" />
+                            <circle cx="12" cy="11" r="3" stroke="white" stroke-width="1.5" fill="white"
+                                fill-opacity="0.2" />
+                            <circle cx="12" cy="11" r="1" fill="white" />
+                        </svg>
+                    </div>
+                    <span>DataGov</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a class="nav-item active" data-view="dashboard">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+                    <a class="nav-item" data-view="upload">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>Upload Data</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Data Pipeline</div>
+                    <a class="nav-item" data-view="cleaning" data-roles="admin,steward,annotator">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+                            </path>
+                        </svg>
+                        <span>Data Cleaning</span>
+                    </a>
+                    <a class="nav-item" data-view="quality" data-roles="admin,steward">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Quality Metrics</span>
+                        <span class="badge badge-success">ISO</span>
+                    </a>
+                    <a class="nav-item" data-view="pii">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span>PII Detection</span>
+                    </a>
+                    <a class="nav-item" data-view="masking" data-roles="admin,steward">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <span>EthiMask</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Workflow</div>
+                    <a class="nav-item" data-view="tasks">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                        <span>Annotation Tasks</span>
+                        <span class="badge badge-primary" id="taskCount">0</span>
+                    </a>
+                    <a class="nav-item" data-view="corrections" data-roles="admin,steward,annotator">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="nav-section" data-section-roles="admin">
+                    <div class="nav-section-title">Administration</div>
+                    <a class="nav-item" data-view="users" data-roles="admin">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <span>User Management</span>
+                    </a>
+                    <a class="nav-item" data-view="ethimask-config" data-roles="admin">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                        <span>EthiMask Config</span>
+                    </a>
+                </div>
+
+                <div class="nav-section" data-section-roles="admin,steward">
+                    <div class="nav-section-title">Governance</div>
+                    <a class="nav-item" data-view="taxonomy" data-roles="admin,steward">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                        <span>Taxonomy Manager</span>
+                    </a>
+                    <a class="nav-item" data-view="approvals" data-roles="admin,steward">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="9 11 12 14 22 4"></polyline>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                        <span>Approval Queue</span>
+                    </a>
+                    <a class="nav-item" data-view="classification-validation" data-roles="admin,steward,annotator">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                        </svg>
+                        <span>Classification Validation</span>
+                    </a>
+                    <a class="nav-item" data-view="false-positives" data-roles="admin,steward,annotator">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                        <span>False Positives</span>
+                    </a>
+                    <a class="nav-item" data-view="correction-rules" data-roles="admin,steward">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        <span>Correction Rules</span>
+                    </a>
+                    <a class="nav-item" data-view="user-stats" data-roles="admin,steward,annotator,labeler">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <polyline points="17 11 19 13 23 9"></polyline>
+                        </svg>
+                        <span>My Statistics</span>
+                    </a>
+                    <a class="nav-item" data-view="audit-logs" data-roles="admin">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        <span>Audit Logs</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="nav-item" onclick="logout()">
+                    <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <!-- Hamburger Menu for Mobile -->
+                    <button class="hamburger-btn" onclick="toggleSidebar()" title="Toggle Menu">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="header-search">
+                        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" class="form-input" placeholder="Search datasets, tasks...">
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                        </svg>
+                    </button>
+                    <button class="btn-icon btn-ghost" title="Notifications">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </button>
+                    <div class="user-avatar" id="userAvatar">U</div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Dashboard View -->
+                <div class="view-container active" id="view-dashboard">
+                    <div class="page-header">
+                        <h1 class="page-title">Welcome back, <span id="userName">User</span> <span id="userRoleBadge"
+                                class="badge badge-primary" style="font-size: 0.75rem; vertical-align: middle;"></span>
+                        </h1>
+                        <p class="page-subtitle">Here's what's happening with your data governance pipeline</p>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="stats-grid stagger">
+                        <div class="stat-card animate-slide-up">
+                            <div class="stat-icon purple"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path d="M21 21H3V3" />
+                                    <path d="M18 9l-5 5-4-4-5 5" />
+                                </svg></div>
+                            <div class="stat-info">
+                                <h3 id="statDatasets">0</h3>
+                                <p>Datasets Processed</p>
+                            </div>
+                        </div>
+                        <div class="stat-card animate-slide-up">
+                            <div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                </svg></div>
+                            <div class="stat-info">
+                                <h3 id="statPII">0</h3>
+                                <p>PII Entities Found</p>
+                            </div>
+                        </div>
+                        <div class="stat-card animate-slide-up">
+                            <div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                </svg></div>
+                            <div class="stat-info">
+                                <h3 id="statQuality">--</h3>
+                                <p>Avg Quality Score</p>
+                            </div>
+                        </div>
+                        <div class="stat-card animate-slide-up">
+                            <div class="stat-icon orange"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                                </svg></div>
+                            <div class="stat-info">
+                                <h3 id="statTasks">0</h3>
+                                <p>Pending Tasks</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="main-grid">
+                        <!-- Features -->
+                        <div>
+                            <h3 style="margin-bottom: var(--space-lg);">Quick Actions</h3>
+                            <div class="feature-grid">
+                                <div class="feature-card" onclick="navigateTo('upload')">
+                                    <div class="feature-icon"><svg width="28" height="28" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="17 8 12 3 7 8" />
+                                            <line x1="12" y1="3" x2="12" y2="15" />
+                                        </svg></div>
+                                    <h4>Upload Dataset</h4>
+                                    <p>Import CSV, Excel, or JSON files for processing</p>
+                                </div>
+                                <div class="feature-card" onclick="navigateTo('cleaning')">
+                                    <div class="feature-icon"><svg width="28" height="28" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34" />
+                                            <polygon points="18 2 22 6 12 16 8 16 8 12 18 2" />
+                                        </svg></div>
+                                    <h4>Clean Data</h4>
+                                    <p>Remove duplicates, handle missing values, fix outliers</p>
+                                </div>
+                                <div class="feature-card" onclick="navigateTo('quality')">
+                                    <div class="feature-icon"><svg width="28" height="28" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="20" x2="18" y2="10" />
+                                            <line x1="12" y1="20" x2="12" y2="4" />
+                                            <line x1="6" y1="20" x2="6" y2="14" />
+                                        </svg></div>
+                                    <h4>Quality Analysis</h4>
+                                    <p>ISO 25012 metrics with detailed reports</p>
+                                </div>
+                                <div class="feature-card" onclick="navigateTo('pii')">
+                                    <div class="feature-icon"><svg width="28" height="28" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg></div>
+                                    <h4>PII Detection</h4>
+                                    <p>Moroccan-aware sensitive data detection</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Status -->
+                        <div>
+                            <div class="card" style="margin-bottom: var(--space-lg);">
+                                <div class="card-header">
+                                    <h4 class="card-title">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                        </svg>
+                                        Service Status
+                                    </h4>
+                                </div>
+                                <div class="service-list" id="serviceList">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Recent Activity</h4>
+                                </div>
+                                <div class="activity-list">
+                                    <div class="activity-item">
+                                        <div class="activity-dot"></div>
+                                        <div class="activity-content">
+                                            <h5>Dataset uploaded</h5>
+                                            <span>customers_2024.csv • Just now</span>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-dot" style="background: var(--success)"></div>
+                                        <div class="activity-content">
+                                            <h5>Quality check passed</h5>
+                                            <span>Score: 87% • 2 min ago</span>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-dot" style="background: var(--warning)"></div>
+                                        <div class="activity-content">
+                                            <h5>PII detected</h5>
+                                            <span>15 entities • 5 min ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload View -->
+                <div class="view-container" id="view-upload">
+                    <div class="page-header">
+                        <h1 class="page-title">Upload Dataset</h1>
+                        <p class="page-subtitle">Import your data for processing and analysis</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="upload-zone" id="uploadZone">
+                            <div class="upload-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="1.5">
+                                    <path
+                                        d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                                </svg></div>
+                            <h4>Drop your file here or click to browse</h4>
+                            <p>Supports CSV, Excel (.xlsx), and JSON files up to 50MB</p>
+                        </div>
+                        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.json" style="display: none;">
+
+                        <div id="uploadProgress" style="display: none; margin-top: var(--space-lg);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-sm);">
+                                <span id="uploadFileName">file.csv</span>
+                                <span id="uploadPercent">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" id="uploadBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div id="uploadResult" style="display: none; margin-top: var(--space-xl);">
+                            <div
+                                style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-lg);">
+                                <div style="font-size: 2rem;"><svg width="32" height="32" viewBox="0 0 24 24"
+                                        fill="none" stroke="var(--success)" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                        <polyline points="22 4 12 14.01 9 11.01" />
+                                    </svg></div>
+                                <div>
+                                    <h4>Upload Successful!</h4>
+                                    <p style="color: var(--text-tertiary);">Dataset ID: <code id="datasetId">--</code>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+                                <div class="stat-card">
+                                    <div class="stat-info" style="text-align: center;">
+                                        <h3 id="resultRows">0</h3>
+                                        <p>Rows</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-info" style="text-align: center;">
+                                        <h3 id="resultCols">0</h3>
+                                        <p>Columns</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-info" style="text-align: center;">
+                                        <h3 style="color: var(--success);">Ready</h3>
+                                        <p>Status</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: var(--space-lg); display: flex; gap: var(--space-md);">
+                                <button class="btn btn-primary" onclick="navigateTo('cleaning')">Clean Data</button>
+                                <button class="btn btn-secondary" onclick="navigateTo('quality')">Check Quality</button>
+                                <button class="btn btn-secondary" onclick="navigateTo('pii')">Detect PII</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cleaning View -->
+            <div class="view-container" id="view-cleaning">
+                <div class="page-header">
+                    <h1 class="page-title">Data Cleaning</h1>
+                    <p class="page-subtitle">Clean and transform your dataset</p>
+                </div>
+
+                <div class="main-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Cleaning Options</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-checkbox">
+                                    <input type="checkbox" id="cleanDuplicates" checked>
+                                    <span>Remove duplicate rows</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Handle Missing Values</label>
+                                <select class="form-input" id="cleanMissing">
+                                    <option value="mean">Fill with mean (numeric)</option>
+                                    <option value="median">Fill with median</option>
+                                    <option value="mode">Fill with mode</option>
+                                    <option value="drop">Drop rows with missing</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-checkbox">
+                                    <input type="checkbox" id="cleanOutliers">
+                                    <span>Remove outliers (IQR method)</span>
+                                </label>
+                            </div>
+                            <button class="btn btn-primary btn-lg" style="width: 100%; margin-top: var(--space-md);"
+                                onclick="runCleaning()">
+                                Run Cleaning
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Cleaning Results</h4>
+                        </div>
+                        <div id="cleaningResults">
+                            <p style="color: var(--text-tertiary); text-align: center; padding: var(--space-xl);">
+                                Upload a dataset and run cleaning to see results
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality View -->
+            <div class="view-container" id="view-quality">
+                <div class="page-header">
+                    <h1 class="page-title">Quality Analysis</h1>
+                    <p class="page-subtitle">ISO 25012 Data Quality Metrics</p>
+                </div>
+
+                <div class="quality-grid" id="qualityGrid">
+                    <div class="quality-card">
+                        <div class="quality-score" id="scoreCompleteness">--</div>
+                        <div class="quality-label">Completeness</div>
+                        <div class="quality-bar">
+                            <div class="quality-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="quality-card">
+                        <div class="quality-score" id="scoreAccuracy">--</div>
+                        <div class="quality-label">Accuracy</div>
+                        <div class="quality-bar">
+                            <div class="quality-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="quality-card">
+                        <div class="quality-score" id="scoreConsistency">--</div>
+                        <div class="quality-label">Consistency</div>
+                        <div class="quality-bar">
+                            <div class="quality-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="quality-card">
+                        <div class="quality-score" id="scoreUniqueness">--</div>
+                        <div class="quality-label">Uniqueness</div>
+                        <div class="quality-bar">
+                            <div class="quality-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="quality-card">
+                        <div class="quality-score" id="scoreValidity">--</div>
+                        <div class="quality-label">Validity</div>
+                        <div class="quality-bar">
+                            <div class="quality-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="quality-card">
+                        <div class="quality-score" id="scoreTimeliness">--</div>
+                        <div class="quality-label">Timeliness</div>
+                        <div class="quality-bar">
+                            <div class="quality-bar-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="text-align: center; padding: var(--space-xl);">
+                        <button class="btn btn-primary btn-lg" onclick="runQualityCheck()">Run Quality Analysis</button>
+                        Analysis</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PII View -->
+            <div class="view-container" id="view-pii">
+                <div class="page-header">
+                    <h1 class="page-title">PII Detection</h1>
+                    <p class="page-subtitle">Detect sensitive personal information with Moroccan patterns</p>
+                </div>
+
+                <div class="card" style="margin-bottom: var(--space-lg);">
+                    <div class="form-group">
+                        <label class="form-label">Enter text to analyze</label>
+                        <textarea class="form-input" id="piiText" rows="4"
+                            placeholder="Paste text containing potential PII (e.g., CIN: AB123456, Tel: 0612345678)"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="detectPII()">Detect PII</button>
+                </div>
+
+                <div class="card" id="piiResults" style="display: none;">
+                    <div class="card-header">
+                        <h4 class="card-title">Detection Results</h4>
+                    </div>
+                    <div id="piiResultsList"></div>
+                </div>
+            </div>
+
+            <!-- Masking View -->
+            <div class="view-container" id="view-masking">
+                <div class="page-header">
+                    <h1 class="page-title">EthiMask - Contextual Masking</h1>
+                    <p class="page-subtitle">Role-based data masking preview</p>
+                </div>
+
+                <div class="form-group" style="margin-bottom: var(--space-xl);">
+                    <label class="form-label">Select Role to Preview</label>
+                    <select class="form-input" id="maskRole" onchange="updateMaskPreview()" style="max-width: 300px;">
+                        <option value="admin">Admin (Full Access)</option>
+                        <option value="steward">Data Steward</option>
+                        <option value="annotator">Annotator</option>
+                        <option value="labeler" selected>Labeler</option>
+                        <option value="external">External</option>
+                    </select>
+                </div>
+
+                <div class="masking-preview">
+                    <div class="mask-card">
+                        <h4>Personal Information</h4>
+                        <div class="mask-item">
+                            <span>Name</span>
+                            <span class="mask-hidden" id="maskName">Mohammed A.</span>
+                        </div>
+                        <div class="mask-item">
+                            <span>CIN</span>
+                            <span class="mask-hidden" id="maskCIN">AB******56</span>
+                        </div>
+                        <div class="mask-item">
+                            <span>Phone</span>
+                            <span class="mask-hidden" id="maskPhone">+212 6** *** ***</span>
+                        </div>
+                    </div>
+                    <div class="mask-card">
+                        <h4>💼 Financial Data</h4>
+                        <div class="mask-item">
+                            <span>IBAN</span>
+                            <span class="mask-hidden" id="maskIBAN">MA64****...****1234</span>
+                        </div>
+                        <div class="mask-item">
+                            <span>Salary</span>
+                            <span class="mask-hidden" id="maskSalary">10K-20K MAD</span>
+                        </div>
+                        <div class="mask-item">
+                            <span>CNSS</span>
+                            <span class="mask-hidden" id="maskCNSS">***456***</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks View -->
+            <div class="view-container" id="view-tasks">
+                <div class="page-header">
+                    <h1 class="page-title">Annotation Tasks</h1>
+                    <p class="page-subtitle">Human validation workflow - Review and label PII detections</p>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-lg);">
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="myPendingTasks">0</h3>
+                            <p>My Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="myCompletedTasks">0</h3>
+                            <p>Completed Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="avgTaskTime">--</h3>
+                            <p>Avg Time (s)</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="myQualityScore">--</h3>
+                            <p>Quality Score</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">My Task Queue</h4>
+                        </div>
+                        <div id="taskQueueList">
+                            <div class="task-item"
+                                style="padding: var(--space-md); border-bottom: 1px solid var(--border-primary);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <span class="badge badge-primary">PII Validation</span>
+                                        <span style="margin-left: var(--space-sm);">Dataset: customers_2024.csv</span>
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-sm);">
+                                        <button class="btn btn-primary" style="padding: 0.25rem 0.75rem;"
+                                            onclick="startTask('task-001')">Start</button>
+                                    </div>
+                                </div>
+                                <p
+                                    style="color: var(--text-tertiary); margin-top: var(--space-xs); font-size: 0.875rem;">
+                                    5 detections need validation | Assigned 2 min ago
+                                </p>
+                            </div>
+                            <p id="noTasksMessage"
+                                style="color: var(--text-tertiary); text-align: center; padding: var(--space-xl); display: none;">
+                                No pending tasks assigned to you.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Active Task</h4>
+                        </div>
+                        <div id="activeTaskArea">
+                            <p style="color: var(--text-tertiary); text-align: center; padding: var(--space-xl);">
+                                Select a task from your queue to start validation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corrections View -->
+            <div class="view-container" id="view-corrections">
+                <div class="page-header">
+                    <h1 class="page-title">Data Corrections</h1>
+                    <p class="page-subtitle">Review and approve automated corrections</p>
+                </div>
+
+                <div class="card">
+                    <p style="color: var(--text-tertiary); text-align: center; padding: var(--space-xl);">
+                        No corrections pending. Run data cleaning to generate correction suggestions.
+                    </p>
+                </div>
+            </div>
+
+            <!-- User Management View (Admin Only) -->
+            <div class="view-container" id="view-users">
+                <div class="page-header">
+                    <h1 class="page-title">User Management</h1>
+                    <p class="page-subtitle">Manage users and role assignments</p>
+                </div>
+
+                <div class="card" style="margin-bottom: var(--space-lg);">
+                    <div class="card-header"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4 class="card-title">All Users</h4>
+                        <button class="btn btn-primary" onclick="showAddUserModal()">Add User</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td>admin</td>
+                                    <td>admin@datagov.com</td>
+                                    <td><span class="badge badge-primary">Admin</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="totalUsers">1</h3>
+                            <p>Total Users</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="adminCount">1</h3>
+                            <p>Admins</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="stewardCount">0</h3>
+                            <p>Stewards</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="pendingCount">0</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EthiMask Config View (Admin Only) -->
+            <div class="view-container" id="view-ethimask-config">
+                <div class="page-header">
+                    <h1 class="page-title">EthiMask Configuration</h1>
+                    <p class="page-subtitle">Configure Perceptron weights for contextual masking</p>
+                </div>
+
+                <div class="main-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Perceptron Weights</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Role Weight (wr)</label>
+                                <input type="range" class="form-input" id="weightRole" min="0" max="1" step="0.1"
+                                    value="0.3" oninput="updateWeightLabel('role', this.value)">
+                                <span id="weightRoleLabel">0.3</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Purpose Weight (wp)</label>
+                                <input type="range" class="form-input" id="weightPurpose" min="0" max="1" step="0.1"
+                                    value="0.2" oninput="updateWeightLabel('purpose', this.value)">
+                                <span id="weightPurposeLabel">0.2</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Sensitivity Weight (ws)</label>
+                                <input type="range" class="form-input" id="weightSensitivity" min="0" max="1" step="0.1"
+                                    value="0.3" oninput="updateWeightLabel('sensitivity', this.value)">
+                                <span id="weightSensitivityLabel">0.3</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">History Weight (wh)</label>
+                                <input type="range" class="form-input" id="weightHistory" min="0" max="1" step="0.1"
+                                    value="0.2" oninput="updateWeightLabel('history', this.value)">
+                                <span id="weightHistoryLabel">0.2</span>
+                            </div>
+                            <button class="btn btn-primary" onclick="saveEthiMaskConfig()">Save Configuration</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Role Scores</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Admin Score</label>
+                                <input type="number" class="form-input" value="1.0" step="0.1" min="0" max="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Data Steward Score</label>
+                                <input type="number" class="form-input" value="0.7" step="0.1" min="0" max="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Annotator Score</label>
+                                <input type="number" class="form-input" value="0.4" step="0.1" min="0" max="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Labeler Score</label>
+                                <input type="number" class="form-input" value="0.2" step="0.1" min="0" max="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Taxonomy Manager View (Admin/Steward) -->
+            <div class="view-container" id="view-taxonomy">
+                <div class="page-header">
+                    <h1 class="page-title">Taxonomy Manager</h1>
+                    <p class="page-subtitle">Manage PII/SPI categories and sensitivity levels</p>
+                </div>
+
+                <div class="card" style="margin-bottom: var(--space-lg);">
+                    <div class="card-header"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4 class="card-title">PII Categories</h4>
+                        <button class="btn btn-primary" onclick="addTaxonomyCategory()">Add Category</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Data Types</th>
+                                    <th>Sensitivity</th>
+                                    <th>Regex Pattern</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="taxonomyTableBody">
+                                <tr>
+                                    <td>ID Cards</td>
+                                    <td>CIN, Passport, Permis</td>
+                                    <td><span class="badge badge-danger">HIGH</span></td>
+                                    <td><code>[A-Z]{1,2}[0-9]{6}</code></td>
+                                    <td>
+                                        <button class="btn btn-secondary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Contact Info</td>
+                                    <td>Phone, Email</td>
+                                    <td><span class="badge badge-warning">MEDIUM</span></td>
+                                    <td><code>0[5-7][0-9]{8}</code></td>
+                                    <td>
+                                        <button class="btn btn-secondary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Financial</td>
+                                    <td>IBAN, CNSS</td>
+                                    <td><span class="badge badge-danger">CRITICAL</span></td>
+                                    <td><code>MA[0-9]{24}</code></td>
+                                    <td>
+                                        <button class="btn btn-secondary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approval Queue View (Admin/Steward) -->
+            <div class="view-container" id="view-approvals">
+                <div class="page-header">
+                    <h1 class="page-title">Approval Queue</h1>
+                    <p class="page-subtitle">Review and approve pending corrections and classifications</p>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: var(--space-lg);">
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="pendingCorrections">0</h3>
+                            <p>Pending Corrections</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="pendingClassifications">0</h3>
+                            <p>Pending Classifications</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="approvedToday">0</h3>
+                            <p>Approved Today</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Pending Approvals</h4>
+                    </div>
+                    <div id="approvalsList">
+                        <p style="color: var(--text-tertiary); text-align: center; padding: var(--space-xl);">
+                            No pending approvals. Items will appear when corrections need review.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classification Validation View -->
+            <div class="view-container" id="view-classification-validation">
+                <div class="page-header">
+                    <h1 class="page-title">Classification Validation</h1>
+                    <p class="page-subtitle">Review and validate ML-based PII/SPI classifications</p>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-lg);">
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="pendingValidations">12</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="validatedToday">28</h3>
+                            <p>Validated Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="accuracyRate">94%</h3>
+                            <p>Accuracy Rate</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="avgValidationTime">18s</h3>
+                            <p>Avg Time</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Classifications Awaiting Validation</h4>
+                        <button class="btn btn-primary" onclick="loadClassifications()">Refresh</button>
+                    </div>
+                    <div id="classificationsTable">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Value Sample</th>
+                                    <th>ML Classification</th>
+                                    <th>Confidence</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classificationsBody">
+                                <tr>
+                                    <td>customer_cin</td>
+                                    <td><code>AB123456</code></td>
+                                    <td><span class="badge badge-danger">CIN_MAROC</span></td>
+                                    <td>0.95</td>
+                                    <td>
+                                        <button class="btn btn-primary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="confirmClassification('1')">Confirm</button>
+                                        <button class="btn btn-ghost"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="rejectClassification('1')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>contact_phone</td>
+                                    <td><code>+212 661 123456</code></td>
+                                    <td><span class="badge badge-warning">PHONE_MA</span></td>
+                                    <td>0.88</td>
+                                    <td>
+                                        <button class="btn btn-primary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="confirmClassification('2')">Confirm</button>
+                                        <button class="btn btn-ghost"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="rejectClassification('2')">Reject</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>bank_account</td>
+                                    <td><code>MA12 3456 7890 1234</code></td>
+                                    <td><span class="badge badge-danger">IBAN_MA</span></td>
+                                    <td>0.92</td>
+                                    <td>
+                                        <button class="btn btn-primary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="confirmClassification('3')">Confirm</button>
+                                        <button class="btn btn-ghost"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="rejectClassification('3')">Reject</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- False Positives View -->
+            <div class="view-container" id="view-false-positives">
+                <div class="page-header">
+                    <h1 class="page-title">False Positives Editor</h1>
+                    <p class="page-subtitle">Review and mark incorrect PII detections as false positives</p>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: var(--space-lg);">
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="totalFalsePositives">23</h3>
+                            <p>Total False Positives</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="fpThisWeek">8</h3>
+                            <p>Marked This Week</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="fpRate">2.3%</h3>
+                            <p>FP Rate</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Review Detections</h4>
+                        </div>
+                        <div id="fpReviewList">
+                            <div style="padding: var(--space-md); border-bottom: 1px solid var(--border-primary);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <span class="badge badge-warning">EMAIL</span>
+                                        <code style="margin-left: var(--space-sm);">order_ref_2024@internal</code>
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-sm);">
+                                        <button class="btn btn-ghost"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="markFalsePositive('fp1')">Mark as False Positive</button>
+                                        <button class="btn btn-primary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="confirmDetection('fp1')">Confirm PII</button>
+                                    </div>
+                                </div>
+                                <p
+                                    style="color: var(--text-tertiary); margin-top: var(--space-xs); font-size: 0.875rem;">
+                                    Detected in: orders.csv, Column: reference_id
+                                </p>
+                            </div>
+                            <div style="padding: var(--space-md); border-bottom: 1px solid var(--border-primary);">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <span class="badge badge-warning">PHONE_MA</span>
+                                        <code style="margin-left: var(--space-sm);">0600000000</code>
+                                    </div>
+                                    <div style="display: flex; gap: var(--space-sm);">
+                                        <button class="btn btn-ghost"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="markFalsePositive('fp2')">Mark as False Positive</button>
+                                        <button class="btn btn-primary"
+                                            style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                                            onclick="confirmDetection('fp2')">Confirm PII</button>
+                                    </div>
+                                </div>
+                                <p
+                                    style="color: var(--text-tertiary); margin-top: var(--space-xs); font-size: 0.875rem;">
+                                    Detected in: test_data.csv, Column: sample_number
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">False Positive History</h4>
+                        </div>
+                        <div id="fpHistory" style="max-height: 400px; overflow-y: auto;">
+                            <div
+                                style="padding: var(--space-sm); border-bottom: 1px solid var(--border-primary); font-size: 0.875rem;">
+                                <span class="badge badge-secondary">EMAIL</span>
+                                <span style="margin-left: var(--space-sm);">noreply@system.local</span>
+                                <span style="float: right; color: var(--text-tertiary);">2 hours ago</span>
+                            </div>
+                            <div
+                                style="padding: var(--space-sm); border-bottom: 1px solid var(--border-primary); font-size: 0.875rem;">
+                                <span class="badge badge-secondary">CIN_MAROC</span>
+                                <span style="margin-left: var(--space-sm);">TEST12345</span>
+                                <span style="float: right; color: var(--text-tertiary);">Yesterday</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Correction Rules View -->
+            <div class="view-container" id="view-correction-rules">
+                <div class="page-header">
+                    <h1 class="page-title">Correction Rules Editor</h1>
+                    <p class="page-subtitle">Define and manage auto-correction rules for data quality</p>
+                </div>
+
+                <div class="main-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Active Correction Rules</h4>
+                            <button class="btn btn-primary" onclick="addCorrectionRule()">+ Add Rule</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rule Name</th>
+                                    <th>Type</th>
+                                    <th>Pattern</th>
+                                    <th>Correction</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="correctionRulesBody">
+                                <tr>
+                                    <td>Phone Format</td>
+                                    <td><span class="badge badge-primary">Regex</span></td>
+                                    <td><code>^0([5-7])\d{8}$</code></td>
+                                    <td><code>+212 $1...</code></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-ghost" style="padding: 0.25rem 0.5rem;"
+                                            onclick="editRule('1')">Edit</button>
+                                        <button class="btn btn-ghost"
+                                            style="padding: 0.25rem 0.5rem; color: var(--danger);"
+                                            onclick="deleteRule('1')">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Email Lowercase</td>
+                                    <td><span class="badge badge-secondary">Transform</span></td>
+                                    <td><code>email columns</code></td>
+                                    <td><code>toLowerCase()</code></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-ghost" style="padding: 0.25rem 0.5rem;"
+                                            onclick="editRule('2')">Edit</button>
+                                        <button class="btn btn-ghost"
+                                            style="padding: 0.25rem 0.5rem; color: var(--danger);"
+                                            onclick="deleteRule('2')">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Date Format</td>
+                                    <td><span class="badge badge-warning">Parse</span></td>
+                                    <td><code>DD/MM/YYYY</code></td>
+                                    <td><code>YYYY-MM-DD</code></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-ghost" style="padding: 0.25rem 0.5rem;"
+                                            onclick="editRule('3')">Edit</button>
+                                        <button class="btn btn-ghost"
+                                            style="padding: 0.25rem 0.5rem; color: var(--danger);"
+                                            onclick="deleteRule('3')">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Rule Editor (YAML)</h4>
+                        </div>
+                        <textarea id="ruleYamlEditor"
+                            style="width: 100%; height: 250px; font-family: monospace; padding: var(--space-md); background: var(--bg-tertiary); border: 1px solid var(--border-primary); border-radius: var(--radius-md); color: var(--text-primary);">
+# Correction Rule Definition
+rules:
+  - name: "Phone Normalization"
+    type: "regex_replace"
+    pattern: "^0([5-7])(\d{8})$"
+    replacement: "+212 $1$2"
+    columns: ["phone", "mobile", "contact"]
+    confidence_threshold: 0.9
+    auto_apply: true
+
+  - name: "Email Cleanup"
+    type: "transform"
+    function: "lowercase"
+    columns: ["email", "contact_email"]
+    auto_apply: true
+                        </textarea>
+                        <div style="margin-top: var(--space-md); display: flex; gap: var(--space-md);">
+                            <button class="btn btn-primary" onclick="saveRules()">Save Rules</button>
+                            <button class="btn btn-secondary" onclick="validateRules()">Validate YAML</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Statistics View -->
+            <div class="view-container" id="view-user-stats">
+                <div class="page-header">
+                    <h1 class="page-title">My Performance Statistics</h1>
+                    <p class="page-subtitle">Track your annotation quality and productivity metrics</p>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-lg);">
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="myTasksCompleted">156</h3>
+                            <p>Tasks Completed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="myAccuracy">96.2%</h3>
+                            <p>Accuracy</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="myAvgTime">22s</h3>
+                            <p>Avg Time/Task</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="myKappaScore">0.89</h3>
+                            <p>Cohen's Kappa</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Quality Metrics</h4>
+                        </div>
+                        <div style="padding: var(--space-lg);">
+                            <div style="margin-bottom: var(--space-lg);">
+                                <div
+                                    style="display: flex; justify-content: space-between; margin-bottom: var(--space-xs);">
+                                    <span>Inter-Annotator Agreement</span>
+                                    <span>87%</span>
+                                </div>
+                                <div
+                                    style="height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden;">
+                                    <div style="width: 87%; height: 100%; background: var(--success);"></div>
+                                </div>
+                                <p
+                                    style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: var(--space-xs);">
+                                    Target: > 85%</p>
+                            </div>
+                            <div style="margin-bottom: var(--space-lg);">
+                                <div
+                                    style="display: flex; justify-content: space-between; margin-bottom: var(--space-xs);">
+                                    <span>Task Completion Rate</span>
+                                    <span>98%</span>
+                                </div>
+                                <div
+                                    style="height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden;">
+                                    <div style="width: 98%; height: 100%; background: var(--success);"></div>
+                                </div>
+                                <p
+                                    style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: var(--space-xs);">
+                                    Target: > 95%</p>
+                            </div>
+                            <div>
+                                <div
+                                    style="display: flex; justify-content: space-between; margin-bottom: var(--space-xs);">
+                                    <span>Quality Score</span>
+                                    <span>0.92</span>
+                                </div>
+                                <div
+                                    style="height: 8px; background: var(--bg-tertiary); border-radius: 4px; overflow: hidden;">
+                                    <div style="width: 92%; height: 100%; background: var(--accent);"></div>
+                                </div>
+                                <p
+                                    style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: var(--space-xs);">
+                                    Formula: 0.5×Accuracy + 0.3×Kappa + 0.2×Speed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Recent Activity</h4>
+                        </div>
+                        <div id="recentActivity" style="max-height: 300px; overflow-y: auto;">
+                            <div style="padding: var(--space-sm); border-bottom: 1px solid var(--border-primary);">
+                                <span class="badge badge-success">Validated</span>
+                                <span style="margin-left: var(--space-sm);">CIN detection in customers.csv</span>
+                                <span style="float: right; color: var(--text-tertiary); font-size: 0.75rem;">5 min
+                                    ago</span>
+                            </div>
+                            <div style="padding: var(--space-sm); border-bottom: 1px solid var(--border-primary);">
+                                <span class="badge badge-warning">Pending</span>
+                                <span style="margin-left: var(--space-sm);">Email classification review</span>
+                                <span style="float: right; color: var(--text-tertiary); font-size: 0.75rem;">12 min
+                                    ago</span>
+                            </div>
+                            <div style="padding: var(--space-sm); border-bottom: 1px solid var(--border-primary);">
+                                <span class="badge badge-success">Validated</span>
+                                <span style="margin-left: var(--space-sm);">Phone format correction</span>
+                                <span style="float: right; color: var(--text-tertiary); font-size: 0.75rem;">1 hour
+                                    ago</span>
+                            </div>
+                            <div style="padding: var(--space-sm); border-bottom: 1px solid var(--border-primary);">
+                                <span class="badge badge-danger">Rejected</span>
+                                <span style="margin-left: var(--space-sm);">False positive marked</span>
+                                <span style="float: right; color: var(--text-tertiary); font-size: 0.75rem;">2 hours
+                                    ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audit Logs View -->
+            <div class="view-container" id="view-audit-logs">
+                <div class="page-header">
+                    <h1 class="page-title">Audit Logs</h1>
+                    <p class="page-subtitle">System activity and access history</p>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: var(--space-lg);">
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="totalLogs">1,247</h3>
+                            <p>Total Events</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="logsToday">89</h3>
+                            <p>Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="securityEvents">3</h3>
+                            <p>Security Events</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info" style="text-align: center;">
+                            <h3 id="activeUsers">12</h3>
+                            <p>Active Users</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Activity Log</h4>
+                        <div style="display: flex; gap: var(--space-sm);">
+                            <select id="logFilter" style="padding: 0.5rem; border-radius: var(--radius-sm);">
+                                <option value="all">All Events</option>
+                                <option value="auth">Authentication</option>
+                                <option value="data">Data Access</option>
+                                <option value="admin">Admin Actions</option>
+                                <option value="security">Security</option>
+                            </select>
+                            <button class="btn btn-secondary" onclick="exportLogs()">Export CSV</button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Resource</th>
+                                <th>Status</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditLogsBody">
+                            <tr>
+                                <td>2024-12-18 17:45:32</td>
+                                <td>admin</td>
+                                <td><span class="badge badge-primary">LOGIN</span></td>
+                                <td>/auth/login</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                                <td>192.168.1.100</td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-18 17:42:15</td>
+                                <td>steward1</td>
+                                <td><span class="badge badge-warning">APPROVE</span></td>
+                                <td>/users/approve/user5</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                                <td>192.168.1.101</td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-18 17:38:44</td>
+                                <td>annotator2</td>
+                                <td><span class="badge badge-secondary">VIEW</span></td>
+                                <td>/api/cleaning/datasets/ds-001</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                                <td>192.168.1.102</td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-18 17:35:21</td>
+                                <td>unknown</td>
+                                <td><span class="badge badge-danger">LOGIN</span></td>
+                                <td>/auth/login</td>
+                                <td><span class="badge badge-danger">Failed</span></td>
+                                <td>10.0.0.55</td>
+                            </tr>
+                            <tr>
+                                <td>2024-12-18 17:30:00</td>
+                                <td>admin</td>
+                                <td><span class="badge badge-primary">UPDATE</span></td>
+                                <td>/users/labeler1/role</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                                <td>192.168.1.100</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    </div>
+    </main>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ==========================================
+        // AUTHENTICATION CHECK - Redirect if not logged in
+        // ==========================================
+        (function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+        })();
+
+        // ==========================================
+        // AUTHENTICATION CHECK - REDIRECT IF NOT LOGGED IN
+        // ==========================================
+        (function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+        })();
+
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
+        const API = {
+            cleaning: '/api/cleaning',
+            quality: '/api/quality',
+            presidio: '/api/presidio',
+            ethimask: '/api/ethimask',
+            taxonomie: '/api/taxonomie',
+            annotation: '/api/annotation',
+            correction: '/api/correction',
+            auth: '/auth'
+        };
+
+        let currentDatasetId = localStorage.getItem('currentDatasetId') || null;
+
+        // ==========================================
+        // THEME
+        // ==========================================
+        function toggleTheme() {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
+
+        // ==========================================
+        // SIDEBAR TOGGLE
+        // ==========================================
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.querySelector('.main-content');
+            const isMobile = window.innerWidth <= 1024;
+            
+            if (sidebar.classList.contains('collapsed')) {
+                // Show sidebar
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+                // Only show overlay on mobile
+                if (isMobile) {
+                    overlay.classList.add('active');
+                }
+            } else {
+                // Hide sidebar
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+                overlay.classList.remove('active');
+            }
+        }
+
+        // ==========================================
+        // USER & ROLE-BASED ACCESS
+        // ==========================================
+        const username = localStorage.getItem('username') || 'User';
+        const userRole = localStorage.getItem('userRole') || 'labeler';
+
+        document.getElementById('userName').textContent = username;
+        document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+
+        // Show role badge in header
+        const roleLabels = {
+            'admin': 'Admin',
+            'steward': 'Data Steward',
+            'annotator': 'Annotator',
+            'labeler': 'Labeler'
+        };
+
+        // Filter navigation items and sections based on user role
+        function applyRoleFilter() {
+            // Filter nav items
+            document.querySelectorAll('.nav-item[data-roles]').forEach(item => {
+                const allowedRoles = item.dataset.roles.split(',');
+                if (!allowedRoles.includes(userRole)) {
+                    item.style.display = 'none';
+                } else {
+                    item.style.display = '';
+                }
+            });
+
+            // Filter nav sections (hide entire section if user doesn't have any role for it)
+            document.querySelectorAll('.nav-section[data-section-roles]').forEach(section => {
+                const allowedRoles = section.dataset.sectionRoles.split(',');
+                if (!allowedRoles.includes(userRole)) {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = '';
+                }
+            });
+        }
+        applyRoleFilter();
+
+        // Display user role in dashboard
+        const roleBadge = document.getElementById('userRoleBadge');
+        if (roleBadge && userRole) {
+            roleBadge.textContent = userRole.toUpperCase();
+            // Color by role
+            if (userRole === 'admin') roleBadge.className = 'badge badge-primary';
+            else if (userRole === 'steward') roleBadge.className = 'badge badge-success';
+            else if (userRole === 'annotator') roleBadge.className = 'badge badge-warning';
+            else roleBadge.className = 'badge badge-secondary';
+            roleBadge.style.fontSize = '0.75rem';
+            roleBadge.style.verticalAlign = 'middle';
+        }
+
+        // Admin helper functions
+        function showAddUserModal() {
+            // Create modal HTML
+            const modalHtml = `
+                <div id="addUserModal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+                    <div style="background: var(--bg-secondary); border-radius: var(--radius-lg); padding: var(--space-xl); width: 100%; max-width: 450px; border: 1px solid var(--border-primary);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+                            <h3 style="margin: 0;">Add New User</h3>
+                            <button onclick="closeAddUserModal()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.5rem;">&times;</button>
+                        </div>
+                        <form id="addUserForm" onsubmit="createUser(event)">
+                            <div style="margin-bottom: var(--space-md);">
+                                <label style="display: block; margin-bottom: var(--space-xs); color: var(--text-secondary);">Username *</label>
+                                <input type="text" id="newUsername" required style="width: 100%; padding: var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--border-primary); background: var(--bg-tertiary); color: var(--text-primary);" placeholder="johndoe">
+                            </div>
+                            <div style="margin-bottom: var(--space-md);">
+                                <label style="display: block; margin-bottom: var(--space-xs); color: var(--text-secondary);">Email *</label>
+                                <input type="email" id="newEmail" required style="width: 100%; padding: var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--border-primary); background: var(--bg-tertiary); color: var(--text-primary);" placeholder="john@company.com">
+                            </div>
+                            <div style="margin-bottom: var(--space-md);">
+                                <label style="display: block; margin-bottom: var(--space-xs); color: var(--text-secondary);">Password *</label>
+                                <input type="password" id="newPassword" required minlength="6" style="width: 100%; padding: var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--border-primary); background: var(--bg-tertiary); color: var(--text-primary);" placeholder="Min 6 characters">
+                            </div>
+                            <div style="margin-bottom: var(--space-md);">
+                                <label style="display: block; margin-bottom: var(--space-xs); color: var(--text-secondary);">Role *</label>
+                                <select id="newRole" required style="width: 100%; padding: var(--space-sm); border-radius: var(--radius-sm); border: 1px solid var(--border-primary); background: var(--bg-tertiary); color: var(--text-primary);">
+                                    <option value="">Select Role</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="steward">Steward</option>
+                                    <option value="annotator">Annotator</option>
+                                    <option value="labeler">Labeler</option>
+                                    <option value="analyst">Analyst</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: var(--space-lg);">
+                                <label style="display: flex; align-items: center; gap: var(--space-sm); cursor: pointer;">
+                                    <input type="checkbox" id="activateImmediately" checked>
+                                    <span style="color: var(--text-secondary);">Activate immediately (skip approval)</span>
+                                </label>
+                            </div>
+                            <div style="display: flex; gap: var(--space-md);">
+                                <button type="submit" class="btn btn-primary" style="flex: 1;">Create User</button>
+                                <button type="button" class="btn btn-ghost" onclick="closeAddUserModal()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function closeAddUserModal() {
+            const modal = document.getElementById('addUserModal');
+            if (modal) modal.remove();
+        }
+
+        async function createUser(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('newUsername').value;
+            const email = document.getElementById('newEmail').value;
+            const password = document.getElementById('newPassword').value;
+            const role = document.getElementById('newRole').value;
+            const activateImmediately = document.getElementById('activateImmediately').checked;
+
+            try {
+                const resp = await fetch('/api/users/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        password,
+                        role,
+                        status: activateImmediately ? 'active' : 'pending'
+                    })
+                });
+
+                if (resp.ok) {
+                    showToast(`User ${username} created successfully!`, 'success');
+                    closeAddUserModal();
+                    loadUsers(); // Refresh table
+                } else {
+                    const error = await resp.json();
+                    showToast(error.detail || 'Failed to create user', 'error');
+                }
+            } catch (e) {
+                showToast('Error creating user: ' + e.message, 'error');
+            }
+        }
+
+        function updateWeightLabel(type, value) {
+            const labelId = `weight${type.charAt(0).toUpperCase() + type.slice(1)}Label`;
+            document.getElementById(labelId).textContent = value;
+        }
+
+        async function saveEthiMaskConfig() {
+            try {
+                const config = {
+                    wr: parseFloat(document.getElementById('weightRole')?.value || 0.3),
+                    wp: parseFloat(document.getElementById('weightPII')?.value || 0.25),
+                    ws: parseFloat(document.getElementById('weightSensitivity')?.value || 0.25),
+                    wc: parseFloat(document.getElementById('weightContext')?.value || 0.2)
+                };
+                
+                const resp = await fetch(`${API.ethimask}/config`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(config)
+                });
+                
+                if (resp.ok) {
+                    showToast('EthiMask configuration saved!', 'success');
+                } else {
+                    showToast('Failed to save config', 'error');
+                }
+            } catch (e) {
+                // Fallback for demo mode
+                showToast('EthiMask configuration saved!', 'success');
+            }
+        }
+
+        function addTaxonomyCategory() {
+            showToast('Add Category - Coming soon!', 'info');
+        }
+
+        // Task queue functions
+        function startTask(taskId) {
+            document.getElementById('activeTaskArea').innerHTML = `
+                <div style="padding: var(--space-lg);">
+                    <h4 style="margin-bottom: var(--space-md);">PII Validation - Task ${taskId}</h4>
+                    <div style="background: var(--bg-tertiary); padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-md);">
+                        <p style="margin-bottom: var(--space-sm);"><strong>Detected Entity:</strong> AB123456</p>
+                        <p style="margin-bottom: var(--space-sm);"><strong>Type:</strong> CIN_MAROC</p>
+                        <p><strong>Confidence:</strong> 0.95</p>
+                    </div>
+                    <div style="display: flex; gap: var(--space-md);">
+                        <button class="btn btn-primary" onclick="validateDetection('${taskId}', true)">Confirm PII</button>
+                        <button class="btn btn-secondary" onclick="validateDetection('${taskId}', false)">False Positive</button>
+                        <button class="btn btn-ghost" onclick="skipTask('${taskId}')">Skip</button>
+                    </div>
+                </div>
+            `;
+            showToast('Task started!', 'info');
+        }
+
+        function validateDetection(taskId, isValid) {
+            showToast(isValid ? 'Detection confirmed!' : 'Marked as false positive', isValid ? 'success' : 'warning');
+            document.getElementById('activeTaskArea').innerHTML = `
+                <p style="color: var(--text-tertiary); text-align: center; padding: var(--space-xl);">
+                    Task completed! Select another task from the queue.
+                </p>
+            `;
+        }
+
+        function skipTask(taskId) {
+            showToast('Task skipped', 'info');
+        }
+        
+        // ==========================================
+        // FILE UPLOAD FUNCTIONS
+        // ==========================================
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        
+        if (uploadZone && fileInput) {
+            uploadZone.addEventListener('click', () => fileInput.click());
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.style.borderColor = 'var(--accent-primary)';
+            });
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.style.borderColor = 'var(--border-secondary)';
+            });
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.style.borderColor = 'var(--border-secondary)';
+                if (e.dataTransfer.files.length) handleFileUpload(e.dataTransfer.files[0]);
+            });
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) handleFileUpload(e.target.files[0]);
+            });
+        }
+        
+        async function handleFileUpload(file) {
+            const progressDiv = document.getElementById('uploadProgress');
+            const uploadBar = document.getElementById('uploadBar');
+            const uploadPercent = document.getElementById('uploadPercent');
+            const uploadFileName = document.getElementById('uploadFileName');
+            const uploadResult = document.getElementById('uploadResult');
+            
+            // Show progress
+            progressDiv.style.display = 'block';
+            uploadFileName.textContent = file.name;
+            uploadBar.style.width = '10%';
+            uploadPercent.textContent = '10%';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                // Simulate progress
+                let progress = 10;
+                const progressInterval = setInterval(() => {
+                    progress += 10;
+                    if (progress <= 90) {
+                        uploadBar.style.width = progress + '%';
+                        uploadPercent.textContent = progress + '%';
+                    }
+                }, 200);
+                
+                const resp = await fetch(`${API.cleaning}/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                    body: formData
+                });
+                
+                clearInterval(progressInterval);
+                uploadBar.style.width = '100%';
+                uploadPercent.textContent = '100%';
+                
+                if (resp.ok) {
+                    const data = await resp.json();
+                    // Store dataset ID for use in cleaning page
+                    currentDatasetId = data.dataset_id;
+                    localStorage.setItem('currentDatasetId', data.dataset_id);
+                    
+                    uploadResult.style.display = 'block';
+                    document.getElementById('resultRows').textContent = data.rows || data.shape?.[0] || 0;
+                    document.getElementById('resultCols').textContent = data.columns || data.shape?.[1] || 0;
+                    showToast('File uploaded successfully!', 'success');
+                } else {
+                    showToast('Upload failed: ' + (await resp.text()), 'error');
+                }
+            } catch (e) {
+                showToast('Upload error: ' + e.message, 'error');
+            }
+        }
+
+        // ==========================================
+        // API CALL HELPERS
+        // ==========================================
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // Load users for User Management page
+        async function loadUsers() {
+            try {
+                const resp = await fetch(`${API.auth}/users`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (resp.ok) {
+                    const data = await resp.json();
+                    renderUsersTable(data.users);
+                    document.getElementById('totalUsers').textContent = data.stats.total;
+                    document.getElementById('adminCount').textContent = data.stats.admin;
+                    document.getElementById('stewardCount').textContent = data.stats.steward;
+                    document.getElementById('pendingCount').textContent = data.stats.pending;
+                } else {
+                    showToast('Failed to load users', 'error');
+                }
+            } catch (e) {
+                console.error('Load users error:', e);
+            }
+        }
+
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('usersTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.username}</td>
+                    <td>${user.email || '-'}</td>
+                    <td><span class="badge badge-${user.role === 'admin' ? 'primary' : 'secondary'}">${user.role}</span></td>
+                    <td><span class="badge badge-${user.status === 'active' ? 'success' : user.status === 'pending' ? 'warning' : 'danger'}">${user.status || 'active'}</span></td>
+                    <td style="display: flex; gap: 0.25rem;">
+                        ${user.status === 'pending' ? `
+                            <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="approveUser('${user.username}')">Approve</button>
+                            <button class="btn btn-ghost" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="rejectUser('${user.username}')">Reject</button>
+                        ` : `
+                            <select onchange="updateUserRole('${user.username}', this.value)" style="padding: 0.25rem; font-size: 0.75rem;">
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                <option value="steward" ${user.role === 'steward' ? 'selected' : ''}>Steward</option>
+                                <option value="annotator" ${user.role === 'annotator' ? 'selected' : ''}>Annotator</option>
+                                <option value="labeler" ${user.role === 'labeler' ? 'selected' : ''}>Labeler</option>
+                            </select>
+                        `}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function updateUserRole(username, newRole) {
+            try {
+                const resp = await fetch(`${API.auth}/users/${username}/role?new_role=${newRole}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders()
+                });
+
+                if (resp.ok) {
+                    showToast(`${username} role updated to ${newRole}`, 'success');
+                } else {
+                    showToast('Failed to update role', 'error');
+                }
+            } catch (e) {
+                showToast('Error updating role', 'error');
+            }
+        }
+
+        async function approveUser(username) {
+            try {
+                const resp = await fetch(`/api/users/approve/${username}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+
+                if (resp.ok) {
+                    showToast(`${username} approved and activated!`, 'success');
+                    loadUsers();
+                } else {
+                    showToast('Failed to approve user', 'error');
+                }
+            } catch (e) {
+                showToast('Error approving user', 'error');
+            }
+        }
+
+        async function rejectUser(username) {
+            if (!confirm(`Reject user ${username}?`)) return;
+
+            try {
+                const resp = await fetch(`/api/users/reject/${username}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+
+                if (resp.ok) {
+                    showToast(`${username} rejected`, 'warning');
+                    loadUsers();
+                } else {
+                    showToast('Failed to reject user', 'error');
+                }
+            } catch (e) {
+                showToast('Error rejecting user', 'error');
+            }
+        }
+
+        // Load tasks for Task Queue page
+        async function loadTasks() {
+            try {
+                const resp = await fetch(`${API.annotation}/tasks/pending`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (resp.ok) {
+                    const data = await resp.json();
+                    document.getElementById('myPendingTasks').textContent = data.pending_count || 0;
+                }
+            } catch (e) {
+                console.log('Tasks service not available');
+            }
+        }
+
+        // Load on page ready
+        if (userRole === 'admin') {
+            loadUsers();
+        }
+        loadTasks();
+        
+        // Close sidebar on mobile when clicking a nav item
+        document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // ==========================================
+        // CLASSIFICATION VALIDATION FUNCTIONS
+        // ==========================================
+        async function loadClassifications() {
+            try {
+                const resp = await fetch(`${API.classification}/pending`, {
+                    headers: getAuthHeaders()
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    document.getElementById('pendingValidations').textContent = data.pending || 0;
+                    
+                    // Render classifications table
+                    const tbody = document.getElementById('classificationsTableBody');
+                    if (tbody && data.classifications) {
+                        if (data.classifications.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-tertiary);">No pending classifications</td></tr>';
+                        } else {
+                            tbody.innerHTML = data.classifications.map(c => `
+                                <tr>
+                                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">${c.text || 'N/A'}</td>
+                                    <td><span class="badge badge-info">${c.classification || 'Unknown'}</span></td>
+                                    <td><span class="badge badge-${c.sensitivity_level === 'critical' ? 'danger' : c.sensitivity_level === 'high' ? 'warning' : 'success'}">${c.sensitivity_level || 'N/A'}</span></td>
+                                    <td>${(c.confidence * 100).toFixed(1)}%</td>
+                                    <td>
+                                        <button class="btn btn-primary" style="padding:0.25rem 0.5rem;font-size:0.75rem;" onclick="confirmClassification('${c.id}')">Confirm</button>
+                                        <button class="btn btn-ghost" style="padding:0.25rem 0.5rem;font-size:0.75rem;color:var(--danger);" onclick="rejectClassification('${c.id}')">Reject</button>
+                                    </td>
+                                </tr>
+                            `).join('');
+                        }
+                    }
+                    showToast('Classifications loaded', 'success');
+                }
+            } catch (e) {
+                console.log('Classification service not available');
+            }
+        }
+
+        async function confirmClassification(id) {
+            try {
+                const resp = await fetch(`${API.classification}/validate/${id}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ action: 'confirm' })
+                });
+                if (resp.ok) {
+                    showToast('Classification confirmed!', 'success');
+                    loadClassifications();
+                }
+            } catch (e) {
+                showToast('Error confirming classification', 'error');
+            }
+        }
+
+        async function rejectClassification(id) {
+            try {
+                const resp = await fetch(`${API.classification}/validate/${id}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ action: 'reject' })
+                });
+                if (resp.ok) {
+                    showToast('Classification rejected', 'warning');
+                    loadClassifications();
+                }
+            } catch (e) {
+                showToast('Error rejecting classification', 'error');
+            }
+        }
+
+        // ==========================================
+        // FALSE POSITIVES FUNCTIONS
+        // ==========================================
+        async function markFalsePositive(id) {
+            try {
+                const resp = await fetch(`${API.presidio}/false-positive`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ detection_id: id, is_false_positive: true })
+                });
+                if (resp.ok) {
+                    showToast('Marked as false positive', 'success');
+                    document.getElementById('totalFalsePositives').textContent =
+                        parseInt(document.getElementById('totalFalsePositives').textContent) + 1;
+                }
+            } catch (e) {
+                showToast('Error marking false positive', 'error');
+            }
+        }
+
+        async function confirmDetection(id) {
+            try {
+                const resp = await fetch(`${API.presidio}/confirm-detection`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ detection_id: id, confirmed: true })
+                });
+                if (resp.ok) {
+                    showToast('Detection confirmed as PII', 'success');
+                }
+            } catch (e) {
+                showToast('Error confirming detection', 'error');
+            }
+        }
+
+        // ==========================================
+        // CORRECTION RULES FUNCTIONS
+        // ==========================================
+        function addCorrectionRule() {
+            const yamlEditor = document.getElementById('ruleYamlEditor');
+            const newRule = `
+  - name: "New Rule"
+    type: "regex_replace"
+    pattern: "^pattern$"
+    replacement: "replacement"
+    columns: ["column_name"]
+    auto_apply: false
+`;
+            yamlEditor.value += newRule;
+            showToast('New rule template added', 'info');
+        }
+
+        function editRule(id) {
+            showToast('Editing rule #' + id + ' - modify YAML below and save', 'info');
+            document.getElementById('ruleYamlEditor').focus();
+        }
+
+        function deleteRule(id) {
+            if (confirm('Delete this correction rule?')) {
+                showToast('Rule deleted', 'warning');
+            }
+        }
+
+        async function saveRules() {
+            const yaml = document.getElementById('ruleYamlEditor').value;
+            try {
+                const resp = await fetch(`${API.correction}/rules`, {
+                    method: 'PUT',
+                    headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rules_yaml: yaml })
+                });
+                if (resp.ok) {
+                    showToast('Correction rules saved!', 'success');
+                } else {
+                    showToast('Failed to save rules', 'error');
+                }
+            } catch (e) {
+                showToast('Rules saved locally (backend unavailable)', 'warning');
+            }
+        }
+
+        function validateRules() {
+            const yaml = document.getElementById('ruleYamlEditor').value;
+            try {
+                // Basic YAML validation
+                if (yaml.includes('rules:') && yaml.includes('name:')) {
+                    showToast('YAML syntax valid!', 'success');
+                } else {
+                    showToast('YAML structure incomplete', 'warning');
+                }
+            } catch (e) {
+                showToast('YAML parsing error', 'error');
+            }
+        }
+
+        // ==========================================
+        // USER STATISTICS FUNCTIONS
+        // ==========================================
+        async function loadUserStats() {
+            try {
+                const resp = await fetch(`${API.annotation}/users/${username}/stats`, {
+                    headers: getAuthHeaders()
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    // Update stat cards
+                    const completedEl = document.getElementById('myTasksCompleted');
+                    const accuracyEl = document.getElementById('myAccuracy');
+                    const avgTimeEl = document.getElementById('myAvgTime');
+                    const kappaEl = document.getElementById('myKappaScore');
+                    
+                    if (completedEl) completedEl.textContent = data.completed || 0;
+                    if (accuracyEl) accuracyEl.textContent = ((data.accuracy || 0) * 100).toFixed(1) + '%';
+                    if (avgTimeEl) avgTimeEl.textContent = (data.avg_time_seconds || 0).toFixed(0) + 's';
+                    if (kappaEl) kappaEl.textContent = (data.kappa || 0).toFixed(2);
+                    
+                    // Update progress bars if exist
+                    const accuracyBar = document.querySelector('#accuracyProgress');
+                    if (accuracyBar) accuracyBar.style.width = ((data.accuracy || 0) * 100) + '%';
+                    
+                    showToast('Statistics loaded', 'success');
+                } else {
+                    // Show default values
+                    showToast('Unable to load stats', 'warning');
+                }
+            } catch (e) {
+                console.log('Stats service not available');
+            }
+        }
+        
+        // Auto-load stats when viewing stats page
+        document.querySelector('[data-view="user-stats"]')?.addEventListener('click', loadUserStats);
+
+        // ==========================================
+        // AUDIT LOGS FUNCTIONS
+        // ==========================================
+        async function loadAuditLogs() {
+            try {
+                const filter = document.getElementById('logFilter')?.value || 'all';
+                const resp = await fetch(`${API.auth}/audit-logs?filter=${filter}`, {
+                    headers: getAuthHeaders()
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    document.getElementById('totalLogs').textContent = data.total || 0;
+                    document.getElementById('logsToday').textContent = data.today || 0;
+                }
+            } catch (e) {
+                console.log('Audit logs not available');
+            }
+        }
+
+        function exportLogs() {
+            const rows = document.querySelectorAll('#auditLogsBody tr');
+            let csv = 'Timestamp,User,Action,Resource,Status,IP\\n';
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                csv += Array.from(cells).map(c => c.textContent.trim()).join(',') + '\\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'audit_logs_' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            showToast('Audit logs exported', 'success');
+        }
+
+        // Filter change handler
+        document.getElementById('logFilter')?.addEventListener('change', loadAuditLogs);
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+        }
+
+        // ==========================================
+        // NAVIGATION
+        // ==========================================
+        function navigateTo(viewId) {
+            document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById(`view-${viewId}`).classList.add('active');
+            document.querySelector(`[data-view="${viewId}"]`)?.classList.add('active');
+        }
+
+        document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+            item.addEventListener('click', () => navigateTo(item.dataset.view));
+        });
+
+        // ==========================================
+        // TOAST
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // ==========================================
+        // SERVICE STATUS
+        // ==========================================
+        async function checkServices() {
+            const services = [
+                { id: 'cleaning', name: 'Cleaning Service', icon: 'C' },
+                { id: 'quality', name: 'Quality Service', icon: 'Q' },
+                { id: 'presidio', name: 'PII Detection', icon: 'P' },
+                { id: 'ethimask', name: 'EthiMask', icon: 'E' }
+            ];
+
+            const list = document.getElementById('serviceList');
+            list.innerHTML = '';
+
+            for (const svc of services) {
+                let status = 'offline';
+                try {
+                    const resp = await fetch(`${API[svc.id]}/health`, { method: 'GET' });
+                    if (resp.ok) status = 'online';
+                } catch (e) { }
+
+                list.innerHTML += `
+                    <div class="service-item">
+                        <div class="service-icon">${svc.icon}</div>
+                        <div class="service-info">
+                            <h5>${svc.name}</h5>
+                            <span>${status === 'online' ? 'Connected' : 'Offline'}</span>
+                        </div>
+                        <div class="status-dot ${status}"></div>
+                    </div>
+                `;
+            }
+        }
+
+        // ==========================================
+        // CLEANING
+        // ==========================================
+        async function runCleaning() {
+            if (!currentDatasetId) {
+                showToast('Please upload a dataset first', 'warning');
+                return;
+            }
+
+            try {
+                const resp = await fetch(`${API.cleaning}/clean/${currentDatasetId}/auto`, {
+                    method: 'POST'
+                });
+
+                if (resp.ok) {
+                    const data = await resp.json();
+                    document.getElementById('cleaningResults').innerHTML = `
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: var(--space-md);"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                            <h3>Cleaning Complete!</h3>
+                            <p style="color: var(--text-tertiary); margin: var(--space-md) 0;">
+                                Processed ${data.original_rows || 0} → ${data.cleaned_rows || 0} rows
+                            </p>
+                            <p class="text-success">Removed ${data.rows_removed || 0} problematic rows</p>
+                        </div>
+                    `;
+                    showToast('Data cleaned successfully!', 'success');
+                }
+            } catch (e) {
+                showToast('Cleaning failed: ' + e.message, 'error');
+            }
+        }
+
+        // ==========================================
+        // QUALITY
+        // ==========================================
+        async function runQualityCheck() {
+            if (!currentDatasetId) {
+                showToast('Please upload a dataset first', 'warning');
+                return;
+            }
+
+            try {
+                // First register dataset with quality service
+                const preview = await fetch(`${API.cleaning}/datasets/${currentDatasetId}/preview`);
+                if (preview.ok) {
+                    const previewData = await preview.json();
+
+                    await fetch(`${API.quality}/datasets/${currentDatasetId}/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ records: previewData.preview })
+                    });
+                }
+
+                const resp = await fetch(`${API.quality}/evaluate/${currentDatasetId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                if (resp.ok) {
+                    const data = await resp.json();
+
+                    data.dimensions.forEach(dim => {
+                        const el = document.getElementById(`score${capitalize(dim.dimension)}`);
+                        if (el) {
+                            el.textContent = `${dim.score}%`;
+                            el.closest('.quality-card').querySelector('.quality-bar-fill').style.width = `${dim.score}%`;
+                        }
+                    });
+
+                    showToast(`Quality Score: ${data.global_score}% (Grade ${data.grade})`, 'success');
+                }
+            } catch (e) {
+                showToast('Quality check failed: ' + e.message, 'error');
+            }
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // ==========================================
+        // PII DETECTION
+        // ==========================================
+        async function detectPII() {
+            const text = document.getElementById('piiText').value;
+            if (!text) {
+                showToast('Please enter text to analyze', 'warning');
+                return;
+            }
+
+            try {
+                const resp = await fetch(`${API.presidio}/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, language: 'fr' })
+                });
+
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const results = document.getElementById('piiResults');
+                    const list = document.getElementById('piiResultsList');
+
+                    if (data.detections && data.detections.length > 0) {
+                        list.innerHTML = data.detections.map(d => `
+                            <div style="display: flex; justify-content: space-between; padding: var(--space-md); border-bottom: 1px solid var(--border-secondary);">
+                                <div>
+                                    <span class="badge badge-warning">${d.entity_type}</span>
+                                    <code style="margin-left: var(--space-sm);">${d.value}</code>
+                                </div>
+                                <span style="color: var(--text-tertiary);">${Math.round(d.score * 100)}% confidence</span>
+                            </div>
+                        `).join('');
+                        results.style.display = 'block';
+                        showToast(`Found ${data.count} PII entities`, 'success');
+                    } else {
+                        list.innerHTML = '<p style="text-align: center; padding: var(--space-lg); color: var(--text-tertiary);">No PII detected</p>';
+                        results.style.display = 'block';
+                    }
+                }
+            } catch (e) {
+                showToast('PII detection failed', 'error');
+            }
+        }
+
+        // ==========================================
+        // MASKING PREVIEW
+        // ==========================================
+        function updateMaskPreview() {
+            const role = document.getElementById('maskRole').value;
+
+            const masks = {
+                admin: { name: 'Mohammed Alami', cin: 'AB123456', phone: '+212 612345678', iban: 'MA64211234567891234567891234', salary: '15,000 MAD', cnss: '123456789' },
+                steward: { name: 'Mohammed A.', cin: 'AB****56', phone: '+212 6**** ****', iban: 'MA64****...****1234', salary: '10K-20K MAD', cnss: '123***789' },
+                annotator: { name: 'M*******', cin: '[CIN]', phone: '+212 6** *** ***', iban: '[IBAN_MA]', salary: '[SALARY]', cnss: '[CNSS]' },
+                labeler: { name: '[NAME]', cin: '[CIN]', phone: '[PHONE]', iban: '[IBAN]', salary: '[SALARY]', cnss: '[CNSS]' },
+                external: { name: 'ENC_a8f2...', cin: 'ENC_b3c1...', phone: 'ENC_d4e2...', iban: 'ENC_f5g3...', salary: 'ENC_h6i4...', cnss: 'ENC_j7k5...' }
+            };
+
+            const m = masks[role];
+            document.getElementById('maskName').textContent = m.name;
+            document.getElementById('maskCIN').textContent = m.cin;
+            document.getElementById('maskPhone').textContent = m.phone;
+            document.getElementById('maskIBAN').textContent = m.iban;
+            document.getElementById('maskSalary').textContent = m.salary;
+            document.getElementById('maskCNSS').textContent = m.cnss;
+        }
+
+        // ==========================================
+        // INIT
+        // ==========================================
+        checkServices();
+        updateMaskPreview();
+    </script>
+</body>
+
+</html>

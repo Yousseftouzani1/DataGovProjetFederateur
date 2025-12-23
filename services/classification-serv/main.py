@@ -8,6 +8,7 @@ According to Cahier des Charges:
 - Integration with taxonomy service
 """
 import uvicorn
+from datetime import datetime
 from typing import List, Optional, Dict
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -241,8 +242,73 @@ def get_categories():
         "sensitivity_levels": list(classifier.SENSITIVITY_KEYWORDS.keys())
     }
 
+# ====================================================================
+# VALIDATION WORKFLOW (For Human Review)
+# ====================================================================
+
+# In-memory storage for pending classifications
+pending_classifications = {}
+validated_classifications = []
+
+@app.get("/pending")
+def get_pending_classifications():
+    """Get classifications awaiting human validation"""
+    return {
+        "pending": len(pending_classifications),
+        "classifications": list(pending_classifications.values())[:50]
+    }
+
+@app.post("/validate/{classification_id}")
+def validate_classification(classification_id: str, action: str = "confirm"):
+    """Validate a pending classification"""
+    if classification_id not in pending_classifications:
+        raise HTTPException(status_code=404, detail="Classification not found")
+    
+    classification = pending_classifications.pop(classification_id)
+    classification["validation"] = {
+        "action": action,
+        "validated_at": datetime.now().isoformat()
+    }
+    
+    if action == "confirm":
+        validated_classifications.append(classification)
+    
+    return {
+        "success": True,
+        "message": f"Classification {action}ed",
+        "classification_id": classification_id
+    }
+
+@app.post("/add-pending")
+def add_pending_classification(request: ClassifyRequest):
+    """Classify and add to pending queue for validation"""
+    from uuid import uuid4
+    result = classifier.classify(request.text, request.use_ml, request.model)
+    
+    classification_id = str(uuid4())
+    pending_classifications[classification_id] = {
+        "id": classification_id,
+        "text": request.text[:100] + "..." if len(request.text) > 100 else request.text,
+        "created_at": datetime.now().isoformat(),
+        **result
+    }
+    
+    return {
+        "success": True,
+        "classification_id": classification_id,
+        "classification": result
+    }
+
+@app.get("/validated")
+def get_validated():
+    """Get validated classifications"""
+    return {
+        "count": len(validated_classifications),
+        "validated": validated_classifications[-50:]
+    }
+
 if __name__ == "__main__":
     print("\n" + "="*60)
     print("🧠 CLASSIFICATION SERVICE - Tâche 5")
     print("="*60)
-    uvicorn.run(app, host="0.0.0.0", port=8005, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8005, reload=True)

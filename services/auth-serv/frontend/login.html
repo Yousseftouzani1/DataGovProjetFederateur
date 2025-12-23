@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,42 +8,57 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
     }
-    
+
     .animated-gradient {
       background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
       background-size: 400% 400%;
       animation: gradient 15s ease infinite;
     }
-    
+
     .glass-effect {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.3);
     }
-    
+
     .input-focus:focus {
       transform: translateY(-2px);
       transition: all 0.3s ease;
     }
-    
+
     @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-20px); }
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-20px);
+      }
     }
-    
+
     .floating {
       animation: float 6s ease-in-out infinite;
     }
-    
+
     .shine {
       position: relative;
       overflow: hidden;
     }
-    
+
     .shine::before {
       content: '';
       position: absolute;
@@ -50,72 +66,73 @@
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
       transition: left 0.5s;
     }
-    
+
     .shine:hover::before {
       left: 100%;
     }
   </style>
 </head>
+
 <body class="animated-gradient flex items-center justify-center min-h-screen p-4">
   <!-- Decorative elements -->
   <div class="absolute top-10 left-10 w-72 h-72 bg-white opacity-10 rounded-full blur-3xl floating"></div>
-  <div class="absolute bottom-10 right-10 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl floating" style="animation-delay: 3s;"></div>
-  
+  <div class="absolute bottom-10 right-10 w-96 h-96 bg-white opacity-10 rounded-full blur-3xl floating"
+    style="animation-delay: 3s;"></div>
+
   <div class="glass-effect shadow-2xl rounded-3xl p-8 md:p-12 w-full max-w-md relative z-10">
     <!-- Logo/Icon -->
     <div class="flex justify-center mb-6">
-      <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform duration-300">
+      <div
+        class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform duration-300">
         <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+          </path>
         </svg>
       </div>
     </div>
-    
-    <h1 class="text-4xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+
+    <h1
+      class="text-4xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
       DataGov Platform
     </h1>
     <p class="text-center text-gray-500 mb-8 text-sm">Secure access to your data governance tools</p>
-    
+
     <form id="loginForm" class="space-y-5">
       <div>
         <label class="block text-gray-700 font-semibold mb-2 text-sm">Username</label>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
           </div>
-          <input
-            type="text"
-            id="username"
-            required
+          <input type="text" id="username" required
             class="input-focus w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-            placeholder="Enter your username"
-          />
+            placeholder="Enter your username" />
         </div>
       </div>
-      
+
       <div>
         <label class="block text-gray-700 font-semibold mb-2 text-sm">Password</label>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+              </path>
             </svg>
           </div>
-          <input
-            type="password"
-            id="password"
-            required
+          <input type="password" id="password" required
             class="input-focus w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-            placeholder="Enter your password"
-          />
+            placeholder="Enter your password" />
         </div>
       </div>
-      
+
       <div class="flex items-center justify-between text-sm">
         <label class="flex items-center text-gray-600 cursor-pointer hover:text-gray-800 transition">
           <input type="checkbox" class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
@@ -123,73 +140,57 @@
         </label>
         <a href="#" class="text-blue-600 hover:text-blue-800 font-medium transition">Forgot password?</a>
       </div>
-      
-      <button
-        type="submit"
-        class="shine w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl text-lg font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-      >
+
+      <button type="submit"
+        class="shine w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl text-lg font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
         Sign In
       </button>
     </form>
-    
+
     <p id="message" class="text-center text-red-500 mt-4 font-medium"></p>
-    
+
     <div class="mt-8 text-center">
-<a href="/frontend/create_user.html" class="text-blue-600 hover:text-blue-800 font-semibold transition">Sign up</a>
+      <a href="/frontend/create_user.html" class="text-blue-600 hover:text-blue-800 font-semibold transition">Sign
+        up</a>
     </div>
-    
+
     <!-- Footer -->
     <div class="mt-8 pt-6 border-t border-gray-200 text-center text-xs text-gray-400">
       <p>© 2024 DataGov Platform. All rights reserved.</p>
     </div>
   </div>
-  
+
   <script>
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
 
-    const response = await fetch("/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        username: username,
-        password: password
-      })
+      const response = await fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          username: username,
+          password: password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        document.getElementById("message").innerText = data.detail;
+        return;
+      }
+
+      // Save token
+      localStorage.setItem("token", data.access_token);
+
+      // Redirect to unified dashboard (handles all roles)
+      window.location.href = "/frontend/dashboard.html";
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      document.getElementById("message").innerText = data.detail;
-      return;
-    }
-
-    // Save token
-    localStorage.setItem("token", data.access_token);
-
-    // Extract role from JWT token
-    const token = data.access_token;
-    const payload = JSON.parse(atob(token.split(".")[1]));
-
-    // ROLE-BASED REDIRECTS
-    if (payload.role === "Data Steward") {
-      window.location.href = "/frontend/steward_dashboard.html";
-    } 
-    else if (payload.role === "Annotator") {
-      window.location.href = "/frontend/annotator_dashboard.html";
-    } 
-    else if (payload.role === "Labeler") {
-      window.location.href = "/frontend/labeler_dashboard.html";
-    }
-    else if (payload.role === "Admin") {
-    window.location.href = "/frontend/admin_dashboard.html";
-}
-
-  });
-</script>
+  </script>
 
 </body>
+
 </html>

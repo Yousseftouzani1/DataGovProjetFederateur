@@ -1,6 +1,10 @@
+# Core FastAPI dependencies
 fastapi>=0.100.0
 uvicorn>=0.22.0
 pydantic>=2.0.0
+
+# ML - Lightweight (no GPU/CUDA needed)
 scikit-learn>=1.3.0
-transformers>=4.30.0
-torch>=2.0.0
+
+# Optional: Transformers with CPU-only torch (much smaller download)
+# These are optional - service works without them using keyword classification
