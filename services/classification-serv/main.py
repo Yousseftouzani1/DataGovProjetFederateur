@@ -6,13 +6,17 @@ According to Cahier des Charges:
 - ML-based classification using HuggingFace/BERT models
 - Ensemble voting mechanism
 - Integration with taxonomy service
+- MongoDB Persistence for Validation Workflow
 """
 import uvicorn
+import uuid
 from datetime import datetime
 from typing import List, Optional, Dict
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
+from backend.database.mongodb import db
 
 # ML imports (optional - will use simple classifier if not available)
 try:
@@ -186,8 +190,8 @@ classifier = SensitivityClassifier()
 
 app = FastAPI(
     title="Classification Service",
-    description="Fine-Grained ML/NLP Classification - Tâche 5",
-    version="1.0.0"
+    description="Fine-Grained ML/NLP Classification (Mongo Persisted)",
+    version="1.1.0"
 )
 
 app.add_middleware(
@@ -199,10 +203,15 @@ app.add_middleware(
 )
 
 @app.get("/")
-def root():
+async def root():
+    count = 0
+    if db is not None:
+        count = await db.pending_classifications.count_documents({})
     return {
         "service": "Classification Service",
         "status": "running",
+        "db_connected": db is not None,
+        "pending_count": count,
         "sklearn_available": SKLEARN_AVAILABLE,
         "transformers_available": TRANSFORMERS_AVAILABLE
     }
@@ -243,35 +252,49 @@ def get_categories():
     }
 
 # ====================================================================
-# VALIDATION WORKFLOW (For Human Review)
+# VALIDATION WORKFLOW (For Human Review) - MONGO DB
 # ====================================================================
 
-# In-memory storage for pending classifications
-pending_classifications = {}
-validated_classifications = []
-
 @app.get("/pending")
-def get_pending_classifications():
+async def get_pending_classifications():
     """Get classifications awaiting human validation"""
+    if db is not None:
+        cursor = db.pending_classifications.find().limit(50)
+        # Convert _id to string if needed, or exclude it
+        classifications = []
+        async for doc in cursor:
+             doc["_id"] = str(doc["_id"])
+             classifications.append(doc)
+    else:
+        classifications = []
+        
     return {
-        "pending": len(pending_classifications),
-        "classifications": list(pending_classifications.values())[:50]
+        "pending": len(classifications),
+        "classifications": classifications
     }
 
 @app.post("/validate/{classification_id}")
-def validate_classification(classification_id: str, action: str = "confirm"):
+async def validate_classification(classification_id: str, action: str = "confirm"):
     """Validate a pending classification"""
-    if classification_id not in pending_classifications:
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
+    classification = await db.pending_classifications.find_one({"id": classification_id})
+    if not classification:
         raise HTTPException(status_code=404, detail="Classification not found")
     
-    classification = pending_classifications.pop(classification_id)
+    # Remove from pending
+    await db.pending_classifications.delete_one({"id": classification_id})
+    
+    # Add validation metadata
     classification["validation"] = {
         "action": action,
         "validated_at": datetime.now().isoformat()
     }
     
+    # Add to validated collection if confirmed
     if action == "confirm":
-        validated_classifications.append(classification)
+        await db.validated_classifications.insert_one(classification)
     
     return {
         "success": True,
@@ -280,18 +303,23 @@ def validate_classification(classification_id: str, action: str = "confirm"):
     }
 
 @app.post("/add-pending")
-def add_pending_classification(request: ClassifyRequest):
+async def add_pending_classification(request: ClassifyRequest):
     """Classify and add to pending queue for validation"""
-    from uuid import uuid4
     result = classifier.classify(request.text, request.use_ml, request.model)
     
-    classification_id = str(uuid4())
-    pending_classifications[classification_id] = {
+    classification_id = str(uuid.uuid4())
+    classification_data = {
         "id": classification_id,
         "text": request.text[:100] + "..." if len(request.text) > 100 else request.text,
         "created_at": datetime.now().isoformat(),
         **result
     }
+    
+    if db is not None:
+        await db.pending_classifications.insert_one(classification_data)
+        # Remove _id from response
+        if "_id" in classification_data:
+            del classification_data["_id"]
     
     return {
         "success": True,
@@ -300,15 +328,24 @@ def add_pending_classification(request: ClassifyRequest):
     }
 
 @app.get("/validated")
-def get_validated():
+async def get_validated():
     """Get validated classifications"""
+    if db is not None:
+        cursor = db.validated_classifications.find().sort("created_at", -1).limit(50)
+        validated = []
+        async for doc in cursor:
+             doc["_id"] = str(doc["_id"])
+             validated.append(doc)
+    else:
+        validated = []
+        
     return {
-        "count": len(validated_classifications),
-        "validated": validated_classifications[-50:]
+        "count": len(validated),
+        "validated": validated
     }
 
 if __name__ == "__main__":
-    print("\n" + "="*60)
-    print("🧠 CLASSIFICATION SERVICE - Tâche 5")
-    print("="*60)
+    print(f"\\n" + "="*60)
+    print(f"🧠 CLASSIFICATION SERVICE (MONGO) - Tâche 5")
+    print(f"="*60)
     uvicorn.run("main:app", host="0.0.0.0", port=8005, reload=True)

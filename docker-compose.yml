@@ -2,10 +2,48 @@ version: "3.9"
 
 # ============================================
 # DataGov - Complete Microservices Stack
-# Uses MongoDB Atlas (cloud) - no local MongoDB
+# Updated with Persistence & Orchestration
 # ============================================
 
 services:
+  # ─────────────────────────────────────────
+  # INFRASTRUCTURE: Database (MongoDB)
+  # ─────────────────────────────────────────
+  mongo:
+    image: mongo:latest
+    container_name: datagov-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - datagov-network
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # INFRASTRUCTURE: Orchestration (Airflow)
+  # ─────────────────────────────────────────
+  airflow:
+    image: apache/airflow:2.7.1
+    container_name: datagov-airflow
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__RBAC=True
+      - _AIRFLOW_DB_UPGRADE=True
+      - _AIRFLOW_WWW_USER_CREATE=True
+      - _AIRFLOW_WWW_USER_USERNAME=admin
+      - _AIRFLOW_WWW_USER_PASSWORD=admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+    command: standalone
+    networks:
+      - datagov-network
+    restart: unless-stopped
 
   # ─────────────────────────────────────────
   # SERVICE 1: Authentication (Port 8001)
@@ -17,6 +55,8 @@ services:
       - .env
     ports:
       - "8001:8001"
+    depends_on:
+      - mongo
     networks:
       - datagov-network
     restart: unless-stopped
@@ -31,6 +71,8 @@ services:
       - .env
     ports:
       - "8002:8002"
+    depends_on:
+      - mongo
     networks:
       - datagov-network
     restart: unless-stopped
@@ -45,8 +87,12 @@ services:
       - .env
     ports:
       - "8003:8003"
+    depends_on:
+      - mongo
     networks:
       - datagov-network
+    volumes:
+      - ./services/presidio-serv:/app
     restart: unless-stopped
 
   # ─────────────────────────────────────────
@@ -59,6 +105,8 @@ services:
       - .env
     ports:
       - "8004:8004"
+    depends_on:
+      - mongo
     networks:
       - datagov-network
     restart: unless-stopped
@@ -73,6 +121,8 @@ services:
       - .env
     ports:
       - "8005:8005"
+    depends_on:
+      - mongo
     networks:
       - datagov-network
     restart: unless-stopped
@@ -87,6 +137,8 @@ services:
       - .env
     ports:
       - "8006:8006"
+    depends_on:
+      - mongo
     networks:
       - datagov-network
     restart: unless-stopped
@@ -101,6 +153,8 @@ services:
       - .env
     ports:
       - "8007:8007"
+    depends_on:
+      - mongo
     networks:
       - datagov-network
     restart: unless-stopped
@@ -115,6 +169,8 @@ services:
       - .env
     ports:
       - "8008:8008"
+    depends_on:
+      - mongo
     networks:
       - datagov-network
     restart: unless-stopped
@@ -129,6 +185,10 @@ services:
       - .env
     ports:
       - "8009:8009"
+    volumes:
+      - ./services/ethimask-serv:/app
+    depends_on:
+      - mongo
     networks:
       - datagov-network
     restart: unless-stopped
@@ -148,20 +208,19 @@ services:
     depends_on:
       - auth-service
       - taxonomie-service
-      - presidio-service
       - cleaning-service
-      - classification-service
-      - correction-service
       - annotation-service
-      - quality-service
-      - ethimask-service
+      # Wait for critical services
     networks:
       - datagov-network
     restart: unless-stopped
 
 # ─────────────────────────────────────────
-# NETWORK
+# NETWORK & VOLUMES
 # ─────────────────────────────────────────
 networks:
   datagov-network:
     driver: bridge
+
+volumes:
+  mongo_data:

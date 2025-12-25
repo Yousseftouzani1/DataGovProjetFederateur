@@ -1,0 +1,16 @@
+id,nom_complet,cin,email,telephone,salaire_mensuel,date_naissance,ville,commentaire,compte_bancaire,score_credit
+1,Mohammed Alami,AB123456,m.alami@example.com,+212612345678,15000,1985-05-15,Casablanca,"Client VIP, très satisfait.",MA64211112222333344445555666,750
+2,Fatima Benjelloun,CD987654,fatima.ben@gmail.com,0661987654,25000,1990-11-20,Rabat,"Attention: Données sensibles à vérifier.",MA64111222333444555666777888,820
+3,Youssef Tazi,EF555666,y.tazi@company.ma,+212 600-000000,8500,1995-02-10,Marrakech,Nouveau client standard.,MA64999888777666555444333222,680
+4,Houda El Fassi,,h.elfassi@fake.com,0600123456,NULL,2000-01-01,Fes,"Compte dormant depuis 2 ans.",MA64000111222333444555666777,
+5,Kamal Idrissi,GH111222,k.idrissi@yahoo.fr,06-55-44-33-22,45000,1978-08-30,Tanger,"Projet confidentiel: Fusion acquisition.",MA64555444333222111000999888,900
+6,Amina Zaid,JK333444,amina.z@gmail,0661112233,-500,2025-12-12,Agadir,"Erreur de saisie probable.",MA64123123123123123123123123,450
+7,Rachid Oualid,LM777888,r.oualid@domain.co.uk,+212699887766,12000,1982-06-25,Meknes,"Demande de crédit immobilier refusée.",MA64321321321321321321321321,710
+8,Sara Mansouri,AB999000,sara.m@,0677-88-99-00,18000,1992-04-14,Rabat,"Client potentiel pour assurance vie.",MA64777777777777777777777777,780
+9,Omar Berrada,X123456,omar.b@startup.ma,06 61 22 33 44,NULL,1988/09/09,Casablanca,"Partenaire stratégique.",MA64888888888888888888888888,850
+10,Zineb Chaoui,ZZ888777,z.chaoui@bigcorp.com,+212600112233,95000,1999-12-31,Tanger,"Accès restreint requis: Top Secret.",MA64555555555555555555555555,950
+11,,UNKNOWN,,0000000000,0,1900-01-01,NULL,"Donnée corrompue.",,0
+12,Driss Chraibi,Q555444,d.chraibi@univ.ma,0661-123-456,11000,1975-03-21,Oujda,"Professeur chercheur.",MA64222222222222222222222222,760
+13,Laila Amrani,K999111,l.amrani@gov.ma,+212611223344,22000,1986-07-07,Rabat,"Fonctionnaire d'état.",MA64333333333333333333333333,810
+14,Karim Bennani,P777333,karim.b@sport.ma,0655443322,35000,1994-05-05,Casablanca,"Athlète professionnel.",MA64444444444444444444444444,790
+15,Nadia Tazi,T111999,n.tazi@art.ma,0622334455,14500,1989-10-10,Marrakech,"Artiste peintre.",MA64666666666666666666666666,720

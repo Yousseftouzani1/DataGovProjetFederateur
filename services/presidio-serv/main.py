@@ -90,11 +90,12 @@ class MoroccanPresidioEngine:
             registry.add_recognizer(MoroccanIBANRecognizer())
             registry.add_recognizer(MoroccanCNSSRecognizer())
             
-            # Use only English model (pre-downloaded in Dockerfile)
+            # Use English model for both EN and FR (since we rely on Custom Recognizers)
             config = {
                 "nlp_engine_name": "spacy",
                 "models": [
                     {"lang_code": "en", "model_name": "en_core_web_sm"},
+                    {"lang_code": "fr", "model_name": "en_core_web_sm"},
                 ]
             }
             provider = NlpEngineProvider(nlp_configuration=config)

@@ -13,6 +13,18 @@ from backend.storage import (
     save_metadata
 )
 
+# Add common services to path
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../common")))
+
+try:
+    from atlas_client import AtlasClient
+    atlas_client = AtlasClient()
+except ImportError:
+    print("⚠️ Could not import AtlasClient. Governance features disabled.")
+    atlas_client = None
+
 app = FastAPI(title="Cleaning Service", version="2.0")
 
 # CORS for frontend compatibility
@@ -61,6 +73,18 @@ async def upload_dataset(file: UploadFile = File(...)):
         await save_raw_dataset(dataset_id, df)
     except Exception as e:
         print(f"MongoDB save warning: {e}")
+    
+    # Register in Atlas
+    if atlas_client:
+        try:
+            atlas_client.register_dataset(
+                name=file.filename,
+                description=f"Uploaded dataset {file.filename}",
+                owner="admin", # TODO: Get from token
+                file_path=f"mongodb://datasets/{dataset_id}"
+            )
+        except Exception as e:
+            print(f"⚠️ Atlas registration failed: {e}")
     
     return {
         "dataset_id": dataset_id,
