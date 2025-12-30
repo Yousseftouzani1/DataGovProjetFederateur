@@ -11,3 +11,5 @@ scikit-learn>=1.3.0
 
 # Optional: Transformers with CPU-only torch (much smaller download)
 # These are optional - service works without them using keyword classification
+
+requests==2.31.0

@@ -18,14 +18,14 @@ import json
 # ====================================================================
 
 SERVICE_URLS = {
-    "cleaning": "http://localhost:8004",
-    "taxonomie": "http://localhost:8002",
-    "presidio": "http://localhost:8003",
-    "classification": "http://localhost:8005",
-    "correction": "http://localhost:8006",
-    "annotation": "http://localhost:8007",
-    "quality": "http://localhost:8008",
-    "ethimask": "http://localhost:8009",
+    "cleaning": "http://cleaning-service:8004",
+    "taxonomie": "http://taxonomie-service:8002",
+    "presidio": "http://presidio-service:8003",
+    "classification": "http://classification-service:8005",
+    "correction": "http://correction-service:8006",
+    "annotation": "http://annotation-service:8007",
+    "quality": "http://quality-service:8008",
+    "ethimask": "http://ethimask-service:8009",
 }
 
 default_args = {
@@ -393,7 +393,7 @@ check_presidio = PythonOperator(
 upload = PythonOperator(
     task_id='upload_dataset',
     python_callable=upload_dataset,
-    op_kwargs={'file_path': '/path/to/dataset.csv'},
+    op_kwargs={'file_path': '/opt/airflow/datasets/test_data/test_data_morocco.csv'},
     dag=dag,
 )
 

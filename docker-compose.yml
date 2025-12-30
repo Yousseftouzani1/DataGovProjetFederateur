@@ -27,7 +27,7 @@ services:
     image: apache/airflow:2.7.1
     container_name: datagov-airflow
     environment:
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__WEBSERVER__RBAC=True
@@ -40,6 +40,7 @@ services:
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
+      - ./datasets:/opt/airflow/datasets
     command: standalone
     networks:
       - datagov-network
@@ -75,6 +76,8 @@ services:
       - mongo
     networks:
       - datagov-network
+    volumes:
+      - ./services/common:/common
     restart: unless-stopped
 
   # ─────────────────────────────────────────
@@ -93,6 +96,7 @@ services:
       - datagov-network
     volumes:
       - ./services/presidio-serv:/app
+      - ./services/common:/common
     restart: unless-stopped
 
   # ─────────────────────────────────────────
@@ -109,6 +113,8 @@ services:
       - mongo
     networks:
       - datagov-network
+    volumes:
+      - ./services/common:/common
     restart: unless-stopped
 
   # ─────────────────────────────────────────
@@ -125,6 +131,8 @@ services:
       - mongo
     networks:
       - datagov-network
+    volumes:
+      - ./services/common:/common
     restart: unless-stopped
 
   # ─────────────────────────────────────────
@@ -141,6 +149,8 @@ services:
       - mongo
     networks:
       - datagov-network
+    volumes:
+      - ./services/common:/common
     restart: unless-stopped
 
   # ─────────────────────────────────────────
@@ -157,6 +167,8 @@ services:
       - mongo
     networks:
       - datagov-network
+    volumes:
+      - ./services/common:/common
     restart: unless-stopped
 
   # ─────────────────────────────────────────
@@ -173,6 +185,8 @@ services:
       - mongo
     networks:
       - datagov-network
+    volumes:
+      - ./services/common:/common
     restart: unless-stopped
 
   # ─────────────────────────────────────────
@@ -187,6 +201,7 @@ services:
       - "8009:8009"
     volumes:
       - ./services/ethimask-serv:/app
+      - ./services/common:/common
     depends_on:
       - mongo
     networks:
