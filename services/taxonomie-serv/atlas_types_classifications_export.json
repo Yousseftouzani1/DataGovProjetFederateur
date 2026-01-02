@@ -1,0 +1,3304 @@
+{
+  "export_metadata": {
+    "export_date": "2026-01-02T18:44:35.817583",
+    "total_entity_types": 47,
+    "total_classifications": 6,
+    "total_instances": 47,
+    "database": "DataGovDB",
+    "cahier_section": "4.9"
+  },
+  "entityDefs": [
+    {
+      "typeName": "data_attribute",
+      "name": "CIN_MAROC",
+      "description": "CIN_MAROC",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "MASSAR",
+      "description": "MASSAR",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "PASSPORT_MA",
+      "description": "PASSPORT_MA",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "DATE_NAISSANCE",
+      "description": "DATE_NAISSANCE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CARTE_SEJOUR",
+      "description": "CARTE_SEJOUR",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CARTE_RAMED",
+      "description": "CARTE_RAMED",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_AMO",
+      "description": "NUMERO_AMO",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "PERMIS_CONDUIRE",
+      "description": "PERMIS_CONDUIRE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CARTE_ELECTORALE",
+      "description": "CARTE_ELECTORALE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CNE",
+      "description": "CNE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CNSS",
+      "description": "CNSS",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_SECURITE_SOCIALE",
+      "description": "NUMERO_SECURITE_SOCIALE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "MATRICULE_EMPLOYEE",
+      "description": "MATRICULE_EMPLOYEE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CONTRAT_TRAVAIL_ID",
+      "description": "CONTRAT_TRAVAIL_ID",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_BADGE",
+      "description": "NUMERO_BADGE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "ICE",
+      "description": "ICE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_RC",
+      "description": "NUMERO_RC",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "PATENTE",
+      "description": "PATENTE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "PHONE_MA",
+      "description": "PHONE_MA",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "EMAIL",
+      "description": "EMAIL",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "PHONE_FIXE_MA",
+      "description": "PHONE_FIXE_MA",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "FAX_MA",
+      "description": "FAX_MA",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "ADRESSE_COMPLETE",
+      "description": "ADRESSE_COMPLETE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CODE_POSTAL_MA",
+      "description": "CODE_POSTAL_MA",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "URL_PERSONNEL",
+      "description": "URL_PERSONNEL",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "EMAIL_PROFESSIONNEL",
+      "description": "EMAIL_PROFESSIONNEL",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "IBAN_MA",
+      "description": "IBAN_MA",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "RIB_MAROC",
+      "description": "RIB_MAROC",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "SWIFT_CODE",
+      "description": "SWIFT_CODE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CARTE_BANCAIRE",
+      "description": "CARTE_BANCAIRE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CVV",
+      "description": "CVV",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_FACTURE",
+      "description": "NUMERO_FACTURE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "SALAIRE",
+      "description": "SALAIRE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_COMPTE_BANCAIRE",
+      "description": "NUMERO_COMPTE_BANCAIRE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "MONTANT_TRANSACTION",
+      "description": "MONTANT_TRANSACTION",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "IMMATRICULATION_VEHICULE",
+      "description": "IMMATRICULATION_VEHICULE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_DOSSIER_MEDICAL",
+      "description": "NUMERO_DOSSIER_MEDICAL",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_MUTUELLE",
+      "description": "NUMERO_MUTUELLE",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "CARTE_HANDICAP",
+      "description": "CARTE_HANDICAP",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_PATIENT",
+      "description": "NUMERO_PATIENT",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "ADRESSE_IP",
+      "description": "ADRESSE_IP",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "DIPLOME_NUMERO",
+      "description": "DIPLOME_NUMERO",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NOTE_EXAMEN",
+      "description": "NOTE_EXAMEN",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_ETUDIANT",
+      "description": "NUMERO_ETUDIANT",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "PHOTO_HASH",
+      "description": "PHOTO_HASH",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "EMPREINTE_DIGITALE_ID",
+      "description": "EMPREINTE_DIGITALE_ID",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "name": "NUMERO_DNA",
+      "description": "NUMERO_DNA",
+      "superTypes": [
+        "Asset"
+      ],
+      "attributeDefs": [
+        {
+          "name": "qualifiedName",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE",
+          "valuesMinCount": 1,
+          "valuesMaxCount": 1,
+          "isUnique": true,
+          "isIndexable": true
+        },
+        {
+          "name": "sensitivity_level",
+          "typeName": "string",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": false,
+          "cardinality": "SET"
+        },
+        {
+          "name": "encryption_required",
+          "typeName": "boolean",
+          "isOptional": false,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "regex_patterns",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    }
+  ],
+  "classificationDefs": [
+    {
+      "name": "PII",
+      "description": "Personally Identifiable Information - RGPD compliant",
+      "superTypes": [],
+      "attributeDefs": []
+    },
+    {
+      "name": "SPI",
+      "description": "Sensitive Personal Information - Article 9 RGPD",
+      "superTypes": [
+        "PII"
+      ],
+      "attributeDefs": []
+    },
+    {
+      "name": "MEDIUM_SENSITIVITY",
+      "description": "Medium sensitivity level - Loi 09-08 compliant",
+      "superTypes": [],
+      "attributeDefs": [
+        {
+          "name": "sensitivity_score",
+          "typeName": "float",
+          "isOptional": true,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "name": "HIGH_SENSITIVITY",
+      "description": "High sensitivity level - Loi 09-08 compliant",
+      "superTypes": [],
+      "attributeDefs": [
+        {
+          "name": "sensitivity_score",
+          "typeName": "float",
+          "isOptional": true,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "name": "CRITICAL_SENSITIVITY",
+      "description": "Critical sensitivity level - Loi 09-08 compliant",
+      "superTypes": [],
+      "attributeDefs": [
+        {
+          "name": "sensitivity_score",
+          "typeName": "float",
+          "isOptional": true,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    },
+    {
+      "name": "LOW_SENSITIVITY",
+      "description": "Low sensitivity level - Loi 09-08 compliant",
+      "superTypes": [],
+      "attributeDefs": [
+        {
+          "name": "sensitivity_score",
+          "typeName": "float",
+          "isOptional": true,
+          "cardinality": "SINGLE"
+        },
+        {
+          "name": "legal_basis",
+          "typeName": "array<string>",
+          "isOptional": true,
+          "cardinality": "SET"
+        }
+      ]
+    }
+  ],
+  "entity_instances": [
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CIN_MAROC",
+        "qualifiedName": "IDENTITE_PERSONNELLE::CIN_MAROC",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b[A-Z]{1,2}\\d{5,8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "MASSAR",
+        "qualifiedName": "IDENTITE_PERSONNELLE::MASSAR",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b[A-Z]\\d{9}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "PASSPORT_MA",
+        "qualifiedName": "IDENTITE_PERSONNELLE::PASSPORT_MA",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b[A-Z]{1,2}\\d{6,9}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "DATE_NAISSANCE",
+        "qualifiedName": "IDENTITE_PERSONNELLE::DATE_NAISSANCE",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "(?:0[1-9]|[12][0-9]|3[01])[-/](?:0[1-9]|1[0-2])[-/](?:19|20)\\d{2}",
+          "(?:19|20)\\d{2}[-/](?:0[1-9]|1[0-2])[-/](?:0[1-9]|[12][0-9]|3[01])"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CARTE_SEJOUR",
+        "qualifiedName": "IDENTITE_PERSONNELLE::CARTE_SEJOUR",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b[A-Z]{2}\\d{6,10}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CARTE_RAMED",
+        "qualifiedName": "IDENTITE_PERSONNELLE::CARTE_RAMED",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bRAMED\\d{10}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_AMO",
+        "qualifiedName": "IDENTITE_PERSONNELLE::NUMERO_AMO",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b\\d{13}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "PERMIS_CONDUIRE",
+        "qualifiedName": "IDENTITE_PERSONNELLE::PERMIS_CONDUIRE",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\b[A-Z]\\d{7}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CARTE_ELECTORALE",
+        "qualifiedName": "IDENTITE_PERSONNELLE::CARTE_ELECTORALE",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\bCE[A-Z]\\d{7}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CNE",
+        "qualifiedName": "IDENTITE_PERSONNELLE::CNE",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b[A-Z]\\d{9}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CNSS",
+        "qualifiedName": "PROFESSIONAL_INFO::CNSS",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b\\d{9,12}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_SECURITE_SOCIALE",
+        "qualifiedName": "PROFESSIONAL_INFO::NUMERO_SECURITE_SOCIALE",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b[12]\\d{14}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "MATRICULE_EMPLOYEE",
+        "qualifiedName": "PROFESSIONAL_INFO::MATRICULE_EMPLOYEE",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\bEMP[A-Z]{2}\\d{6}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CONTRAT_TRAVAIL_ID",
+        "qualifiedName": "PROFESSIONAL_INFO::CONTRAT_TRAVAIL_ID",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bCT\\d{8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_BADGE",
+        "qualifiedName": "PROFESSIONAL_INFO::NUMERO_BADGE",
+        "sensitivity_level": "low",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\bBDG\\d{6}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "LOW_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "ICE",
+        "qualifiedName": "PROFESSIONAL_INFO::ICE",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\b\\d{15}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_RC",
+        "qualifiedName": "PROFESSIONAL_INFO::NUMERO_RC",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\bRC\\d{6,8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "PATENTE",
+        "qualifiedName": "PROFESSIONAL_INFO::PATENTE",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\bPAT\\d{8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "PHONE_MA",
+        "qualifiedName": "COORDONNEES::PHONE_MA",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "(?:\\+212|00212|0)[5-7]\\d{8}",
+          "\\+212[\\s.-]?[5-7][\\s.-]?\\d{2}[\\s.-]?\\d{2}[\\s.-]?\\d{2}[\\s.-]?\\d{2}"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "EMAIL",
+        "qualifiedName": "COORDONNEES::EMAIL",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "PHONE_FIXE_MA",
+        "qualifiedName": "COORDONNEES::PHONE_FIXE_MA",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\b05\\d{8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "FAX_MA",
+        "qualifiedName": "COORDONNEES::FAX_MA",
+        "sensitivity_level": "low",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\b(?:fax|télécopie)[:\\s]*05\\d{8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "LOW_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "ADRESSE_COMPLETE",
+        "qualifiedName": "COORDONNEES::ADRESSE_COMPLETE",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b\\d+,?\\s+(?:rue|avenue|boulevard|av\\.)\\s+[\\w\\s]+,\\s*\\d{5}"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CODE_POSTAL_MA",
+        "qualifiedName": "COORDONNEES::CODE_POSTAL_MA",
+        "sensitivity_level": "low",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\b\\d{5}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "LOW_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "URL_PERSONNEL",
+        "qualifiedName": "COORDONNEES::URL_PERSONNEL",
+        "sensitivity_level": "low",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "https?://[\\w\\.-]+\\.[a-z]{2,}"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "LOW_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "EMAIL_PROFESSIONNEL",
+        "qualifiedName": "COORDONNEES::EMAIL_PROFESSIONNEL",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "[a-zA-Z0-9._%+-]+@(?:entreprise|company|corp|inc|org)\\.(?:ma|com)"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "PII"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "IBAN_MA",
+        "qualifiedName": "DONNEES_FINANCIERES::IBAN_MA",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bMA\\d{2}[A-Z0-9\\s]{20,26}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "RIB_MAROC",
+        "qualifiedName": "DONNEES_FINANCIERES::RIB_MAROC",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b\\d{24}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "SWIFT_CODE",
+        "qualifiedName": "DONNEES_FINANCIERES::SWIFT_CODE",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CARTE_BANCAIRE",
+        "qualifiedName": "DONNEES_FINANCIERES::CARTE_BANCAIRE",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CVV",
+        "qualifiedName": "DONNEES_FINANCIERES::CVV",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b\\d{3,4}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_FACTURE",
+        "qualifiedName": "DONNEES_FINANCIERES::NUMERO_FACTURE",
+        "sensitivity_level": "low",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\bFAC\\d{8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "LOW_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "SALAIRE",
+        "qualifiedName": "DONNEES_FINANCIERES::SALAIRE",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\d+\\s?(?:DH|MAD|dirhams?)"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_COMPTE_BANCAIRE",
+        "qualifiedName": "DONNEES_FINANCIERES::NUMERO_COMPTE_BANCAIRE",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\b\\d{10,16}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "MONTANT_TRANSACTION",
+        "qualifiedName": "DONNEES_FINANCIERES::MONTANT_TRANSACTION",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\b\\d{1,}[.,]\\d{2}\\s?(?:DH|MAD)\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "IMMATRICULATION_VEHICULE",
+        "qualifiedName": "DONNEES_VEHICULE::IMMATRICULATION_VEHICULE",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\d{1,6}[\\s-]?[A-Zأ-ي][\\s-]?\\d{1,4}"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_DOSSIER_MEDICAL",
+        "qualifiedName": "DONNEES_SANTE::NUMERO_DOSSIER_MEDICAL",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bDM\\d{8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_MUTUELLE",
+        "qualifiedName": "DONNEES_SANTE::NUMERO_MUTUELLE",
+        "sensitivity_level": "high",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bMUT\\d{8,12}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "HIGH_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "CARTE_HANDICAP",
+        "qualifiedName": "DONNEES_SANTE::CARTE_HANDICAP",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bCH\\d{8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_PATIENT",
+        "qualifiedName": "DONNEES_SANTE::NUMERO_PATIENT",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bPAT\\d{8,10}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "ADRESSE_IP",
+        "qualifiedName": "DONNEES_TECHNIQUES::ADRESSE_IP",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "DIPLOME_NUMERO",
+        "qualifiedName": "DONNEES_EDUCATION::DIPLOME_NUMERO",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\bDIP\\d{8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NOTE_EXAMEN",
+        "qualifiedName": "DONNEES_EDUCATION::NOTE_EXAMEN",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\b\\d{1,2}[.,]\\d{2}\\s*/\\s*20\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_ETUDIANT",
+        "qualifiedName": "DONNEES_EDUCATION::NUMERO_ETUDIANT",
+        "sensitivity_level": "medium",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": false,
+        "regex_patterns": [
+          "\\bETU\\d{8}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "MEDIUM_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "PHOTO_HASH",
+        "qualifiedName": "DONNEES_BIOMETRIQUES::PHOTO_HASH",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bPH[A-F0-9]{64}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "EMPREINTE_DIGITALE_ID",
+        "qualifiedName": "DONNEES_BIOMETRIQUES::EMPREINTE_DIGITALE_ID",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bFP[A-F0-9]{32}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    },
+    {
+      "typeName": "data_attribute",
+      "attributes": {
+        "name": "NUMERO_DNA",
+        "qualifiedName": "DONNEES_BIOMETRIQUES::NUMERO_DNA",
+        "sensitivity_level": "critical",
+        "legal_basis": [
+          "RGPD Art.6",
+          "Loi 09-08 Art.3"
+        ],
+        "encryption_required": true,
+        "regex_patterns": [
+          "\\bDNA[A-F0-9]{16}\\b"
+        ]
+      },
+      "classifications": [
+        {
+          "typeName": "SPI"
+        },
+        {
+          "typeName": "CRITICAL_SENSITIVITY"
+        }
+      ]
+    }
+  ]
+}

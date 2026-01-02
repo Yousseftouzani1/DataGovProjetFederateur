@@ -1,0 +1,4536 @@
+{
+  "export_metadata": {
+    "export_date": "2026-01-02T18:45:46.465327",
+    "total_documents": 10,
+    "total_patterns": 161,
+    "database": "DataGovDB",
+    "collection": "taxonomies",
+    "context": "Maroc",
+    "cahier_section": "4.9"
+  },
+  "taxonomies": [
+    {
+      "_id": "6934c2db3e05e1be0c58e064",
+      "metadata": {
+        "domain_id": "DOM-007",
+        "domain_name": "DONNEES_BIOMETRIQUES",
+        "domain_name_en": "BIOMETRIC_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données biométriques - IMMUABLES, ne peuvent être changées",
+        "total_entities": 6
+      },
+      "categories": [
+        {
+          "class": "DONNEES_BIOMETRIQUES",
+          "class_en": "BIOMETRIC_DATA",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Empreintes digitales",
+              "name_en": "Fingerprints",
+              "synonyms_fr": [
+                "empreintes",
+                "dactyloscopie",
+                "empreinte digitale"
+              ],
+              "synonyms_en": [
+                "fingerprint",
+                "fingerprint scan"
+              ],
+              "acronyms_fr": [
+                "EMP"
+              ],
+              "acronyms_en": [
+                "FP"
+              ],
+              "regex_patterns": [],
+              "data_format": "image, template, minutiae",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ],
+              "why_sensitive": "IMMUABLE - ne peut être changé en cas de compromission"
+            },
+            {
+              "name": "Reconnaissance faciale",
+              "name_en": "Facial recognition",
+              "synonyms_fr": [
+                "biométrie faciale",
+                "visage",
+                "reconnaissance visage",
+                "photo biométrique"
+              ],
+              "synonyms_en": [
+                "face recognition",
+                "facial biometrics"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [
+                "FR"
+              ],
+              "regex_patterns": [],
+              "data_format": "photo, vecteurs faciaux, embeddings",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Scan de l'iris",
+              "name_en": "Iris scan",
+              "synonyms_fr": [
+                "scan iris",
+                "reconnaissance iris",
+                "biométrie oculaire"
+              ],
+              "synonyms_en": [
+                "iris recognition",
+                "eye scan"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "data_format": "image, code iris",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Empreinte vocale",
+              "name_en": "Voice biometrics",
+              "synonyms_fr": [
+                "reconnaissance vocale biométrique",
+                "voix",
+                "voiceprint"
+              ],
+              "synonyms_en": [
+                "voice recognition",
+                "voiceprint"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "data_format": "audio, voiceprint",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "ADN / Données génétiques",
+              "name_en": "DNA / Genetic data",
+              "synonyms_fr": [
+                "ADN",
+                "génome",
+                "données génétiques",
+                "profil ADN"
+              ],
+              "synonyms_en": [
+                "DNA",
+                "genetic data",
+                "genome"
+              ],
+              "acronyms_fr": [
+                "ADN"
+              ],
+              "acronyms_en": [
+                "DNA"
+              ],
+              "regex_patterns": [],
+              "data_format": "séquence génétique, profil ADN",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ],
+              "why_sensitive": "Données génétiques héritables - impact sur famille"
+            },
+            {
+              "name": "Géométrie de la main",
+              "name_en": "Hand geometry",
+              "synonyms_fr": [
+                "forme main",
+                "géométrie palmaire"
+              ],
+              "synonyms_en": [
+                "hand shape",
+                "palm geometry"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "data_format": "mesures, template",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ]
+            }
+          ]
+        }
+      ],
+      "created_at": "2025-12-06 23:57:14.489000",
+      "updated_at": "2025-12-06 23:57:14.489000"
+    },
+    {
+      "_id": "6934c2dc3e05e1be0c58e06c",
+      "metadata": {
+        "domain_id": "DOM-002",
+        "domain_name": "COORDONNEES_CONTACT",
+        "domain_name_en": "CONTACT_INFORMATION",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Informations permettant de contacter une personne",
+        "total_entities": 4
+      },
+      "categories": [
+        {
+          "class": "COORDONNEES",
+          "class_en": "CONTACT_INFORMATION",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "Adresse postale",
+              "name_en": "Postal address",
+              "synonyms_fr": [
+                "adresse domicile",
+                "résidence",
+                "adresse personnelle",
+                "domicile"
+              ],
+              "synonyms_en": [
+                "home address",
+                "residence",
+                "mailing address"
+              ],
+              "acronyms_fr": [
+                "ADR"
+              ],
+              "acronyms_en": [
+                "ADDR"
+              ],
+              "regex_patterns": [
+                "\\d+[,\\s]+[A-Za-zàâçéèêëïîôùûü\\s-]+[,\\s]+\\d{5}[,\\s]+[A-Za-zàâçéèêëïîôùûü\\s-]+",
+                "\\d+[,\\s]+(Rue|Avenue|Boulevard|Bd|Av|Immeuble|Résidence)[\\s\\w-]+",
+                "\\b\\d{5}\\s+[A-Za-zàâçéèêëïîôùûü-]+\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD Art.6"
+              ]
+            },
+            {
+              "name": "Numéro de téléphone",
+              "name_en": "Phone number",
+              "synonyms_fr": [
+                "mobile",
+                "portable",
+                "GSM",
+                "téléphone fixe",
+                "numéro mobile",
+                "téléphone"
+              ],
+              "synonyms_en": [
+                "mobile",
+                "cell phone",
+                "phone",
+                "telephone"
+              ],
+              "acronyms_fr": [
+                "TEL",
+                "GSM"
+              ],
+              "acronyms_en": [
+                "TEL",
+                "PHONE"
+              ],
+              "regex_patterns": [
+                "\\b(\\+212|00212|0)[5-7]\\d{8}\\b",
+                "\\b0\\d{9}\\b",
+                "\\b(\\+212|00212|0)\\s?[5-7]\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}\\s?\\d{2}\\b",
+                "\\b05[2-3]\\d{7}\\b"
+              ],
+              "format": "+212 6XX XXX XXX ou 06XX XXX XXX (mobile), 05XX XXX XXX (fixe)",
+              "sensitivity_level": "high",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD Art.6"
+              ],
+              "why_sensitive": "Spam, phishing, bypass 2FA"
+            },
+            {
+              "name": "Adresse email",
+              "name_en": "Email address",
+              "synonyms_fr": [
+                "email",
+                "courriel",
+                "adresse électronique",
+                "mail"
+              ],
+              "synonyms_en": [
+                "email",
+                "e-mail",
+                "electronic mail"
+              ],
+              "acronyms_fr": [
+                "EMAIL",
+                "MAIL"
+              ],
+              "acronyms_en": [
+                "EMAIL"
+              ],
+              "regex_patterns": [
+                "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b"
+              ],
+              "format": "utilisateur@domaine.extension",
+              "sensitivity_level": "high",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD Art.6"
+              ],
+              "why_sensitive": "Phishing, reset password, spam"
+            },
+            {
+              "name": "Réseaux sociaux",
+              "name_en": "Social media handles",
+              "synonyms_fr": [
+                "profil social",
+                "compte facebook",
+                "compte instagram",
+                "linkedin"
+              ],
+              "synonyms_en": [
+                "social profile",
+                "facebook",
+                "instagram",
+                "linkedin"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "@[A-Za-z0-9_]{3,30}",
+                "facebook\\.com/[A-Za-z0-9.]+",
+                "linkedin\\.com/in/[A-Za-z0-9-]+",
+                "instagram\\.com/[A-Za-z0-9_.]+",
+                "twitter\\.com/[A-Za-z0-9_]+"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Low",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            }
+          ]
+        }
+      ],
+      "created_at": "2025-12-06 23:57:14.959000",
+      "updated_at": "2025-12-06 23:57:14.959000"
+    },
+    {
+      "_id": "6934c2dc3e05e1be0c58e072",
+      "metadata": {
+        "domain_id": "DOM-006",
+        "domain_name": "EDUCATION",
+        "domain_name_en": "EDUCATION",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données relatives à l'éducation et formation",
+        "total_entities": 8
+      },
+      "categories": [
+        {
+          "class": "EDUCATION",
+          "class_en": "EDUCATION",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "Code Massar",
+              "name_en": "Massar student code",
+              "synonyms_fr": [
+                "code massar",
+                "identifiant massar",
+                "numéro massar",
+                "code élève"
+              ],
+              "synonyms_en": [
+                "massar code",
+                "student ID"
+              ],
+              "acronyms_fr": [
+                "MASSAR"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[MPTJ]\\d{9}\\b",
+                "\\b[A-Z]\\d{9}\\b",
+                "\\bMassar[:\\s]*[A-Z]\\d{9}\\b"
+              ],
+              "format": "1 lettre (M/P/T/J) + 9 chiffres",
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "MEN Maroc"
+              ]
+            },
+            {
+              "name": "CNE - Code National Étudiant",
+              "name_en": "National student code",
+              "synonyms_fr": [
+                "code national étudiant",
+                "CNE",
+                "numéro étudiant"
+              ],
+              "synonyms_en": [
+                "national student ID",
+                "CNE"
+              ],
+              "acronyms_fr": [
+                "CNE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]\\d{9}\\b",
+                "\\bCNE[:\\s]*[A-Z]\\d{9}\\b"
+              ],
+              "format": "1 lettre + 9 chiffres",
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "MESRSFC Maroc"
+              ]
+            },
+            {
+              "name": "Apogée - Numéro Étudiant",
+              "name_en": "Apogee student number",
+              "synonyms_fr": [
+                "numéro apogée",
+                "code apogée",
+                "numéro universitaire"
+              ],
+              "synonyms_en": [
+                "apogee ID",
+                "university ID"
+              ],
+              "acronyms_fr": [
+                "APO"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{8,10}\\b"
+              ],
+              "format": "8-10 chiffres",
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08"
+              ],
+              "context_required": [
+                "apogée",
+                "étudiant",
+                "université"
+              ]
+            },
+            {
+              "name": "Relevé de Notes",
+              "name_en": "Academic transcript",
+              "synonyms_fr": [
+                "bulletin scolaire",
+                "relevé de notes",
+                "notes",
+                "résultats scolaires"
+              ],
+              "synonyms_en": [
+                "grade report",
+                "transcript",
+                "school results"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Diplôme / Attestation",
+              "name_en": "Degree / Certificate",
+              "synonyms_fr": [
+                "diplôme",
+                "attestation",
+                "certificat",
+                "baccalauréat",
+                "licence",
+                "master"
+              ],
+              "synonyms_en": [
+                "degree",
+                "certificate",
+                "diploma"
+              ],
+              "acronyms_fr": [
+                "BAC",
+                "LIC",
+                "MST",
+                "DOC"
+              ],
+              "acronyms_en": [
+                "BA",
+                "MA",
+                "PhD"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Numéro Baccalauréat",
+              "name_en": "Baccalaureate number",
+              "synonyms_fr": [
+                "numéro bac",
+                "code bac",
+                "candidat bac"
+              ],
+              "synonyms_en": [
+                "bac number",
+                "baccalaureate ID"
+              ],
+              "acronyms_fr": [
+                "BAC"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{8,10}\\b"
+              ],
+              "format": "8-10 chiffres",
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "MEN Maroc"
+              ],
+              "context_required": [
+                "baccalauréat",
+                "bac",
+                "candidat"
+              ]
+            },
+            {
+              "name": "Dossier Scolaire",
+              "name_en": "School record",
+              "synonyms_fr": [
+                "dossier élève",
+                "dossier scolaire",
+                "fiche élève"
+              ],
+              "synonyms_en": [
+                "student file",
+                "school file"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Établissement de Formation",
+              "name_en": "Educational institution",
+              "synonyms_fr": [
+                "école",
+                "université",
+                "lycée",
+                "collège",
+                "établissement"
+              ],
+              "synonyms_en": [
+                "school",
+                "university",
+                "college"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "low",
+              "risk_level": "Low",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            }
+          ]
+        }
+      ],
+      "created_at": "2025-12-06 23:57:15.331000",
+      "updated_at": "2025-12-06 23:57:15.331000"
+    },
+    {
+      "_id": "6934c2dd3e05e1be0c58e07c",
+      "metadata": {
+        "domain_id": "DOM-003",
+        "domain_name": "DONNEES_FINANCIERES",
+        "domain_name_en": "FINANCIAL_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Informations bancaires et financières ultra-sensibles",
+        "total_entities": 7
+      },
+      "categories": [
+        {
+          "class": "DONNEES_FINANCIERES",
+          "class_en": "FINANCIAL_DATA",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "RIB / IBAN",
+              "name_en": "Bank account (IBAN)",
+              "synonyms_fr": [
+                "coordonnées bancaires",
+                "compte bancaire",
+                "relevé d'identité bancaire",
+                "numéro de compte"
+              ],
+              "synonyms_en": [
+                "bank account",
+                "IBAN",
+                "account number"
+              ],
+              "acronyms_fr": [
+                "RIB",
+                "IBAN"
+              ],
+              "acronyms_en": [
+                "IBAN"
+              ],
+              "regex_patterns": [
+                "\\bMA64\\d{4}[A-Z0-9]{16}\\b",
+                "\\bMA\\d{2}[A-Z0-9]{22,24}\\b",
+                "\\bMA[0-9]{2}[0-9]{20}\\b"
+              ],
+              "format": "MA + 2 chiffres contrôle + 20-24 caractères",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "PCI-DSS",
+                "Bank Al-Maghrib"
+              ],
+              "why_sensitive": "Permet prélèvement frauduleux, transferts non autorisés, vol direct"
+            },
+            {
+              "name": "Numéro de carte bancaire",
+              "name_en": "Credit/Debit card number",
+              "synonyms_fr": [
+                "carte bancaire",
+                "carte de crédit",
+                "carte visa",
+                "mastercard",
+                "CB"
+              ],
+              "synonyms_en": [
+                "credit card",
+                "debit card",
+                "card number"
+              ],
+              "acronyms_fr": [
+                "CB",
+                "VISA",
+                "MC"
+              ],
+              "acronyms_en": [
+                "CC",
+                "VISA",
+                "MC"
+              ],
+              "regex_patterns": [
+                "\\b(?:\\d{4}[ -]?){3}\\d{4}\\b",
+                "\\b\\d{16}\\b",
+                "\\b4[0-9]{15}\\b",
+                "\\b5[1-5][0-9]{14}\\b"
+              ],
+              "format": "16 chiffres (4x4 groupes)",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "PCI-DSS Level 1"
+              ],
+              "why_sensitive": "Achats frauduleux immédiats"
+            },
+            {
+              "name": "CVV / CVC",
+              "name_en": "Card verification code",
+              "synonyms_fr": [
+                "code sécurité",
+                "cryptogramme visuel",
+                "code carte"
+              ],
+              "synonyms_en": [
+                "security code",
+                "CVV",
+                "CVC"
+              ],
+              "acronyms_fr": [
+                "CVV",
+                "CVC"
+              ],
+              "acronyms_en": [
+                "CVV",
+                "CVC"
+              ],
+              "regex_patterns": [
+                "\\b\\d{3,4}\\b"
+              ],
+              "format": "3-4 chiffres",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "PCI-DSS Level 1"
+              ],
+              "why_sensitive": "STOCKAGE INTERDIT - Permet transactions en ligne",
+              "context_required": [
+                "cvv",
+                "cvc",
+                "sécurité",
+                "carte"
+              ]
+            },
+            {
+              "name": "Identifiant fiscal (IF)",
+              "name_en": "Tax identification number",
+              "synonyms_fr": [
+                "numéro fiscal",
+                "identifiant fiscal",
+                "IF",
+                "ICE"
+              ],
+              "synonyms_en": [
+                "tax ID",
+                "fiscal ID"
+              ],
+              "acronyms_fr": [
+                "IF",
+                "ICE"
+              ],
+              "acronyms_en": [
+                "TIN",
+                "TAX"
+              ],
+              "regex_patterns": [
+                "\\b\\d{8,15}\\b"
+              ],
+              "format": "8-15 chiffres",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "DGI Maroc"
+              ],
+              "context_required": [
+                "fiscal",
+                "IF",
+                "impôt",
+                "taxe",
+                "ICE"
+              ]
+            },
+            {
+              "name": "Salaire",
+              "name_en": "Salary amount",
+              "synonyms_fr": [
+                "rémunération",
+                "paie",
+                "revenus",
+                "montant salaire"
+              ],
+              "synonyms_en": [
+                "salary",
+                "wage",
+                "income",
+                "pay"
+              ],
+              "acronyms_fr": [
+                "SAL"
+              ],
+              "acronyms_en": [
+                "SAL"
+              ],
+              "regex_patterns": [
+                "\\b\\d{3,7}\\s*(MAD|DH|dirhams?)\\b",
+                "\\b(salaire|paie)[:\\s]+\\d+\\b"
+              ],
+              "format": "Montant en MAD/DH",
+              "sensitivity_level": "critical",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "Code du travail"
+              ],
+              "why_sensitive": "Secret professionnel, discrimination"
+            },
+            {
+              "name": "Numéro de chèque",
+              "name_en": "Check number",
+              "synonyms_fr": [
+                "chèque",
+                "numéro chèque"
+              ],
+              "synonyms_en": [
+                "check",
+                "cheque number"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{7,10}\\b"
+              ],
+              "format": "7-10 chiffres",
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Bank Al-Maghrib"
+              ],
+              "context_required": [
+                "chèque",
+                "cheque"
+              ]
+            },
+            {
+              "name": "Code secret / PIN",
+              "name_en": "PIN code",
+              "synonyms_fr": [
+                "code PIN",
+                "code secret",
+                "mot de passe carte"
+              ],
+              "synonyms_en": [
+                "PIN",
+                "secret code"
+              ],
+              "acronyms_fr": [
+                "PIN"
+              ],
+              "acronyms_en": [
+                "PIN"
+              ],
+              "regex_patterns": [
+                "\\b\\d{4,6}\\b"
+              ],
+              "format": "4-6 chiffres",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "PCI-DSS"
+              ],
+              "why_sensitive": "STOCKAGE INTERDIT",
+              "context_required": [
+                "PIN",
+                "code secret",
+                "mot de passe"
+              ]
+            }
+          ]
+        }
+      ],
+      "created_at": "2025-12-06 23:57:15.823000",
+      "updated_at": "2025-12-06 23:57:15.823000"
+    },
+    {
+      "_id": "6934c2dd3e05e1be0c58e085",
+      "metadata": {
+        "domain_id": "DOM-001",
+        "domain_name": "IDENTITE_DOCUMENTS_OFFICIELS",
+        "domain_name_en": "OFFICIAL_IDENTITY_DOCUMENTS",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Documents officiels d'identification émis par les autorités marocaines",
+        "total_entities": 6
+      },
+      "categories": [
+        {
+          "class": "IDENTITE_PERSONNELLE",
+          "class_en": "PERSONAL_IDENTITY",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Nom complet",
+              "name_en": "Full name",
+              "synonyms_fr": [
+                "nom et prénom",
+                "identité civile",
+                "nom patronymique",
+                "nom de famille"
+              ],
+              "synonyms_en": [
+                "full legal name",
+                "civil identity",
+                "personal name"
+              ],
+              "acronyms_fr": [
+                "NOM"
+              ],
+              "acronyms_en": [
+                "FN"
+              ],
+              "regex_patterns": [
+                "\\b[A-Z][a-zàâçéèêëïîôùûü-]+\\s+[A-Z][a-zàâçéèêëïîôùûü-]+\\b",
+                "\\b[A-Z][A-Z\\s]+\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD Art.6"
+              ]
+            },
+            {
+              "name": "CIN - Carte d'Identité Nationale",
+              "name_en": "National Identity Card",
+              "synonyms_fr": [
+                "carte nationale",
+                "pièce d'identité",
+                "carte d'identité",
+                "CNI"
+              ],
+              "synonyms_en": [
+                "ID card",
+                "national ID",
+                "identity card"
+              ],
+              "acronyms_fr": [
+                "CIN",
+                "CNI"
+              ],
+              "acronyms_en": [
+                "NIC",
+                "ID"
+              ],
+              "regex_patterns": [
+                "\\b[A-Z]{1,2}\\d{5,8}\\b",
+                "\\bCIN[:\\s]*[A-Z]{1,2}\\d{5,8}\\b",
+                "\\b[A-Z]{2}\\s*[0-9]{5,6}\\b",
+                "\\b[A-Z]{2}-[0-9]{5,6}\\b"
+              ],
+              "format": "1-2 lettres majuscules + 5-8 chiffres (ex: AB123456, CD12345)",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD Art.9"
+              ],
+              "why_sensitive": "Permet usurpation d'identité, fraude bancaire, utilisation frauduleuse services publics"
+            },
+            {
+              "name": "Numéro de passeport",
+              "name_en": "Passport number",
+              "synonyms_fr": [
+                "passeport",
+                "document de voyage",
+                "passeport biométrique"
+              ],
+              "synonyms_en": [
+                "passport ID",
+                "travel document",
+                "biometric passport"
+              ],
+              "acronyms_fr": [
+                "PP",
+                "PASS"
+              ],
+              "acronyms_en": [
+                "PP",
+                "PASS"
+              ],
+              "regex_patterns": [
+                "\\b[A-Z]{1,2}\\d{6,9}\\b",
+                "\\b\\d{8,9}\\b",
+                "\\bPASS[:\\s]*[A-Z]{1,2}\\d{6,9}\\b"
+              ],
+              "format": "1-2 lettres + 6-9 chiffres (ex: AA1234567)",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Date de naissance",
+              "name_en": "Date of birth",
+              "synonyms_fr": [
+                "né(e) le",
+                "date naissance",
+                "anniversaire"
+              ],
+              "synonyms_en": [
+                "DOB",
+                "birthdate",
+                "birthday"
+              ],
+              "acronyms_fr": [
+                "DDN"
+              ],
+              "acronyms_en": [
+                "DOB"
+              ],
+              "regex_patterns": [
+                "\\b(0[1-9]|[12][0-9]|3[01])[-/](0[1-9]|1[0-2])[-/](19|20)\\d{2}\\b",
+                "\\b(19|20)\\d{2}[-/](0[1-9]|1[0-2])[-/](0[1-9]|[12][0-9]|3[01])\\b"
+              ],
+              "format": "DD/MM/YYYY ou YYYY-MM-DD",
+              "sensitivity_level": "high",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD Art.6"
+              ]
+            },
+            {
+              "name": "Lieu de naissance",
+              "name_en": "Place of birth",
+              "synonyms_fr": [
+                "né(e) à",
+                "ville de naissance",
+                "lieu naissance"
+              ],
+              "synonyms_en": [
+                "birthplace",
+                "place of birth"
+              ],
+              "acronyms_fr": [
+                "LN"
+              ],
+              "acronyms_en": [
+                "POB"
+              ],
+              "regex_patterns": [
+                "\\bné(e)?\\s+(à|au|aux)\\s+[A-Z][a-zàâçéèêëïîôùûü-]+\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Nationalité",
+              "name_en": "Nationality",
+              "synonyms_fr": [
+                "citoyenneté",
+                "origine nationale"
+              ],
+              "synonyms_en": [
+                "citizenship",
+                "national origin"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b(marocain|marocaine|français|française|algérien|algérienne|tunisien|tunisienne|espagnol|espagnole|américain|américaine)\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Permis de conduire",
+              "name_en": "Driver's license",
+              "synonyms_fr": [
+                "permis",
+                "licence de conduite"
+              ],
+              "synonyms_en": [
+                "driving license",
+                "driver license"
+              ],
+              "acronyms_fr": [
+                "PC"
+              ],
+              "acronyms_en": [
+                "DL"
+              ],
+              "regex_patterns": [
+                "\\b\\d{6,10}\\b"
+              ],
+              "format": "6-10 chiffres",
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08"
+              ],
+              "context_required": [
+                "permis",
+                "conduire",
+                "licence"
+              ]
+            }
+          ]
+        }
+      ],
+      "created_at": "2025-12-06 23:57:16.296000",
+      "updated_at": "2025-12-06 23:57:16.296000"
+    },
+    {
+      "_id": "6934c2de3e05e1be0c58e08e",
+      "metadata": {
+        "domain_id": "DOM-008",
+        "domain_name": "DONNEES_JUDICIAIRES",
+        "domain_name_en": "JUDICIAL_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données judiciaires et juridiques ultra-sensibles",
+        "total_entities": 6
+      },
+      "categories": [
+        {
+          "class": "DONNEES_JUDICIAIRES",
+          "class_en": "JUDICIAL_DATA",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Casier judiciaire",
+              "name_en": "Criminal record",
+              "synonyms_fr": [
+                "extrait de casier judiciaire",
+                "B3",
+                "antécédents judiciaires",
+                "casier"
+              ],
+              "synonyms_en": [
+                "criminal background",
+                "police record"
+              ],
+              "acronyms_fr": [
+                "B3"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "Code pénal Maroc"
+              ]
+            },
+            {
+              "name": "Jugement / Décision judiciaire",
+              "name_en": "Court judgment",
+              "synonyms_fr": [
+                "jugement",
+                "décision tribunal",
+                "verdict",
+                "condamnation"
+              ],
+              "synonyms_en": [
+                "court decision",
+                "verdict",
+                "sentence"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "Code de procédure pénale"
+              ]
+            },
+            {
+              "name": "Procès-verbal de police",
+              "name_en": "Police report",
+              "synonyms_fr": [
+                "PV police",
+                "rapport police",
+                "plainte"
+              ],
+              "synonyms_en": [
+                "police report",
+                "complaint"
+              ],
+              "acronyms_fr": [
+                "PV"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Mandat d'arrêt",
+              "name_en": "Arrest warrant",
+              "synonyms_fr": [
+                "mandat",
+                "avis de recherche"
+              ],
+              "synonyms_en": [
+                "warrant",
+                "arrest warrant"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "Code de procédure pénale"
+              ]
+            },
+            {
+              "name": "Détention / Incarcération",
+              "name_en": "Detention / Imprisonment",
+              "synonyms_fr": [
+                "détention",
+                "prison",
+                "incarcération",
+                "peine"
+              ],
+              "synonyms_en": [
+                "detention",
+                "imprisonment",
+                "jail"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Infractions / Délits",
+              "name_en": "Offenses / Crimes",
+              "synonyms_fr": [
+                "infraction",
+                "délit",
+                "crime",
+                "contravention"
+              ],
+              "synonyms_en": [
+                "offense",
+                "crime",
+                "misdemeanor"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD Art.10"
+              ]
+            }
+          ]
+        }
+      ],
+      "created_at": "2025-12-06 23:57:16.784000",
+      "updated_at": "2025-12-06 23:57:16.784000"
+    },
+    {
+      "_id": "6934c2de3e05e1be0c58e096",
+      "metadata": {
+        "domain_id": "DOM-005",
+        "domain_name": "DONNEES_MEDICALES",
+        "domain_name_en": "MEDICAL_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données de santé protégées par le secret médical absolu - Source: Taxonomie_Domaine_Medical.csv (79 entries)",
+        "total_entities": 45
+      },
+      "categories": [
+        {
+          "class": "IDENTIFICATION_PATIENT",
+          "class_en": "PATIENT_IDENTIFICATION",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Numéro de Dossier Médical (NDM)",
+              "name_en": "Medical Record Number",
+              "synonyms_fr": [
+                "dossier médical",
+                "NDM",
+                "identifiant patient",
+                "dossier patient"
+              ],
+              "synonyms_en": [
+                "MRN",
+                "medical record",
+                "patient ID"
+              ],
+              "acronyms_fr": [
+                "NDM",
+                "DM"
+              ],
+              "acronyms_en": [
+                "MRN"
+              ],
+              "regex_patterns": [
+                "\\bMED-?\\d{4,}-?\\d{3,}\\b",
+                "\\bDM-?\\d{6,}\\b",
+                "\\bNDM[:\\s]*\\d+\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA",
+                "Loi 09-08",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Numéro d'Assurance Maladie",
+              "name_en": "Health Insurance Number",
+              "synonyms_fr": [
+                "AMO",
+                "assurance maladie",
+                "carte vitale",
+                "numéro CNOPS"
+              ],
+              "synonyms_en": [
+                "health insurance ID",
+                "insurance number"
+              ],
+              "acronyms_fr": [
+                "AMO",
+                "CNOPS",
+                "RAMED"
+              ],
+              "acronyms_en": [
+                "HIN"
+              ],
+              "regex_patterns": [
+                "\\b[A-Z]{2}\\d{8,10}\\b",
+                "\\bAMO[:\\s]*\\d+\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA",
+                "Loi 65-00",
+                "CNSS Maroc"
+              ]
+            },
+            {
+              "name": "Identifiant Biométrique Patient",
+              "name_en": "Patient Biometric ID",
+              "synonyms_fr": [
+                "empreinte patient",
+                "biométrie médicale"
+              ],
+              "synonyms_en": [
+                "patient fingerprint",
+                "medical biometrics"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "ANTECEDENTS_MEDICAUX",
+          "class_en": "MEDICAL_HISTORY",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Antécédents Personnels",
+              "name_en": "Personal medical history",
+              "synonyms_fr": [
+                "historique médical",
+                "maladies passées",
+                "pathologies antérieures"
+              ],
+              "synonyms_en": [
+                "past medical history",
+                "previous conditions"
+              ],
+              "acronyms_fr": [
+                "ATCD"
+              ],
+              "acronyms_en": [
+                "PMH"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Antécédents Familiaux",
+              "name_en": "Family medical history",
+              "synonyms_fr": [
+                "historique familial",
+                "maladies héréditaires",
+                "prédispositions génétiques"
+              ],
+              "synonyms_en": [
+                "family history",
+                "hereditary conditions"
+              ],
+              "acronyms_fr": [
+                "ATCD FAM"
+              ],
+              "acronyms_en": [
+                "FMH"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Allergies",
+              "name_en": "Allergies",
+              "synonyms_fr": [
+                "allergie médicamenteuse",
+                "allergie alimentaire",
+                "substances allergènes"
+              ],
+              "synonyms_en": [
+                "drug allergy",
+                "food allergy",
+                "allergens"
+              ],
+              "acronyms_fr": [
+                "ALL"
+              ],
+              "acronyms_en": [
+                "ALL"
+              ],
+              "regex_patterns": [
+                "\\b(allergi(e|que)|allergique à)\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            },
+            {
+              "name": "Vaccinations",
+              "name_en": "Vaccination history",
+              "synonyms_fr": [
+                "carnet vaccinal",
+                "historique vaccins",
+                "immunisations"
+              ],
+              "synonyms_en": [
+                "vaccine record",
+                "immunization history"
+              ],
+              "acronyms_fr": [
+                "VAC"
+              ],
+              "acronyms_en": [
+                "VAC"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "HIPAA PHI",
+                "OMS"
+              ]
+            },
+            {
+              "name": "Maladies Chroniques",
+              "name_en": "Chronic diseases",
+              "synonyms_fr": [
+                "diabète",
+                "hypertension",
+                "asthme",
+                "maladie chronique"
+              ],
+              "synonyms_en": [
+                "diabetes",
+                "hypertension",
+                "chronic condition"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b(diabète|hypertension|asthme|cancer|VIH|SIDA|hépatite)\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Handicaps",
+              "name_en": "Disabilities",
+              "synonyms_fr": [
+                "handicap physique",
+                "handicap mental",
+                "PMR"
+              ],
+              "synonyms_en": [
+                "physical disability",
+                "mental disability"
+              ],
+              "acronyms_fr": [
+                "PMR"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "INFORMATIONS_CLINIQUES",
+          "class_en": "CLINICAL_INFORMATION",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Diagnostic Principal (ICD-10/11)",
+              "name_en": "Primary diagnosis (ICD-10/11)",
+              "synonyms_fr": [
+                "diagnostic",
+                "pathologie",
+                "maladie diagnostiquée",
+                "code CIM"
+              ],
+              "synonyms_en": [
+                "diagnosis",
+                "ICD code",
+                "medical condition"
+              ],
+              "acronyms_fr": [
+                "DX",
+                "CIM"
+              ],
+              "acronyms_en": [
+                "DX",
+                "ICD"
+              ],
+              "regex_patterns": [
+                "\\b[A-Z]\\d{2}(\\.\\d{1,2})?\\b"
+              ],
+              "format": "Code ICD: Lettre + 2-4 chiffres (ex: J45.0)",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "OMS ICD"
+              ]
+            },
+            {
+              "name": "Signes Vitaux",
+              "name_en": "Vital signs",
+              "synonyms_fr": [
+                "tension artérielle",
+                "pouls",
+                "température",
+                "saturation O2"
+              ],
+              "synonyms_en": [
+                "blood pressure",
+                "pulse",
+                "temperature",
+                "SpO2"
+              ],
+              "acronyms_fr": [
+                "TA",
+                "FC",
+                "SpO2"
+              ],
+              "acronyms_en": [
+                "BP",
+                "HR",
+                "SpO2"
+              ],
+              "regex_patterns": [
+                "\\b\\d{2,3}/\\d{2,3}\\s*(mmHg)?\\b",
+                "\\bSpO2[:\\s]*\\d{2,3}%\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            },
+            {
+              "name": "Notes Cliniques",
+              "name_en": "Clinical notes",
+              "synonyms_fr": [
+                "observations médicales",
+                "compte rendu consultation"
+              ],
+              "synonyms_en": [
+                "clinical observations",
+                "doctor's notes"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            },
+            {
+              "name": "Groupe Sanguin",
+              "name_en": "Blood type",
+              "synonyms_fr": [
+                "groupe sanguin",
+                "rhésus",
+                "groupe ABO"
+              ],
+              "synonyms_en": [
+                "blood group",
+                "Rh factor"
+              ],
+              "acronyms_fr": [
+                "GS"
+              ],
+              "acronyms_en": [
+                "BT"
+              ],
+              "regex_patterns": [
+                "\\b(A|B|AB|O)[+−-]\\b",
+                "\\b(A|B|AB|O)\\s*(positif|négatif|\\+|-)\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "HIPAA PHI"
+              ],
+              "context_required": [
+                "sang",
+                "sanguin",
+                "groupe",
+                "rhésus"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "RESULTATS_LABORATOIRE",
+          "class_en": "LABORATORY_RESULTS",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Analyses Sanguines",
+              "name_en": "Blood tests",
+              "synonyms_fr": [
+                "NFS",
+                "glycémie",
+                "bilan sanguin",
+                "hémogramme"
+              ],
+              "synonyms_en": [
+                "CBC",
+                "blood glucose",
+                "blood work"
+              ],
+              "acronyms_fr": [
+                "NFS",
+                "HB",
+                "GLY"
+              ],
+              "acronyms_en": [
+                "CBC",
+                "BG"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "LOINC"
+              ]
+            },
+            {
+              "name": "Tests Sérologiques",
+              "name_en": "Serological tests",
+              "synonyms_fr": [
+                "sérologie",
+                "HIV",
+                "hépatite",
+                "COVID-19",
+                "test sérologique"
+              ],
+              "synonyms_en": [
+                "HIV test",
+                "hepatitis screening",
+                "COVID test"
+              ],
+              "acronyms_fr": [
+                "HIV",
+                "HBV",
+                "HCV",
+                "COVID"
+              ],
+              "acronyms_en": [
+                "HIV",
+                "HBV",
+                "HCV"
+              ],
+              "regex_patterns": [
+                "\\b(HIV|VIH|hépatite|COVID)[:\\s]*(positif|négatif|\\+|-)\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Marqueurs Tumoraux",
+              "name_en": "Tumor markers",
+              "synonyms_fr": [
+                "PSA",
+                "CA-125",
+                "AFP",
+                "marqueurs cancer"
+              ],
+              "synonyms_en": [
+                "cancer markers",
+                "tumor markers"
+              ],
+              "acronyms_fr": [
+                "PSA",
+                "AFP"
+              ],
+              "acronyms_en": [
+                "PSA",
+                "AFP"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "IMAGERIE_MEDICALE",
+          "class_en": "MEDICAL_IMAGING",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Radiographies",
+              "name_en": "X-rays",
+              "synonyms_fr": [
+                "radio",
+                "radiologie",
+                "rayon X"
+              ],
+              "synonyms_en": [
+                "X-ray",
+                "radiograph"
+              ],
+              "acronyms_fr": [
+                "RX"
+              ],
+              "acronyms_en": [
+                "XR"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "DICOM"
+              ]
+            },
+            {
+              "name": "Scanner (CT)",
+              "name_en": "CT Scan",
+              "synonyms_fr": [
+                "scanner",
+                "tomodensitométrie",
+                "TDM"
+              ],
+              "synonyms_en": [
+                "CT scan",
+                "computed tomography"
+              ],
+              "acronyms_fr": [
+                "TDM",
+                "CT"
+              ],
+              "acronyms_en": [
+                "CT"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "DICOM"
+              ]
+            },
+            {
+              "name": "IRM",
+              "name_en": "MRI",
+              "synonyms_fr": [
+                "IRM",
+                "résonance magnétique",
+                "imagerie RM"
+              ],
+              "synonyms_en": [
+                "MRI",
+                "magnetic resonance imaging"
+              ],
+              "acronyms_fr": [
+                "IRM"
+              ],
+              "acronyms_en": [
+                "MRI"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "DICOM"
+              ]
+            },
+            {
+              "name": "Échographies",
+              "name_en": "Ultrasounds",
+              "synonyms_fr": [
+                "échographie",
+                "écho",
+                "ultrason"
+              ],
+              "synonyms_en": [
+                "ultrasound",
+                "sonography"
+              ],
+              "acronyms_fr": [
+                "ECHO"
+              ],
+              "acronyms_en": [
+                "US"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "DICOM"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "TRAITEMENTS_PRESCRIPTIONS",
+          "class_en": "TREATMENTS_PRESCRIPTIONS",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Ordonnances Médicamenteuses",
+              "name_en": "Prescriptions",
+              "synonyms_fr": [
+                "ordonnance",
+                "prescription",
+                "médicaments prescrits"
+              ],
+              "synonyms_en": [
+                "prescription",
+                "medication order"
+              ],
+              "acronyms_fr": [
+                "ORD",
+                "RX"
+              ],
+              "acronyms_en": [
+                "RX"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            },
+            {
+              "name": "Médicaments en Cours",
+              "name_en": "Current medications",
+              "synonyms_fr": [
+                "traitement en cours",
+                "médicaments actuels",
+                "posologie"
+              ],
+              "synonyms_en": [
+                "current treatment",
+                "medication list"
+              ],
+              "acronyms_fr": [
+                "TTT"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            },
+            {
+              "name": "Effets Indésirables",
+              "name_en": "Adverse effects",
+              "synonyms_fr": [
+                "effets secondaires",
+                "réactions médicamenteuses"
+              ],
+              "synonyms_en": [
+                "side effects",
+                "adverse reactions"
+              ],
+              "acronyms_fr": [
+                "EI"
+              ],
+              "acronyms_en": [
+                "AE"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "Pharmacovigilance"
+              ]
+            },
+            {
+              "name": "Protocoles Thérapeutiques",
+              "name_en": "Treatment protocols",
+              "synonyms_fr": [
+                "chimiothérapie",
+                "radiothérapie",
+                "protocole oncologique"
+              ],
+              "synonyms_en": [
+                "chemotherapy",
+                "radiation therapy",
+                "oncology protocol"
+              ],
+              "acronyms_fr": [
+                "CHIMIO",
+                "RT"
+              ],
+              "acronyms_en": [
+                "CHEMO",
+                "RT"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "SANTE_MENTALE",
+          "class_en": "MENTAL_HEALTH",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Diagnostic Psychiatrique (DSM-5)",
+              "name_en": "Psychiatric diagnosis",
+              "synonyms_fr": [
+                "diagnostic psy",
+                "trouble mental",
+                "maladie psychiatrique"
+              ],
+              "synonyms_en": [
+                "mental disorder",
+                "psychiatric condition"
+              ],
+              "acronyms_fr": [
+                "DSM"
+              ],
+              "acronyms_en": [
+                "DSM"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Évaluations Psychologiques",
+              "name_en": "Psychological assessments",
+              "synonyms_fr": [
+                "bilan psychologique",
+                "test psychométrique"
+              ],
+              "synonyms_en": [
+                "psychological tests",
+                "mental health assessment"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            },
+            {
+              "name": "Traitements Psychotropes",
+              "name_en": "Psychotropic medications",
+              "synonyms_fr": [
+                "antidépresseurs",
+                "anxiolytiques",
+                "neuroleptiques"
+              ],
+              "synonyms_en": [
+                "antidepressants",
+                "anxiolytics",
+                "antipsychotics"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            },
+            {
+              "name": "Addictions",
+              "name_en": "Addictions",
+              "synonyms_fr": [
+                "tabac",
+                "alcool",
+                "drogues",
+                "dépendance",
+                "toxicomanie"
+              ],
+              "synonyms_en": [
+                "tobacco",
+                "alcohol",
+                "drug addiction",
+                "substance abuse"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "RGPD Art.9"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "DONNEES_GENETIQUES",
+          "class_en": "GENETIC_DATA",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Séquençage ADN",
+              "name_en": "DNA sequencing",
+              "synonyms_fr": [
+                "test génétique",
+                "analyse ADN",
+                "génome"
+              ],
+              "synonyms_en": [
+                "genetic testing",
+                "DNA analysis",
+                "genome"
+              ],
+              "acronyms_fr": [
+                "ADN"
+              ],
+              "acronyms_en": [
+                "DNA"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "HIPAA"
+              ]
+            },
+            {
+              "name": "Marqueurs Génétiques",
+              "name_en": "Genetic markers",
+              "synonyms_fr": [
+                "prédispositions",
+                "BRCA",
+                "mutations génétiques"
+              ],
+              "synonyms_en": [
+                "genetic predisposition",
+                "BRCA",
+                "genetic mutations"
+              ],
+              "acronyms_fr": [
+                "BRCA"
+              ],
+              "acronyms_en": [
+                "BRCA"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Tests de Paternité",
+              "name_en": "Paternity tests",
+              "synonyms_fr": [
+                "test paternité",
+                "filiation génétique"
+              ],
+              "synonyms_en": [
+                "paternity test",
+                "genetic filiation"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "SANTE_REPRODUCTIVE",
+          "class_en": "REPRODUCTIVE_HEALTH",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Historique Obstétrical",
+              "name_en": "Obstetric history",
+              "synonyms_fr": [
+                "grossesses",
+                "accouchements",
+                "fausses couches"
+              ],
+              "synonyms_en": [
+                "pregnancies",
+                "deliveries",
+                "miscarriages"
+              ],
+              "acronyms_fr": [
+                "G",
+                "P",
+                "A"
+              ],
+              "acronyms_en": [
+                "G",
+                "P",
+                "A"
+              ],
+              "regex_patterns": [
+                "\\bG\\d+P\\d+A?\\d*\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Contraception",
+              "name_en": "Contraception",
+              "synonyms_fr": [
+                "méthode contraceptive",
+                "pilule",
+                "stérilet"
+              ],
+              "synonyms_en": [
+                "birth control",
+                "contraceptive method"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "HIPAA PHI"
+              ]
+            },
+            {
+              "name": "PMA / FIV",
+              "name_en": "Assisted reproduction",
+              "synonyms_fr": [
+                "fécondation in vitro",
+                "procréation assistée",
+                "PMA"
+              ],
+              "synonyms_en": [
+                "IVF",
+                "assisted reproduction",
+                "fertility treatment"
+              ],
+              "acronyms_fr": [
+                "FIV",
+                "PMA"
+              ],
+              "acronyms_en": [
+                "IVF",
+                "ART"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "IST",
+              "name_en": "STIs",
+              "synonyms_fr": [
+                "infections sexuellement transmissibles",
+                "MST",
+                "maladies vénériennes"
+              ],
+              "synonyms_en": [
+                "sexually transmitted infections",
+                "STDs"
+              ],
+              "acronyms_fr": [
+                "IST",
+                "MST"
+              ],
+              "acronyms_en": [
+                "STI",
+                "STD"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "HIPAA PHI",
+                "RGPD Art.9"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "ASSURANCE_FACTURATION",
+          "class_en": "INSURANCE_BILLING",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "Numéro de Police d'Assurance",
+              "name_en": "Insurance policy number",
+              "synonyms_fr": [
+                "police assurance",
+                "contrat assurance santé"
+              ],
+              "synonyms_en": [
+                "insurance policy",
+                "policy number"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]{2,4}\\d{6,12}\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "HIPAA",
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Factures Médicales",
+              "name_en": "Medical bills",
+              "synonyms_fr": [
+                "facture hôpital",
+                "honoraires",
+                "frais médicaux"
+              ],
+              "synonyms_en": [
+                "hospital bill",
+                "medical fees"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "HIPAA",
+                "PCI-DSS"
+              ]
+            }
+          ]
+        }
+      ],
+      "created_at": "2025-12-06 23:57:17.246000",
+      "updated_at": "2025-12-06 23:57:17.246000"
+    },
+    {
+      "_id": "6934c2e03e05e1be0c58e0bd",
+      "metadata": {
+        "domain_id": "DOM-004",
+        "domain_name": "DONNEES_PROFESSIONNELLES",
+        "domain_name_en": "PROFESSIONAL_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Informations liées à l'emploi et la relation de travail - Source: Taxonomie_Domaine_Professionnel.csv (117 entries)",
+        "total_entities": 35
+      },
+      "categories": [
+        {
+          "class": "IDENTIFICATION_EMPLOYE",
+          "class_en": "EMPLOYEE_IDENTIFICATION",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "Matricule Employé",
+              "name_en": "Employee ID",
+              "synonyms_fr": [
+                "matricule",
+                "numéro employé",
+                "identifiant salarié",
+                "code employé"
+              ],
+              "synonyms_en": [
+                "employee ID",
+                "staff number",
+                "worker ID"
+              ],
+              "acronyms_fr": [
+                "MAT",
+                "EMP"
+              ],
+              "acronyms_en": [
+                "EMP",
+                "ID"
+              ],
+              "regex_patterns": [
+                "\\b[A-Z]{2,4}\\d{4,8}\\b",
+                "\\bEMP-?\\d{4,8}\\b",
+                "\\bMAT[:\\s]*\\d+\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "RGPD Art.6",
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Numéro CNSS",
+              "name_en": "CNSS number (Social Security)",
+              "synonyms_fr": [
+                "sécurité sociale",
+                "immatriculation CNSS",
+                "numéro social"
+              ],
+              "synonyms_en": [
+                "social security number",
+                "CNSS ID"
+              ],
+              "acronyms_fr": [
+                "CNSS",
+                "SS"
+              ],
+              "acronyms_en": [
+                "SSN",
+                "CNSS"
+              ],
+              "regex_patterns": [
+                "\\b\\d{9,12}\\b",
+                "\\bCNSS[:\\s]*\\d{9,12}\\b"
+              ],
+              "format": "9-12 chiffres",
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "Dahir 1-72-184",
+                "Code du travail"
+              ],
+              "why_sensitive": "Unique permanent, lie à tous droits sociaux (retraite, santé)"
+            },
+            {
+              "name": "Données Biométriques Pointage",
+              "name_en": "Biometric attendance data",
+              "synonyms_fr": [
+                "empreinte pointage",
+                "reconnaissance faciale pointage"
+              ],
+              "synonyms_en": [
+                "fingerprint attendance",
+                "facial recognition clock-in"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Photo d'Identité Professionnelle",
+              "name_en": "Professional ID photo",
+              "synonyms_fr": [
+                "photo badge",
+                "photo carte employé"
+              ],
+              "synonyms_en": [
+                "badge photo",
+                "employee card photo"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "RGPD Art.6"
+              ]
+            },
+            {
+              "name": "Signature",
+              "name_en": "Signature",
+              "synonyms_fr": [
+                "signature électronique",
+                "signature manuscrite"
+              ],
+              "synonyms_en": [
+                "electronic signature",
+                "handwritten signature"
+              ],
+              "acronyms_fr": [
+                "SIG"
+              ],
+              "acronyms_en": [
+                "SIG"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 53-05 Maroc"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "INFORMATIONS_CONTRACTUELLES",
+          "class_en": "CONTRACTUAL_INFORMATION",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "Type de Contrat",
+              "name_en": "Contract type",
+              "synonyms_fr": [
+                "CDI",
+                "CDD",
+                "intérim",
+                "stage",
+                "contrat travail"
+              ],
+              "synonyms_en": [
+                "permanent contract",
+                "fixed-term contract",
+                "internship"
+              ],
+              "acronyms_fr": [
+                "CDI",
+                "CDD"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b(CDI|CDD|Intérim|Stage|Contrat)\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "Date d'Embauche",
+              "name_en": "Hire date",
+              "synonyms_fr": [
+                "date début contrat",
+                "date entrée",
+                "date recrutement"
+              ],
+              "synonyms_en": [
+                "start date",
+                "joining date",
+                "hire date"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b(0[1-9]|[12][0-9]|3[01])[-/](0[1-9]|1[0-2])[-/](19|20)\\d{2}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Low",
+              "regulations": [
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "Poste / Fonction",
+              "name_en": "Job title / Position",
+              "synonyms_fr": [
+                "fonction",
+                "intitulé de poste",
+                "titre",
+                "métier"
+              ],
+              "synonyms_en": [
+                "job title",
+                "position",
+                "role"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "low",
+              "risk_level": "Low",
+              "regulations": [
+                "RGPD Art.6"
+              ]
+            },
+            {
+              "name": "Clause de Non-Concurrence",
+              "name_en": "Non-compete clause",
+              "synonyms_fr": [
+                "non-concurrence",
+                "clause restrictive"
+              ],
+              "synonyms_en": [
+                "non-compete",
+                "restrictive covenant"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "Clause de Confidentialité",
+              "name_en": "Confidentiality clause",
+              "synonyms_fr": [
+                "NDA",
+                "secret professionnel",
+                "confidentialité"
+              ],
+              "synonyms_en": [
+                "NDA",
+                "confidentiality agreement"
+              ],
+              "acronyms_fr": [
+                "NDA"
+              ],
+              "acronyms_en": [
+                "NDA"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Droit des contrats"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "REMUNERATION_AVANTAGES",
+          "class_en": "COMPENSATION_BENEFITS",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Salaire Brut",
+              "name_en": "Gross salary",
+              "synonyms_fr": [
+                "salaire brut",
+                "rémunération brute"
+              ],
+              "synonyms_en": [
+                "gross pay",
+                "gross salary"
+              ],
+              "acronyms_fr": [
+                "SAL"
+              ],
+              "acronyms_en": [
+                "SAL"
+              ],
+              "regex_patterns": [
+                "\\b\\d{3,7}\\s*(MAD|DH|dirhams?)\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD",
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "Salaire Net",
+              "name_en": "Net salary",
+              "synonyms_fr": [
+                "salaire net",
+                "rémunération nette",
+                "paie nette"
+              ],
+              "synonyms_en": [
+                "net pay",
+                "take-home pay"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{3,7}\\s*(MAD|DH|dirhams?)\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD",
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "Primes et Bonus",
+              "name_en": "Bonuses and incentives",
+              "synonyms_fr": [
+                "prime",
+                "bonus",
+                "13ème mois",
+                "prime rendement"
+              ],
+              "synonyms_en": [
+                "bonus",
+                "incentive",
+                "performance bonus"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "RGPD"
+              ]
+            },
+            {
+              "name": "Bulletin de Paie",
+              "name_en": "Payslip",
+              "synonyms_fr": [
+                "fiche de paie",
+                "bulletin salaire",
+                "slip de paie"
+              ],
+              "synonyms_en": [
+                "payslip",
+                "pay stub",
+                "salary slip"
+              ],
+              "acronyms_fr": [
+                "BP"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD",
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "RIB Salarié",
+              "name_en": "Employee bank details",
+              "synonyms_fr": [
+                "coordonnées bancaires employé",
+                "compte virement salaire"
+              ],
+              "synonyms_en": [
+                "bank details for salary",
+                "payroll account"
+              ],
+              "acronyms_fr": [
+                "RIB"
+              ],
+              "acronyms_en": [
+                "IBAN"
+              ],
+              "regex_patterns": [
+                "\\bMA\\d{2}[A-Z0-9]{22,24}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "PCI-DSS",
+                "RGPD"
+              ]
+            },
+            {
+              "name": "Stock-Options / Actions",
+              "name_en": "Stock options / Shares",
+              "synonyms_fr": [
+                "stock options",
+                "actions gratuites",
+                "participation"
+              ],
+              "synonyms_en": [
+                "stock options",
+                "equity",
+                "shares"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "RGPD"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "QUALIFICATIONS_COMPETENCES",
+          "class_en": "QUALIFICATIONS_SKILLS",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "Diplômes Académiques",
+              "name_en": "Academic degrees",
+              "synonyms_fr": [
+                "diplôme",
+                "baccalauréat",
+                "licence",
+                "master",
+                "doctorat"
+              ],
+              "synonyms_en": [
+                "degree",
+                "bachelor",
+                "master",
+                "PhD"
+              ],
+              "acronyms_fr": [
+                "BAC",
+                "LIC",
+                "MST",
+                "DOC"
+              ],
+              "acronyms_en": [
+                "BA",
+                "MA",
+                "PhD"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "medium",
+              "risk_level": "Low",
+              "regulations": [
+                "RGPD Art.6"
+              ]
+            },
+            {
+              "name": "Certifications Professionnelles",
+              "name_en": "Professional certifications",
+              "synonyms_fr": [
+                "certification",
+                "PMP",
+                "CFA",
+                "CISSP",
+                "AWS"
+              ],
+              "synonyms_en": [
+                "certification",
+                "professional certificate"
+              ],
+              "acronyms_fr": [
+                "CERT"
+              ],
+              "acronyms_en": [
+                "CERT"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "low",
+              "risk_level": "Low",
+              "regulations": [
+                "RGPD Art.6"
+              ]
+            },
+            {
+              "name": "Habilitations",
+              "name_en": "Authorizations / Licenses",
+              "synonyms_fr": [
+                "habilitation électrique",
+                "CACES",
+                "SST"
+              ],
+              "synonyms_en": [
+                "electrical authorization",
+                "forklift license",
+                "safety certification"
+              ],
+              "acronyms_fr": [
+                "CACES",
+                "SST"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "Medium",
+              "regulations": [
+                "Sécurité au travail"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "EVALUATION_PERFORMANCE",
+          "class_en": "PERFORMANCE_EVALUATION",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "Évaluation Annuelle",
+              "name_en": "Annual performance review",
+              "synonyms_fr": [
+                "entretien annuel",
+                "évaluation performance",
+                "bilan annuel"
+              ],
+              "synonyms_en": [
+                "annual review",
+                "performance appraisal"
+              ],
+              "acronyms_fr": [
+                "EA"
+              ],
+              "acronyms_en": [
+                "APR"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "RGPD Art.6"
+              ]
+            },
+            {
+              "name": "Notation / Score Performance",
+              "name_en": "Performance rating / Score",
+              "synonyms_fr": [
+                "note",
+                "score",
+                "rating",
+                "notation"
+              ],
+              "synonyms_en": [
+                "rating",
+                "score",
+                "grade"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[1-5]/5\\b",
+                "\\b(A|B|C|D|E)\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "RGPD Art.6"
+              ],
+              "context_required": [
+                "performance",
+                "note",
+                "évaluation"
+              ]
+            },
+            {
+              "name": "Commentaires Manager",
+              "name_en": "Manager comments",
+              "synonyms_fr": [
+                "appréciation hiérarchique",
+                "feedback manager"
+              ],
+              "synonyms_en": [
+                "manager feedback",
+                "supervisor comments"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "RGPD Art.6"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "ABSENCES_CONGES",
+          "class_en": "ABSENCES_LEAVES",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "Congés Payés",
+              "name_en": "Paid leave",
+              "synonyms_fr": [
+                "CP",
+                "congés annuels",
+                "vacances"
+              ],
+              "synonyms_en": [
+                "vacation",
+                "annual leave",
+                "PTO"
+              ],
+              "acronyms_fr": [
+                "CP"
+              ],
+              "acronyms_en": [
+                "PTO"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "low",
+              "risk_level": "Low",
+              "regulations": [
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "Congé Maladie",
+              "name_en": "Sick leave",
+              "synonyms_fr": [
+                "arrêt maladie",
+                "maladie",
+                "ITT"
+              ],
+              "synonyms_en": [
+                "sick leave",
+                "medical leave"
+              ],
+              "acronyms_fr": [
+                "AM"
+              ],
+              "acronyms_en": [
+                "SL"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "HIPAA"
+              ]
+            },
+            {
+              "name": "Congé Maternité / Paternité",
+              "name_en": "Maternity / Paternity leave",
+              "synonyms_fr": [
+                "congé maternité",
+                "congé paternité",
+                "congé parental"
+              ],
+              "synonyms_en": [
+                "maternity leave",
+                "paternity leave"
+              ],
+              "acronyms_fr": [
+                "CM",
+                "CPat"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Accident de Travail",
+              "name_en": "Work accident",
+              "synonyms_fr": [
+                "AT",
+                "accident travail",
+                "blessure professionnelle"
+              ],
+              "synonyms_en": [
+                "work injury",
+                "occupational accident"
+              ],
+              "acronyms_fr": [
+                "AT"
+              ],
+              "acronyms_en": [
+                "WA"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "CNAMTS"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "DOSSIER_DISCIPLINAIRE",
+          "class_en": "DISCIPLINARY_RECORD",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Avertissements",
+              "name_en": "Warnings",
+              "synonyms_fr": [
+                "avertissement",
+                "rappel à l'ordre",
+                "sanction légère"
+              ],
+              "synonyms_en": [
+                "warning",
+                "written warning"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Code du travail",
+                "RGPD"
+              ]
+            },
+            {
+              "name": "Blâmes",
+              "name_en": "Reprimands",
+              "synonyms_fr": [
+                "blâme",
+                "sanction disciplinaire"
+              ],
+              "synonyms_en": [
+                "reprimand",
+                "formal warning"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "Licenciement pour Faute",
+              "name_en": "Dismissal for misconduct",
+              "synonyms_fr": [
+                "licenciement faute grave",
+                "rupture pour faute"
+              ],
+              "synonyms_en": [
+                "dismissal for cause",
+                "termination for misconduct"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "Harcèlement (signalements)",
+              "name_en": "Harassment reports",
+              "synonyms_fr": [
+                "harcèlement",
+                "plainte harcèlement",
+                "signalement"
+              ],
+              "synonyms_en": [
+                "harassment complaint",
+                "harassment report"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Code pénal"
+              ]
+            }
+          ]
+        },
+        {
+          "class": "SANTE_SECURITE_TRAVAIL",
+          "class_en": "OCCUPATIONAL_HEALTH_SAFETY",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "Aptitude Médicale",
+              "name_en": "Medical fitness",
+              "synonyms_fr": [
+                "visite médicale",
+                "aptitude médecine du travail"
+              ],
+              "synonyms_en": [
+                "medical fitness",
+                "occupational health check"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b(Apte|Inapte|Aptitude partielle)\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Code du travail"
+              ]
+            },
+            {
+              "name": "Restrictions d'Aptitude",
+              "name_en": "Work restrictions",
+              "synonyms_fr": [
+                "restrictions médicales",
+                "limitations",
+                "aménagement poste"
+              ],
+              "synonyms_en": [
+                "work restrictions",
+                "medical limitations"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9"
+              ]
+            },
+            {
+              "name": "Déclaration RQTH",
+              "name_en": "Disability declaration",
+              "synonyms_fr": [
+                "travailleur handicapé",
+                "RQTH",
+                "handicap"
+              ],
+              "synonyms_en": [
+                "disability status",
+                "disabled worker"
+              ],
+              "acronyms_fr": [
+                "RQTH"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Dossier Médical SST",
+              "name_en": "Occupational health record",
+              "synonyms_fr": [
+                "dossier médecine du travail",
+                "dossier SST"
+              ],
+              "synonyms_en": [
+                "occupational health file"
+              ],
+              "acronyms_fr": [
+                "SST"
+              ],
+              "acronyms_en": [
+                "OHS"
+              ],
+              "regex_patterns": [],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "RGPD Art.9",
+                "HIPAA"
+              ]
+            }
+          ]
+        }
+      ],
+      "created_at": "2025-12-06 23:57:18.921000",
+      "updated_at": "2025-12-06 23:57:18.921000"
+    },
+    {
+      "_id": "6934c2e13e05e1be0c58e0e1",
+      "metadata": {
+        "domain_id": "DOM-009",
+        "domain_name": "DONNEES_VEHICULES",
+        "domain_name_en": "VEHICLE_DATA",
+        "version": "1.0",
+        "context": "Maroc",
+        "last_updated": "2025-12-07",
+        "description": "Données relatives aux véhicules et transport",
+        "total_entities": 5
+      },
+      "categories": [
+        {
+          "class": "DONNEES_VEHICULES",
+          "class_en": "VEHICLE_DATA",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "Immatriculation véhicule",
+              "name_en": "License plate",
+              "synonyms_fr": [
+                "plaque immatriculation",
+                "numéro plaque",
+                "matricule véhicule"
+              ],
+              "synonyms_en": [
+                "license plate",
+                "vehicle registration",
+                "plate number"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [
+                "LP"
+              ],
+              "regex_patterns": [
+                "\\b\\d{1,6}\\s?[أابتثجحخدذرزسشصضطظعغفقكلمنهوي]\\s?\\d{1,4}\\b",
+                "\\bWW\\s?\\d{1,6}\\b",
+                "\\b\\d{1,5}-[أ-ي]-\\d{1,4}\\b"
+              ],
+              "format": "Chiffres + lettre arabe + chiffres (Maroc)",
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Permis de conduire",
+              "name_en": "Driver's license",
+              "synonyms_fr": [
+                "permis",
+                "licence conduire",
+                "permis B"
+              ],
+              "synonyms_en": [
+                "driving license",
+                "driver license"
+              ],
+              "acronyms_fr": [
+                "PC"
+              ],
+              "acronyms_en": [
+                "DL"
+              ],
+              "regex_patterns": [
+                "\\b\\d{6,10}\\b"
+              ],
+              "format": "6-10 chiffres",
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Carte grise",
+              "name_en": "Vehicle registration card",
+              "synonyms_fr": [
+                "certificat immatriculation",
+                "carte grise",
+                "document véhicule"
+              ],
+              "synonyms_en": [
+                "registration certificate",
+                "vehicle title"
+              ],
+              "acronyms_fr": [
+                "CG"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Numéro de châssis (VIN)",
+              "name_en": "Vehicle Identification Number",
+              "synonyms_fr": [
+                "VIN",
+                "numéro châssis",
+                "numéro série véhicule"
+              ],
+              "synonyms_en": [
+                "VIN",
+                "chassis number"
+              ],
+              "acronyms_fr": [
+                "VIN"
+              ],
+              "acronyms_en": [
+                "VIN"
+              ],
+              "regex_patterns": [
+                "\\b[A-HJ-NPR-Z0-9]{17}\\b"
+              ],
+              "format": "17 caractères alphanumériques",
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            },
+            {
+              "name": "Assurance véhicule",
+              "name_en": "Vehicle insurance",
+              "synonyms_fr": [
+                "assurance auto",
+                "police assurance véhicule",
+                "contrat assurance"
+              ],
+              "synonyms_en": [
+                "car insurance",
+                "auto insurance policy"
+              ],
+              "acronyms_fr": [],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]{2,4}\\d{8,12}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08"
+              ]
+            }
+          ]
+        }
+      ],
+      "created_at": "2025-12-06 23:57:20.473000",
+      "updated_at": "2025-12-06 23:57:20.473000"
+    },
+    {
+      "_id": "6957fcaa01b77aa87d7d37f5",
+      "metadata": {
+        "domain_id": "DOM-010",
+        "domain_name": "IDENTITE_MAROCAINE_ETENDUE",
+        "domain_name_en": "EXTENDED_MOROCCAN_IDENTITY",
+        "version": "2.0",
+        "context": "Maroc",
+        "last_updated": "2026-01-02",
+        "description": "Taxonomie PII/SPI marocaine étendue - 47 types - Cahier des Charges Section 4.8",
+        "total_entities": 47,
+        "cahier_section": "4.8",
+        "source": "taxonomy_service_v2"
+      },
+      "categories": [
+        {
+          "class": "IDENTITE_PERSONNELLE",
+          "class_en": "Identite Personnelle",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "CIN_MAROC",
+              "name_en": "Cin Maroc",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CIN_MAROC"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]{1,2}\\d{5,8}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "IDENTITE"
+            },
+            {
+              "name": "MASSAR",
+              "name_en": "Massar",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "MASSAR"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]\\d{9}\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "EDUCATION"
+            },
+            {
+              "name": "PASSPORT_MA",
+              "name_en": "Passport Ma",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "PASSPORT_MA"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]{1,2}\\d{6,9}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "IDENTITE"
+            },
+            {
+              "name": "DATE_NAISSANCE",
+              "name_en": "Date Naissance",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "DATE_NAISSANCE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "(?:0[1-9]|[12][0-9]|3[01])[-/](?:0[1-9]|1[0-2])[-/](?:19|20)\\d{2}",
+                "(?:19|20)\\d{2}[-/](?:0[1-9]|1[0-2])[-/](?:0[1-9]|[12][0-9]|3[01])"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "IDENTITE"
+            },
+            {
+              "name": "CARTE_SEJOUR",
+              "name_en": "Carte Sejour",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CARTE_SEJOUR"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]{2}\\d{6,10}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "IMMIGRATION"
+            },
+            {
+              "name": "CARTE_RAMED",
+              "name_en": "Carte Ramed",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CARTE_RAMED"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bRAMED\\d{10}\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "SANTE"
+            },
+            {
+              "name": "NUMERO_AMO",
+              "name_en": "Numero Amo",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_AMO"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{13}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "SANTE"
+            },
+            {
+              "name": "PERMIS_CONDUIRE",
+              "name_en": "Permis Conduire",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "PERMIS_CONDUIRE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]\\d{7}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "IDENTITE"
+            },
+            {
+              "name": "CARTE_ELECTORALE",
+              "name_en": "Carte Electorale",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CARTE_ELECTORALE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bCE[A-Z]\\d{7}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "POLITIQUE"
+            },
+            {
+              "name": "CNE",
+              "name_en": "Cne",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CNE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]\\d{9}\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "IDENTITE_PERSONNELLE",
+              "domain": "EDUCATION"
+            }
+          ]
+        },
+        {
+          "class": "PROFESSIONAL_INFO",
+          "class_en": "Professional Info",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "CNSS",
+              "name_en": "Cnss",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CNSS"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{9,12}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "PROFESSIONAL_INFO",
+              "domain": "PROFESSIONNEL"
+            },
+            {
+              "name": "NUMERO_SECURITE_SOCIALE",
+              "name_en": "Numero Securite Sociale",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_SECURITE_SOCIALE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[12]\\d{14}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "PROFESSIONAL_INFO",
+              "domain": "PROFESSIONNEL"
+            },
+            {
+              "name": "MATRICULE_EMPLOYEE",
+              "name_en": "Matricule Employee",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "MATRICULE_EMPLOYEE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bEMP[A-Z]{2}\\d{6}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "PROFESSIONAL_INFO",
+              "domain": "PROFESSIONNEL"
+            },
+            {
+              "name": "CONTRAT_TRAVAIL_ID",
+              "name_en": "Contrat Travail Id",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CONTRAT_TRAVAIL_ID"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bCT\\d{8}\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "PROFESSIONAL_INFO",
+              "domain": "PROFESSIONNEL"
+            },
+            {
+              "name": "NUMERO_BADGE",
+              "name_en": "Numero Badge",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_BADGE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bBDG\\d{6}\\b"
+              ],
+              "sensitivity_level": "low",
+              "risk_level": "Low",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "PROFESSIONAL_INFO",
+              "domain": "PROFESSIONNEL"
+            },
+            {
+              "name": "ICE",
+              "name_en": "Ice",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "ICE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{15}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "PROFESSIONAL_INFO",
+              "domain": "PROFESSIONNEL"
+            },
+            {
+              "name": "NUMERO_RC",
+              "name_en": "Numero Rc",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_RC"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bRC\\d{6,8}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "PROFESSIONAL_INFO",
+              "domain": "PROFESSIONNEL"
+            },
+            {
+              "name": "PATENTE",
+              "name_en": "Patente",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "PATENTE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bPAT\\d{8}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "PROFESSIONAL_INFO",
+              "domain": "PROFESSIONNEL"
+            }
+          ]
+        },
+        {
+          "class": "COORDONNEES",
+          "class_en": "Coordonnees",
+          "type": "PII",
+          "subclasses": [
+            {
+              "name": "PHONE_MA",
+              "name_en": "Phone Ma",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "PHONE_MA"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "(?:\\+212|00212|0)[5-7]\\d{8}",
+                "\\+212[\\s.-]?[5-7][\\s.-]?\\d{2}[\\s.-]?\\d{2}[\\s.-]?\\d{2}[\\s.-]?\\d{2}"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "COORDONNEES",
+              "domain": "CONTACT"
+            },
+            {
+              "name": "EMAIL",
+              "name_en": "Email",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "EMAIL"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "COORDONNEES",
+              "domain": "CONTACT"
+            },
+            {
+              "name": "PHONE_FIXE_MA",
+              "name_en": "Phone Fixe Ma",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "PHONE_FIXE_MA"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b05\\d{8}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "COORDONNEES",
+              "domain": "CONTACT"
+            },
+            {
+              "name": "FAX_MA",
+              "name_en": "Fax Ma",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "FAX_MA"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b(?:fax|télécopie)[:\\s]*05\\d{8}\\b"
+              ],
+              "sensitivity_level": "low",
+              "risk_level": "Low",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "COORDONNEES",
+              "domain": "CONTACT"
+            },
+            {
+              "name": "ADRESSE_COMPLETE",
+              "name_en": "Adresse Complete",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "ADRESSE_COMPLETE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d+,?\\s+(?:rue|avenue|boulevard|av\\.)\\s+[\\w\\s]+,\\s*\\d{5}"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "COORDONNEES",
+              "domain": "CONTACT"
+            },
+            {
+              "name": "CODE_POSTAL_MA",
+              "name_en": "Code Postal Ma",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CODE_POSTAL_MA"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{5}\\b"
+              ],
+              "sensitivity_level": "low",
+              "risk_level": "Low",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "COORDONNEES",
+              "domain": "CONTACT"
+            },
+            {
+              "name": "URL_PERSONNEL",
+              "name_en": "Url Personnel",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "URL_PERSONNEL"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "https?://[\\w\\.-]+\\.[a-z]{2,}"
+              ],
+              "sensitivity_level": "low",
+              "risk_level": "Low",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "COORDONNEES",
+              "domain": "CONTACT"
+            },
+            {
+              "name": "EMAIL_PROFESSIONNEL",
+              "name_en": "Email Professionnel",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "EMAIL_PROFESSIONNEL"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "[a-zA-Z0-9._%+-]+@(?:entreprise|company|corp|inc|org)\\.(?:ma|com)"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "COORDONNEES",
+              "domain": "PROFESSIONNEL"
+            }
+          ]
+        },
+        {
+          "class": "DONNEES_FINANCIERES",
+          "class_en": "Donnees Financieres",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "IBAN_MA",
+              "name_en": "Iban Ma",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "IBAN_MA"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bMA\\d{2}[A-Z0-9\\s]{20,26}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_FINANCIERES",
+              "domain": "FINANCIER"
+            },
+            {
+              "name": "RIB_MAROC",
+              "name_en": "Rib Maroc",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "RIB_MAROC"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{24}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_FINANCIERES",
+              "domain": "FINANCIER"
+            },
+            {
+              "name": "SWIFT_CODE",
+              "name_en": "Swift Code",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "SWIFT_CODE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_FINANCIERES",
+              "domain": "FINANCIER"
+            },
+            {
+              "name": "CARTE_BANCAIRE",
+              "name_en": "Carte Bancaire",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CARTE_BANCAIRE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_FINANCIERES",
+              "domain": "FINANCIER"
+            },
+            {
+              "name": "CVV",
+              "name_en": "Cvv",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CVV"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{3,4}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_FINANCIERES",
+              "domain": "FINANCIER"
+            },
+            {
+              "name": "NUMERO_FACTURE",
+              "name_en": "Numero Facture",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_FACTURE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bFAC\\d{8}\\b"
+              ],
+              "sensitivity_level": "low",
+              "risk_level": "Low",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_FINANCIERES",
+              "domain": "COMMERCIAL"
+            },
+            {
+              "name": "SALAIRE",
+              "name_en": "Salaire",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "SALAIRE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\d+\\s?(?:DH|MAD|dirhams?)"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_FINANCIERES",
+              "domain": "PROFESSIONNEL"
+            },
+            {
+              "name": "NUMERO_COMPTE_BANCAIRE",
+              "name_en": "Numero Compte Bancaire",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_COMPTE_BANCAIRE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{10,16}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_FINANCIERES",
+              "domain": "FINANCIER"
+            },
+            {
+              "name": "MONTANT_TRANSACTION",
+              "name_en": "Montant Transaction",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "MONTANT_TRANSACTION"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{1,}[.,]\\d{2}\\s?(?:DH|MAD)\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_FINANCIERES",
+              "domain": "FINANCIER"
+            }
+          ]
+        },
+        {
+          "class": "DONNEES_VEHICULE",
+          "class_en": "Donnees Vehicule",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "IMMATRICULATION_VEHICULE",
+              "name_en": "Immatriculation Vehicule",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "IMMATRICULATION_VEHICULE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\d{1,6}[\\s-]?[A-Zأ-ي][\\s-]?\\d{1,4}"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_VEHICULE",
+              "domain": "VEHICULE"
+            }
+          ]
+        },
+        {
+          "class": "DONNEES_SANTE",
+          "class_en": "Donnees Sante",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "NUMERO_DOSSIER_MEDICAL",
+              "name_en": "Numero Dossier Medical",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_DOSSIER_MEDICAL"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bDM\\d{8}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_SANTE",
+              "domain": "SANTE"
+            },
+            {
+              "name": "NUMERO_MUTUELLE",
+              "name_en": "Numero Mutuelle",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_MUTUELLE"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bMUT\\d{8,12}\\b"
+              ],
+              "sensitivity_level": "high",
+              "risk_level": "High",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_SANTE",
+              "domain": "SANTE"
+            },
+            {
+              "name": "CARTE_HANDICAP",
+              "name_en": "Carte Handicap",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "CARTE_HANDICAP"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bCH\\d{8}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_SANTE",
+              "domain": "SANTE"
+            },
+            {
+              "name": "NUMERO_PATIENT",
+              "name_en": "Numero Patient",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_PATIENT"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bPAT\\d{8,10}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_SANTE",
+              "domain": "SANTE"
+            }
+          ]
+        },
+        {
+          "class": "DONNEES_TECHNIQUES",
+          "class_en": "Donnees Techniques",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "ADRESSE_IP",
+              "name_en": "Adresse Ip",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "ADRESSE_IP"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_TECHNIQUES",
+              "domain": "INFORMATIQUE"
+            }
+          ]
+        },
+        {
+          "class": "DONNEES_EDUCATION",
+          "class_en": "Donnees Education",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "DIPLOME_NUMERO",
+              "name_en": "Diplome Numero",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "DIPLOME_NUMERO"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bDIP\\d{8}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_EDUCATION",
+              "domain": "EDUCATION"
+            },
+            {
+              "name": "NOTE_EXAMEN",
+              "name_en": "Note Examen",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NOTE_EXAMEN"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\b\\d{1,2}[.,]\\d{2}\\s*/\\s*20\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_EDUCATION",
+              "domain": "EDUCATION"
+            },
+            {
+              "name": "NUMERO_ETUDIANT",
+              "name_en": "Numero Etudiant",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_ETUDIANT"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bETU\\d{8}\\b"
+              ],
+              "sensitivity_level": "medium",
+              "risk_level": "Medium",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_EDUCATION",
+              "domain": "EDUCATION"
+            }
+          ]
+        },
+        {
+          "class": "DONNEES_BIOMETRIQUES",
+          "class_en": "Donnees Biometriques",
+          "type": "SPI",
+          "subclasses": [
+            {
+              "name": "PHOTO_HASH",
+              "name_en": "Photo Hash",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "PHOTO_HASH"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bPH[A-F0-9]{64}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_BIOMETRIQUES",
+              "domain": "BIOMETRIQUE"
+            },
+            {
+              "name": "EMPREINTE_DIGITALE_ID",
+              "name_en": "Empreinte Digitale Id",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "EMPREINTE_DIGITALE_ID"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bFP[A-F0-9]{32}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_BIOMETRIQUES",
+              "domain": "BIOMETRIQUE"
+            },
+            {
+              "name": "NUMERO_DNA",
+              "name_en": "Numero Dna",
+              "synonyms_fr": [],
+              "synonyms_en": [],
+              "acronyms_fr": [
+                "NUMERO_DNA"
+              ],
+              "acronyms_en": [],
+              "regex_patterns": [
+                "\\bDNA[A-F0-9]{16}\\b"
+              ],
+              "sensitivity_level": "critical",
+              "risk_level": "Critical",
+              "regulations": [
+                "Loi 09-08",
+                "RGPD"
+              ],
+              "context_required": [],
+              "category": "DONNEES_BIOMETRIQUES",
+              "domain": "BIOMETRIQUE"
+            }
+          ]
+        }
+      ],
+      "created_at": "2026-01-02 18:13:09.416137",
+      "updated_at": "2026-01-02 18:13:09.416137"
+    }
+  ]
+}
