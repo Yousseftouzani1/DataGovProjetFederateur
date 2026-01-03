@@ -15,6 +15,7 @@ from typing import List, Optional, Dict
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+import os
 
 from backend.database.mongodb import db
 
@@ -33,12 +34,15 @@ try:
 except ImportError:
     TRANSFORMERS_AVAILABLE = False
 
+from backend.models.ensemble_classifier import EnsembleSensitivityClassifier
+
 # ====================================================================
 # MODELS
 # ====================================================================
 
 class ClassifyRequest(BaseModel):
     text: str = Field(..., description="Text to classify", min_length=1)
+    language: str = Field(default="en", description="Language: en, fr, ar")
     use_ml: bool = Field(default=True, description="Use ML classification")
     model: str = Field(default="ensemble", description="Model: ensemble, bert, simple")
 
@@ -49,140 +53,17 @@ class ClassifyResponse(BaseModel):
     sensitivity_level: str
     confidence: float
     model_used: str
+    explainability: Optional[Dict] = None
     categories: Dict[str, float]
 
 class TrainRequest(BaseModel):
     data: List[Dict]  # [{"text": "...", "label": "..."}]
     model_type: str = Field(default="simple")
 
-# ====================================================================
-# SENSITIVITY CLASSIFIER
-# ====================================================================
-
-class SensitivityClassifier:
-    """
-    Multi-model classifier for data sensitivity
-    Uses ensemble of simple rules, TF-IDF, and (optionally) transformers
-    """
-    
-    SENSITIVITY_KEYWORDS = {
-        "critical": [
-            "cin", "passport", "iban", "bank account", "cnss", "ssn",
-            "carte d'identité", "numéro national", "compte bancaire",
-            "بطاقة", "الحساب البنكي", "جواز السفر"
-        ],
-        "high": [
-            "email", "phone", "address", "birth date", "salary",
-            "téléphone", "adresse", "date de naissance", "salaire",
-            "الهاتف", "العنوان", "تاريخ الميلاد"
-        ],
-        "medium": [
-            "name", "nom", "age", "gender", "job", "company",
-            "الاسم", "العمر", "الجنس"
-        ],
-        "low": [
-            "city", "country", "region", "category",
-            "ville", "pays", "région",
-            "المدينة", "البلد"
-        ]
-    }
-    
-    CATEGORY_LABELS = [
-        "PERSONAL_IDENTITY",
-        "CONTACT_INFO", 
-        "FINANCIAL_DATA",
-        "MEDICAL_DATA",
-        "PROFESSIONAL_INFO",
-        "TECHNICAL_DATA",
-        "OTHER"
-    ]
-    
-    def __init__(self):
-        self.vectorizer = None
-        self.simple_classifier = None
-        self.transformer_pipeline = None
-        
-        if SKLEARN_AVAILABLE:
-            self.vectorizer = TfidfVectorizer(max_features=1000)
-        
-        # Try to load transformer model (optional)
-        if TRANSFORMERS_AVAILABLE:
-            try:
-                self.transformer_pipeline = pipeline(
-                    "text-classification",
-                    model="distilbert-base-uncased-finetuned-sst-2-english"
-                )
-            except Exception:
-                pass
-        
-        print("✅ Classification Engine initialized")
-        print(f"   sklearn: {SKLEARN_AVAILABLE}")
-        print(f"   transformers: {TRANSFORMERS_AVAILABLE}")
-    
-    def classify_sensitivity(self, text: str) -> str:
-        """Classify text sensitivity level using keywords"""
-        text_lower = text.lower()
-        
-        for level, keywords in self.SENSITIVITY_KEYWORDS.items():
-            if any(kw in text_lower for kw in keywords):
-                return level
-        
-        return "unknown"
-    
-    def classify_category(self, text: str) -> Dict[str, float]:
-        """Classify text into categories with confidence scores"""
-        scores = {}
-        text_lower = text.lower()
-        
-        # Simple keyword-based scoring
-        category_keywords = {
-            "PERSONAL_IDENTITY": ["name", "cin", "passport", "birth", "nom", "identité"],
-            "CONTACT_INFO": ["email", "phone", "address", "téléphone", "adresse"],
-            "FINANCIAL_DATA": ["bank", "iban", "salary", "account", "banque", "salaire"],
-            "MEDICAL_DATA": ["health", "medical", "disease", "santé", "médical"],
-            "PROFESSIONAL_INFO": ["job", "company", "employee", "emploi", "entreprise"],
-            "TECHNICAL_DATA": ["ip", "mac", "server", "password", "api"],
-        }
-        
-        for category, keywords in category_keywords.items():
-            score = sum(1 for kw in keywords if kw in text_lower)
-            scores[category] = min(score / len(keywords), 1.0)
-        
-        # Set OTHER if no matches
-        if all(v == 0 for v in scores.values()):
-            scores["OTHER"] = 0.5
-        
-        return scores
-    
-    def classify(self, text: str, use_ml: bool = True, model: str = "ensemble") -> dict:
-        """Main classification method"""
-        sensitivity = self.classify_sensitivity(text)
-        categories = self.classify_category(text)
-        
-        # Get top category
-        top_category = max(categories, key=categories.get)
-        confidence = categories[top_category]
-        
-        # Adjust confidence with ML if available
-        if use_ml and self.transformer_pipeline and model in ["ensemble", "bert"]:
-            try:
-                result = self.transformer_pipeline(text[:512])[0]
-                # Use transformer confidence as modifier
-                confidence = (confidence + result["score"]) / 2
-            except Exception:
-                pass
-        
-        return {
-            "text": text[:100] + "..." if len(text) > 100 else text,
-            "classification": top_category,
-            "sensitivity_level": sensitivity,
-            "confidence": round(confidence, 3),
-            "model_used": model,
-            "categories": categories
-        }
-
-# Initialize classifier
-classifier = SensitivityClassifier()
+# Initialize advanced classifier
+# Set explicit model path relative to app root
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "backend", "models")
+classifier = EnsembleSensitivityClassifier(model_dir=MODEL_PATH)
 
 # ====================================================================
 # FASTAPI APP
@@ -228,19 +109,60 @@ def health():
 
 @app.post("/classify", response_model=ClassifyResponse)
 async def classify_text(request: ClassifyRequest):
-    """Classify text sensitivity and category"""
+    """
+    Advanced Ensemble Classification (Tâche 5)
+    Combines Keywords, Multi-language BERT, and Statistical Models
+    """
     try:
+        # 1. Run Ensemble Inference
         result = classifier.classify(
             text=request.text,
-            use_ml=request.use_ml,
-            model=request.model
+            lang=request.language
         )
         
+        # 2. Extract results
+        top_category = result["classification"]
+        confidence = result["confidence"]
+        explainability = result["explainability"]
+        
+        # 3. Determine Sensitivity based on logic + triggers
+        sensitivity = "unknown"
+        text_lower = request.text.lower()
+        
+        # Priority 1: Direct Keyword/Regex/Medical triggers from classifier
+        triggers_str = str(explainability["triggers"])
+        if "Rules: " in triggers_str:
+            if top_category == "PERSONAL_IDENTITY": sensitivity = "critical"
+            elif top_category == "FINANCIAL_DATA": sensitivity = "critical"
+            elif top_category == "MEDICAL_DATA": sensitivity = "high"
+            
+        # Priority 2: Keyword scanning (Secondary backup)
+        if sensitivity == "unknown":
+            for level, keywords in classifier.SENSITIVITY_KEYWORDS.items():
+                if any(kw in text_lower for kw in keywords):
+                    sensitivity = level
+                    break
+        
+        # Priority 3: Confidence-based elevation
+        if sensitivity == "unknown" and confidence > 0.6:
+             if top_category in ["PERSONAL_IDENTITY", "FINANCIAL_DATA"]:
+                 sensitivity = "high"
+             elif top_category in ["MEDICAL_DATA"]:
+                 sensitivity = "medium"
+
         return ClassifyResponse(
             success=True,
-            **result
+            text=result["text_preview"],
+            classification=top_category,
+            sensitivity_level=sensitivity,
+            confidence=confidence,
+            model_used=request.model,
+            explainability=explainability,
+            categories=result["raw_scores"]["statistical"] if result["raw_scores"]["statistical"] else {top_category: confidence}
         )
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/categories")
@@ -305,7 +227,7 @@ async def validate_classification(classification_id: str, action: str = "confirm
 @app.post("/add-pending")
 async def add_pending_classification(request: ClassifyRequest):
     """Classify and add to pending queue for validation"""
-    result = classifier.classify(request.text, request.use_ml, request.model)
+    result = classifier.classify(text=request.text, lang=request.language)
     
     classification_id = str(uuid.uuid4())
     classification_data = {
@@ -326,6 +248,36 @@ async def add_pending_classification(request: ClassifyRequest):
         "classification_id": classification_id,
         "classification": result
     }
+
+@app.post("/retrain")
+async def retrain_model():
+    """Trigger active learning from human-validated data"""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+        
+    try:
+        # 1. Fetch all validated classifications
+        cursor = db.validated_classifications.find()
+        validated_data = []
+        async for doc in cursor:
+            validated_data.append({
+                "text": doc.get("text_preview", doc.get("text", "")),
+                "label": doc.get("classification", "OTHER")
+            })
+            
+        if not validated_data:
+             return {"success": False, "message": "No validated data found to retrain"}
+
+        # 2. Trigger retraining
+        success = classifier.retrain_from_validated(validated_data)
+        
+        return {
+            "success": success,
+            "message": f"Retrained on {len(validated_data)} samples" if success else "Retraining failed",
+            "samples_used": len(validated_data)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/validated")
 async def get_validated():

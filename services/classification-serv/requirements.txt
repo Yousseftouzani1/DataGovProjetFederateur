@@ -5,11 +5,12 @@ motor>=3.3.0
 dnspython>=2.4.0
 python-dotenv>=1.0.0
 pydantic>=2.0.0
-
-# ML - Lightweight (no GPU/CUDA needed)
-scikit-learn>=1.3.0
-
-# Optional: Transformers with CPU-only torch (much smaller download)
-# These are optional - service works without them using keyword classification
-
 requests==2.31.0
+
+# ML - Lightweight & Fast (CDC Tâche 5 Compliant)
+scikit-learn>=1.3.0
+joblib>=1.3.0
+scipy>=1.10.1
+arabic-reshaper>=3.0.0
+python-bidi>=0.4.2
+nltk>=3.8.1
