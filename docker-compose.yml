@@ -134,6 +134,11 @@ services:
     volumes:
       - ./services/common:/common
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # ─────────────────────────────────────────
   # SERVICE 6: Correction (Port 8006)

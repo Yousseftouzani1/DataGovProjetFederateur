@@ -36,8 +36,10 @@ This federated project develops a **complete sensitive data governance system** 
 | 📈 **ISO 25012 Scoring**           | Data quality evaluation with 6 dimensions               | US-QUAL-01, US-QUAL-02          |
 | ✅ **Human Validation**            | Annotation workflow with approval system                | US-VALID-01, US-VALID-02        |
 | 🔧 **Smart Correction**            | Rule-based automatic correction engine                  | US-CORR-01, US-CORR-04          |
-| 🇲🇦 **Moroccan Support**            | CIN, CNSS, IBAN MA, Moroccan phone patterns             | US-PII-03                       |
-| 🌍 **Multilingual**                | French, English, Arabic                                 | US-PII-04                       |
+| 🇲🇦 **Moroccan Support**            | CIN, CNSS, Passport, RIB, Phone patterns                | US-PII-03                       |
+| 🌍 **Multilingual**                | French, English, Arabic (Transformers)                  | US-PII-04                       |
+| 🧠 **Active Learning**             | Self-improving classification from human feedback       | US-CLASS-03                     |
+| 🛡️ **Fuzzy Robustness**            | Detection of obfuscated IDs (e.g., B . K . 1 2 3)       | US-PII-05                       |
 
 ---
 
@@ -75,17 +77,17 @@ This federated project develops a **complete sensitive data governance system** 
 
 ### 📦 The 9 Services
 
-| #   | Service               | Port | Task   | User Stories             | Description                                |
-| --- | --------------------- | ---- | ------ | ------------------------ | ------------------------------------------ |
-| 1   | `auth-serv`           | 8001 | Task 1 | US-AUTH-01, US-AUTH-02   | JWT Authentication + Role management       |
-| 2   | `taxonomie-serv`      | 8002 | Task 2 | US-TAX-01, US-TAX-02     | PII/SPI Taxonomy + Moroccan regex patterns |
-| 3   | `presidio-serv`       | 8003 | Task 3 | US-PII-01, US-PII-03     | Microsoft Presidio + Moroccan recognizers  |
-| 4   | `cleaning-serv`       | 8004 | Task 4 | US-CLEAN-01, US-CLEAN-02 | Data cleaning and profiling                |
-| 5   | `classification-serv` | 8005 | Task 5 | US-CLASS-01, US-CLASS-02 | ML/NLP Classification (HuggingFace)        |
-| 6   | `correction-serv`     | 8006 | Task 6 | US-CORR-01, US-CORR-04   | Automatic inconsistency correction         |
-| 7   | `annotation-serv`     | 8007 | Task 7 | US-VALID-01, US-ANNO-01  | Human validation workflow                  |
-| 8   | `quality-serv`        | 8008 | Task 8 | US-QUAL-01, US-QUAL-02   | ISO 25012 metrics                          |
-| 9   | `ethimask-serv`       | 8009 | Task 9 | US-MASK-01, US-MASK-02   | Contextual masking (Perceptron)            |
+| #   | Service               | Port | Task   | User Stories             | Description                                  |
+| --- | --------------------- | ---- | ------ | ------------------------ | -------------------------------------------- |
+| 1   | `auth-serv`           | 8001 | Task 1 | US-AUTH-01, US-AUTH-02   | JWT Authentication + Role management         |
+| 2   | `taxonomie-serv`      | 8002 | Task 2 | US-TAX-01, US-TAX-02     | MongoDB PII Taxonomy + Moroccan patterns     |
+| 3   | `presidio-serv`       | 8003 | Task 3 | US-PII-01, US-PII-03     | Advanced Moroccan Recognizers + Presidio     |
+| 4   | `cleaning-serv`       | 8004 | Task 4 | US-CLEAN-01, US-CLEAN-02 | Data cleaning and profiling                  |
+| 5   | `classification-serv` | 8005 | Task 5 | US-CLASS-01, US-CLASS-02 | **2.0 Ensemble ML (BERT + Active Learning)** |
+| 6   | `correction-serv`     | 8006 | Task 6 | US-CORR-01, US-CORR-04   | Automatic inconsistency correction           |
+| 7   | `annotation-serv`     | 8007 | Task 7 | US-VALID-01, US-ANNO-01  | Human validation workflow (MongoDB)          |
+| 8   | `quality-serv`        | 8008 | Task 8 | US-QUAL-01, US-QUAL-02   | ISO 25012 metrics                            |
+| 9   | `ethimask-serv`       | 8009 | Task 9 | US-MASK-01, US-MASK-02   | Contextual masking (Perceptron)              |
 
 ---
 
