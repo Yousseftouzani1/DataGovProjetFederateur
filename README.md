@@ -41,38 +41,64 @@ This federated project develops a **complete sensitive data governance system** 
 | 🧠 **Active Learning**             | Self-improving classification from human feedback       | US-CLASS-03                     |
 | 🛡️ **Fuzzy Robustness**            | Detection of obfuscated IDs (e.g., B . K . 1 2 3)       | US-PII-05                       |
 
+> [!TIP] > **New in v2.0**: Integrated **BERT-based Ensemble Classification** with **Active Learning** loops for 99% accuracy on sensitive data identification.
+
 ---
 
 ## 🏗️ Microservices Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                   DataSentinel Web Dashboard                     │
-│                  (Modern React-style Interface)                  │
-└─────────────┬───────────────────────────────────┬───────────────┘
-              │                                   │
-┌─────────────▼───────────┐     ┌─────────────────▼───────────────┐
-│     API Gateway          │     │       Apache Airflow            │
-│       (Nginx)            │     │      (Orchestration)            │
-└─────────────┬───────────┘     └─────────────────┬───────────────┘
-              │                                   │
-┌─────────────▼───────────────────────────────────▼───────────────┐
-│                  MICROSERVICES (FastAPI)                         │
-├──────────────────────────────────────────────────────────────────┤
-│  auth-serv      │  taxonomie-serv  │  presidio-serv              │
-│  (Port 8001)    │  (Port 8002)     │  (Port 8003)                │
-├─────────────────┼──────────────────┼─────────────────────────────┤
-│  cleaning-serv  │  classification  │  correction-serv            │
-│  (Port 8004)    │  (Port 8005)     │  (Port 8006)                │
-├─────────────────┼──────────────────┼─────────────────────────────┤
-│  annotation-srv │  quality-serv    │  ethimask-serv              │
-│  (Port 8007)    │  (Port 8008)     │  (Port 8009)                │
-└─────────────────┴──────────────────┴─────────────────────────────┘
-              │                                   │
-┌─────────────▼───────────┐     ┌─────────────────▼───────────────┐
-│       MongoDB           │     │   Apache Atlas & Ranger          │
-│   (Persistent Storage)  │     │   (Big Data Governance)          │
-└─────────────────────────┘     └──────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph "Frontend & Entry"
+        UI["DataSentinel Dashboard<br/>(Modern UI)"]
+        Gateway["Nginx Gateway<br/>(Reverse Proxy)"]
+    end
+
+    subgraph "Orchestration"
+        Airflow["Apache Airflow<br/>(DAG Workflows)"]
+    end
+
+    subgraph "Microservices (FastAPI)"
+        direction LR
+        Auth["Auth<br/>(Security)"]
+        Taxo["Taxonomy<br/>(PII Specs)"]
+        Presidio["Presidio<br/>(Moroccan PII)"]
+        Clean["Cleaning<br/>(Profiling)"]
+        Class["Classification<br/>(ML/BERT)"]
+        Corr["Correction<br/>(Logic)"]
+        Anno["Annotation<br/>(Human-in-loop)"]
+        Qual["Quality<br/>(ISO 25012)"]
+        Mask["EthiMask<br/>(Contextual)"]
+    end
+
+    subgraph "Data & Governance"
+        DB[("MongoDB<br/>(Persistence)")]
+        Atlas["Apache Atlas<br/>(Metadata)"]
+        Ranger["Apache Ranger<br/>(Access Control)"]
+    end
+
+    UI --> Gateway
+    Gateway --> Auth
+    Gateway --> Taxo
+    Gateway --> Presidio
+    Gateway --> Clean
+    Gateway --> Class
+    Gateway --> Anno
+    Gateway --> Qual
+    Gateway --> Mask
+
+    Airflow --> Clean
+    Airflow --> Class
+    Airflow --> Qual
+
+    Class --> DB
+    Anno --> DB
+    Taxo --> DB
+    Auth --> DB
+
+    Qual --> Atlas
+    Class --> Atlas
+    Mask --> Ranger
 ```
 
 ### 📦 The 9 Services
@@ -184,7 +210,10 @@ The system defines **4 principal roles** with specific permissions and data acce
 
 Watch the complete platform demonstration:
 
-[![DataSentinel Demo](docs/demos/vid.mp4)](docs/demos/vid.mp4)
+<video src="docs/demos/vid.mp4" width="100%" controls>
+  Your browser does not support the video tag. 
+  <a href="docs/demos/vid.mp4">Click here to download the video</a>.
+</video>
 
 **Demo Contents:**
 
@@ -199,25 +228,15 @@ Watch the complete platform demonstration:
 
 ## 📸 Screenshots
 
-### 🖥️ Modern Dashboard
-
 ![Dashboard](docs/demos/screenshot_01_dashboard.png)
 
-### 🔍 PII Detection (Moroccan Patterns)
+![PII Detection](docs/demos/Screenshot%202026-01-03%20001817.png)
 
-![PII Detection](docs/demos/screenshot_02_identity_results.png)
+![Quality Analysis](docs/demos/Screenshot%202026-01-03%20002611.png)
 
-### 📊 Quality Analysis (ISO 25012)
+![EthiMask](docs/demos/Screenshot%202026-01-03%20002718.png)
 
-![Quality Analysis](docs/demos/screenshot_05_summary.png)
-
-### 🔒 EthiMask Role-Based Masking
-
-![EthiMask](docs/demos/screenshot_03_anonymized.png)
-
-### 🌍 Arabic Language Support
-
-![Arabic Support](docs/demos/screenshot_04_arabic_results.png)
+![Arabic Support](docs/demos/Screenshot%202026-01-03%20001939.png)
 
 ---
 
@@ -332,15 +351,46 @@ The `presidio-serv` includes **custom recognizers** for Moroccan context:
 ## 📋 Complete Workflow
 
 ```mermaid
-graph LR
-    A[📤 Upload CSV] --> B[🧹 Auto-Clean]
-    B --> C[🔍 Detect PII]
-    C --> D[🏷️ Classify ML]
-    D --> E[✅ Validate - Annotator]
-    E --> F[📊 Quality Check - Steward]
-    F --> G[✔️ Approve - Steward]
-    G --> H[🔒 Apply EthiMask]
-    H --> I[💾 Store + Atlas]
+sequenceDiagram
+    autonumber
+    participant U as 👤 User
+    participant F as 💻 Frontend
+    participant S as ⚙️ Microservices
+    participant D as 🗄️ MongoDB/Atlas/Ranger
+
+    U->>F: Upload CSV/Dataset
+    F->>S: POST /profile & /clean
+    S-->>D: Store Raw Metadata
+    S->>S: PII Detection (Presidio)
+    S->>S: ML Classification (BERT)
+    S-->>D: Sync to Apache Atlas
+    U->>F: Access Validation Queue
+    F->>S: GET /tasks (Annotator)
+    S->>F: Display Unvalidated Data
+    U->>F: Confirm/Correct Labels
+    F->>S: POST /validate
+    S->>S: Calculate Quality (ISO 25012)
+    S-->>D: Permanent Metadata Storage
+    U->>F: Request Masked Export
+    F->>S: GET /mask (EthiMask)
+    S->>S: Check Ranger Policies
+    S->>F: Return Protected Data
+    F->>U: Download Cleaned/Masked File
+```
+
+### 📝 Validation State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending: Dataset Uploaded
+    Pending --> Validating: Assigned to Annotator
+    Validating --> Corrected: Annotator submits fixes
+    Corrected --> InReview: Submit for Steward Approval
+    InReview --> Approved: Steward validates
+    InReview --> Rejected: Steward identifies errors
+    Rejected --> Validating: Re-assign to Annotator
+    Approved --> Finalized: Sync to Enterprise Catalog
+    Finalized --> [*]
 ```
 
 ---
@@ -391,12 +441,12 @@ pytest tests/test_presidio.py -v
 | Academic Supervisor | Pr. K. BAINA |
 
 **Development Team:**
-| Member | Responsibilities |
-|--------|------------------|
-| BAZZAOUI Younes | Backend Architecture + Presidio |
-| ELGARCH Youssef | Frontend + Quality Service |
-| IBNOU-KADY Nisrine | Classification + ML Models |
-| TOUZANI Youssef | EthiMask + Annotation Workflow |
+| Member |
+|--------|
+| BAZZAOUI Younes |
+| ELGARCH Youssef |
+| IBNOU-KADY Nisrine |
+| TOUZANI Youssef |
 
 ---
 
