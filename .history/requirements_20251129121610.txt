@@ -1,0 +1,25 @@
+# FastAPI et serveur ASGI
+fastapi
+uvicorn[standard]
+
+# Gestion des fichiers et formulaires
+python-multipart
+jinja2
+
+# Base de données MongoDB
+pymongo
+gridfs
+bson
+
+# Manipulation de données Excel et CSV
+pandas
+openpyxl
+xlrd
+
+# Bibliothèques pour le RAG PDF
+pypdf
+sentence-transformers
+faiss-cpu
+langchain-community
+langchain-text-splitters
+numpy
