@@ -30,6 +30,9 @@ if PRESIDIO_AVAILABLE:
     from backend.recognizers.phone_ma_recognizer import MoroccanPhoneRecognizer
     from backend.recognizers.iban_ma_recognizer import MoroccanIBANRecognizer
     from backend.recognizers.cnss_recognizer import MoroccanCNSSRecognizer
+    from backend.recognizers.arabic_recognizer import ArabicMoroccanRecognizer
+    from backend.recognizers.passport_ma_recognizer import MoroccanPassportRecognizer
+    from backend.recognizers.permis_ma_recognizer import MoroccanPermisRecognizer
 
 # ====================================================================
 # MODELS
@@ -84,13 +87,18 @@ class MoroccanPresidioEngine:
             registry = RecognizerRegistry()
             registry.load_predefined_recognizers()
             
-            # Add Moroccan recognizers
-            registry.add_recognizer(MoroccanCINRecognizer())
-            registry.add_recognizer(MoroccanPhoneRecognizer())
-            registry.add_recognizer(MoroccanIBANRecognizer())
-            registry.add_recognizer(MoroccanCNSSRecognizer())
+            # Add Moroccan recognizers for multiple languages
+            # This ensures they are found when analysis is requested in en, fr, or ar
+            for lang in ["en", "fr", "ar"]:
+                registry.add_recognizer(MoroccanCINRecognizer(supported_language=lang))
+                registry.add_recognizer(MoroccanPhoneRecognizer(supported_language=lang))
+                registry.add_recognizer(MoroccanIBANRecognizer(supported_language=lang))
+                registry.add_recognizer(MoroccanCNSSRecognizer(supported_language=lang))
+                registry.add_recognizer(MoroccanPassportRecognizer(supported_language=lang))
+                registry.add_recognizer(MoroccanPermisRecognizer(supported_language=lang))
+                # registry.add_recognizer(ArabicMoroccanRecognizer(supported_language=lang))
             
-            # Use English model for both EN and FR (since we rely on Custom Recognizers)
+            # Use English model for all languages (Custom Recognizers handle the patterns)
             config = {
                 "nlp_engine_name": "spacy",
                 "models": [
@@ -103,14 +111,13 @@ class MoroccanPresidioEngine:
             
             self.analyzer = AnalyzerEngine(
                 registry=registry,
-                nlp_engine=nlp_engine,
-                supported_languages=["en"]
+                nlp_engine=nlp_engine
             )
             
             self.anonymizer = AnonymizerEngine()
             
             print("✅ Moroccan Presidio Engine initialized")
-            print("   Custom recognizers: CIN_MAROC, PHONE_MA, IBAN_MA, CNSS_MA")
+            print("   Custom recognizers: CIN_MAROC, PHONE_MA, IBAN_MA, CNSS, PASSPORT_MA, PERMIS_MA, ARABIC_MOROCCAN_PII")
             
         except Exception as e:
             print(f"⚠️ Presidio initialization error: {e}")
@@ -139,7 +146,7 @@ class MoroccanPresidioEngine:
                 "entity_type": r.entity_type,
                 "start": r.start,
                 "end": r.end,
-                "score": r.score,
+                "score": round(r.score, 3),
                 "value": text[r.start:r.end]
             }
             for r in results

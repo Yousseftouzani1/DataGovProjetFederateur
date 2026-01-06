@@ -4,23 +4,23 @@ from presidio_analyzer import Pattern
 from .moroccan_base_recognizer import MoroccanPatternRecognizer
 
 
-class MoroccanCNSSRecognizer(MoroccanPatternRecognizer):
+class MoroccanPermisRecognizer(MoroccanPatternRecognizer):
     """
-    Recognizer for Moroccan CNSS (Caisse Nationale de Sécurité Sociale)
+    Recognizer for Moroccan Driving License (Permis de Conduire)
     Algorithm 3 Compliant (Weighted Scoring)
     """
     
     PATTERNS = [
+        # Permis code format (alphanumeric 6-12 chars, must contain at least one digit)
         Pattern(
-            "CNSS",
-            r"\b\d{9,12}\b",
-            0.3 # Lowered to require explicit context
+            "PERMIS_MA",
+            r"\b(?=[A-Z]*\d)[A-Z0-9]{6,12}\b",
+            0.20 # Very specific context required
         ),
     ]
     
     CONTEXT = [
-        "cnss", "sécurité sociale", "caisse nationale", 
-        "cotisation", "immatriculation", "الضمان", "الاجتماعي", "الصندوق"
+        "permis", "conduire", "conduite", "رخصة", "القيادة", "driving", "license"
     ]
     
     def __init__(
@@ -28,14 +28,20 @@ class MoroccanCNSSRecognizer(MoroccanPatternRecognizer):
         patterns: Optional[List[Pattern]] = None,
         context: Optional[List[str]] = None,
         supported_language: str = "en",
-        supported_entity: str = "CNSS",
+        supported_entity: str = "PERMIS_MA",
     ):
         patterns = patterns if patterns else self.PATTERNS
         context = context if context else self.CONTEXT
         
+        # Validator for Algorithm 3: check length and alphanumeric format
+        def permis_validator(text: str) -> bool:
+            return bool(re.match(r"^[A-Z0-9]{6,12}$", text.strip().upper()))
+
         super().__init__(
             supported_entity=supported_entity,
             patterns=patterns,
             context=context,
             supported_language=supported_language,
+            validator=permis_validator
         )
+

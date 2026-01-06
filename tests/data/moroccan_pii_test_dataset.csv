@@ -1,0 +1,551 @@
+text,expected_entities,entity_values,entity_count,category
+Appelez-moi au 00212770887307,"[""PHONE_MA""]","[""00212770887307""]",1,single_phone
+Numéro CIN YF261100,"[""CIN_MAROC""]","[""YF261100""]",1,single_cin
+Code AB123,[],[],0,edge_partial_cin
+Mobile: 00212672445234,"[""PHONE_MA""]","[""00212672445234""]",1,single_phone
+Le projet avance bien.,[],[],0,no_pii
+La réunion est prévue pour demain.,[],[],0,no_pii
+"Je m'appelle Ahmed, mon CIN est AF685078","[""CIN_MAROC""]","[""AF685078""]",1,single_cin
+"Informations: CIN PS617246, Tel: +212793903841","[""CIN_MAROC"", ""PHONE_MA""]","[""PS617246"", ""+212793903841""]",2,multiple_entities
+Mobile: 00212671040347,"[""PHONE_MA""]","[""00212671040347""]",1,single_phone
+"Informations: CIN DY554784, Tel: 00212595836028, IBAN: MA54MFCIE50IR4AJOHRARSLSJ6VF","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""DY554784"", ""00212595836028"", ""MA54MFCIE50IR4AJOHRARSLSJ6VF""]",3,multiple_entities
+Appelez-moi au 0578103759,"[""PHONE_MA""]","[""0578103759""]",1,single_phone
+"Je m'appelle Ahmed, mon CIN est ZD478116","[""CIN_MAROC""]","[""ZD478116""]",1,single_cin
+Document CIN SE725759 valide jusqu'en 2030,"[""CIN_MAROC""]","[""SE725759""]",1,single_cin
+Mon compte bancaire: MA43STJKK7J2IRAZO4ZESCXR7II1,"[""IBAN_MA""]","[""MA43STJKK7J2IRAZO4ZESCXR7II1""]",1,single_iban
+CNSS: 951253434602,"[""CNSS""]","[""951253434602""]",1,single_cnss
+CIN: DB758944,"[""CIN_MAROC""]","[""DB758944""]",1,single_cin
+"Informations: CIN HL372575, Tel: +212528971329","[""CIN_MAROC"", ""PHONE_MA""]","[""HL372575"", ""+212528971329""]",2,multiple_entities
+CIN: RS606524,"[""CIN_MAROC""]","[""RS606524""]",1,single_cin
+Compte: MA71GUKLO5EGC5VBZCERI384G51Y,"[""IBAN_MA""]","[""MA71GUKLO5EGC5VBZCERI384G51Y""]",1,single_iban
+"Informations: CIN XQ874088, Tel: +212 7 73 22 88 01","[""CIN_MAROC"", ""PHONE_MA""]","[""XQ874088"", ""+212 7 73 22 88 01""]",2,multiple_entities
+"Informations: CIN AF273530, Tel: 00212554732472","[""CIN_MAROC"", ""PHONE_MA""]","[""AF273530"", ""00212554732472""]",2,multiple_entities
+Téléphone: +212569533928,"[""PHONE_MA""]","[""+212569533928""]",1,single_phone
+The price is 123456789012,[],[],0,edge_numeric
+Mon numéro est 0525356396,"[""PHONE_MA""]","[""0525356396""]",1,single_phone
+Document CIN UQ694569 valide jusqu'en 2030,"[""CIN_MAROC""]","[""UQ694569""]",1,single_cin
+Le rapport sera envoyé ce soir.,[],[],0,no_pii
+Tel portable 0574718365,"[""PHONE_MA""]","[""0574718365""]",1,single_phone
+CNSS: 664933165247,"[""CNSS""]","[""664933165247""]",1,single_cnss
+Le projet avance bien.,[],[],0,no_pii
+J'aime beaucoup ce restaurant.,[],[],0,no_pii
+RIB IBAN MA38HHNEGQRJ44RTDT1PJZ3TRAZG,"[""IBAN_MA""]","[""MA38HHNEGQRJ44RTDT1PJZ3TRAZG""]",1,single_iban
+Reference XY12345,[],[],0,edge_partial_cin
+Numéro de sécurité sociale: 065667570917,"[""CNSS""]","[""065667570917""]",1,single_cnss
+Document CIN IS221115 valide jusqu'en 2030,"[""CIN_MAROC""]","[""IS221115""]",1,single_cin
+Téléphone: 0747028180,"[""PHONE_MA""]","[""0747028180""]",1,single_phone
+Document CIN GW104561 valide jusqu'en 2030,"[""CIN_MAROC""]","[""GW104561""]",1,single_cin
+CIN: PV086319,"[""CIN_MAROC""]","[""PV086319""]",1,single_cin
+Mon numéro est +212514180968,"[""PHONE_MA""]","[""+212514180968""]",1,single_phone
+"Informations: CIN UB186468, Tel: 0687758465, IBAN: MA19ADQMX1P461BSG6LT3HS7SFTZ","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""UB186468"", ""0687758465"", ""MA19ADQMX1P461BSG6LT3HS7SFTZ""]",3,multiple_entities
+"Informations: CIN UU108699, Tel: +212 7 36 09 86 42","[""CIN_MAROC"", ""PHONE_MA""]","[""UU108699"", ""+212 7 36 09 86 42""]",2,multiple_entities
+Mobile: +212 6 46 52 10 25,"[""PHONE_MA""]","[""+212 6 46 52 10 25""]",1,single_phone
+Compte: MA67PXAF5XLFR848NM2UHJMKPA0C,"[""IBAN_MA""]","[""MA67PXAF5XLFR848NM2UHJMKPA0C""]",1,single_iban
+"Informations: CIN RF395082, Tel: 00212663543563","[""CIN_MAROC"", ""PHONE_MA""]","[""RF395082"", ""00212663543563""]",2,multiple_entities
+"Je m'appelle Ahmed, mon CIN est PH917672","[""CIN_MAROC""]","[""PH917672""]",1,single_cin
+Tel portable 0537804191,"[""PHONE_MA""]","[""0537804191""]",1,single_phone
+"Informations: CIN KH641656, Tel: 00212628536762","[""CIN_MAROC"", ""PHONE_MA""]","[""KH641656"", ""00212628536762""]",2,multiple_entities
+La réunion est prévue pour demain.,[],[],0,no_pii
+Le temps est très agréable aujourd'hui.,[],[],0,no_pii
+CNSS: 246081948246,"[""CNSS""]","[""246081948246""]",1,single_cnss
+Le temps est très agréable aujourd'hui.,[],[],0,no_pii
+"Informations: CIN CH330452, Tel: 00212626377680","[""CIN_MAROC"", ""PHONE_MA""]","[""CH330452"", ""00212626377680""]",2,multiple_entities
+Mon CIN est CT476647,"[""CIN_MAROC""]","[""CT476647""]",1,single_cin
+Mon compte bancaire: MA33RCZBIIZJEGMZ90SCQMRQB1JT,"[""IBAN_MA""]","[""MA33RCZBIIZJEGMZ90SCQMRQB1JT""]",1,single_iban
+"Informations: CIN SI184426, Tel: 0686061419","[""CIN_MAROC"", ""PHONE_MA""]","[""SI184426"", ""0686061419""]",2,multiple_entities
+Numéro de sécurité sociale: 993502678897,"[""CNSS""]","[""993502678897""]",1,single_cnss
+"Je m'appelle Ahmed, mon CIN est LB837908","[""CIN_MAROC""]","[""LB837908""]",1,single_cin
+J'aime beaucoup ce restaurant.,[],[],0,no_pii
+Le projet avance bien.,[],[],0,no_pii
+Veuillez enregistrer le CIN ZL431144,"[""CIN_MAROC""]","[""ZL431144""]",1,single_cin
++212 6 12 34 56 78,"[""PHONE_MA""]","[""+212612345678""]",1,edge_phone_spaces
+"Informations: CIN MK715034, Tel: 0565491233","[""CIN_MAROC"", ""PHONE_MA""]","[""MK715034"", ""0565491233""]",2,multiple_entities
+RIB IBAN MA77DENV9EDEKZ8OUNUR3DJ206HF,"[""IBAN_MA""]","[""MA77DENV9EDEKZ8OUNUR3DJ206HF""]",1,single_iban
+"Je m'appelle Ahmed, mon CIN est NM130224","[""CIN_MAROC""]","[""NM130224""]",1,single_cin
+Téléphone: +212573655158,"[""PHONE_MA""]","[""+212573655158""]",1,single_phone
+Appelez-moi au 0565304649,"[""PHONE_MA""]","[""0565304649""]",1,single_phone
+Carte d'identité numéro: LG252583,"[""CIN_MAROC""]","[""LG252583""]",1,single_cin
+Mon numéro est 0659731689,"[""PHONE_MA""]","[""0659731689""]",1,single_phone
+"Informations: CIN II629586, Tel: 00212713954845","[""CIN_MAROC"", ""PHONE_MA""]","[""II629586"", ""00212713954845""]",2,multiple_entities
+Le projet avance bien.,[],[],0,no_pii
+Mon CIN est US304281,"[""CIN_MAROC""]","[""US304281""]",1,single_cin
+Mon CIN est JX254509,"[""CIN_MAROC""]","[""JX254509""]",1,single_cin
+Le document est prêt.,[],[],0,no_pii
+Mon numéro CNSS est 874211828137,"[""CNSS""]","[""874211828137""]",1,single_cnss
+Pour me joindre: +212685957706,"[""PHONE_MA""]","[""+212685957706""]",1,single_phone
+CIN: SY540043,"[""CIN_MAROC""]","[""SY540043""]",1,single_cin
+"Informations: CIN EJ781099, Tel: 00212711843251","[""CIN_MAROC"", ""PHONE_MA""]","[""EJ781099"", ""00212711843251""]",2,multiple_entities
+Tel portable 00212510380581,"[""PHONE_MA""]","[""00212510380581""]",1,single_phone
+Mobile: 0722304198,"[""PHONE_MA""]","[""0722304198""]",1,single_phone
+Le projet avance bien.,[],[],0,no_pii
+Mobile: +212539735904,"[""PHONE_MA""]","[""+212539735904""]",1,single_phone
+Mon CIN est YQ710243,"[""CIN_MAROC""]","[""YQ710243""]",1,single_cin
+Affilié CNSS 756792161153,"[""CNSS""]","[""756792161153""]",1,single_cnss
+Compte: MA77LSCO2JIK5BI47K3ITGIG2GTQ,"[""IBAN_MA""]","[""MA77LSCO2JIK5BI47K3ITGIG2GTQ""]",1,single_iban
+CIN: YG475634,"[""CIN_MAROC""]","[""YG475634""]",1,single_cin
+Le document est prêt.,[],[],0,no_pii
+Veuillez enregistrer le CIN UE359593,"[""CIN_MAROC""]","[""UE359593""]",1,single_cin
+Mon compte bancaire: MA93WDZK4ZURZGPFD8G56VR1NMXW,"[""IBAN_MA""]","[""MA93WDZK4ZURZGPFD8G56VR1NMXW""]",1,single_iban
+0612 345 678,"[""PHONE_MA""]","[""0612345678""]",1,edge_phone_spaces
+The weather is nice today AB123.,[],[],0,edge_false_positive
+Merci pour votre aide.,[],[],0,no_pii
+Le document est prêt.,[],[],0,no_pii
+Document CIN GM980420 valide jusqu'en 2030,"[""CIN_MAROC""]","[""GM980420""]",1,single_cin
+"Informations: CIN NL316582, Tel: +212 5 46 13 81 83, IBAN: MA79OAAMDKY2QIURAIIL8MNOOJKM","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""NL316582"", ""+212 5 46 13 81 83"", ""MA79OAAMDKY2QIURAIIL8MNOOJKM""]",3,multiple_entities
+CNSS: 159866240770,"[""CNSS""]","[""159866240770""]",1,single_cnss
+Numéro CIN QA227680,"[""CIN_MAROC""]","[""QA227680""]",1,single_cin
+Veuillez enregistrer le CIN BJ959807,"[""CIN_MAROC""]","[""BJ959807""]",1,single_cin
+CNSS: 409759866171,"[""CNSS""]","[""409759866171""]",1,single_cnss
+Mon CIN est ND148088,"[""CIN_MAROC""]","[""ND148088""]",1,single_cin
+"Informations: CIN ID514356, Tel: 0768883853","[""CIN_MAROC"", ""PHONE_MA""]","[""ID514356"", ""0768883853""]",2,multiple_entities
+Téléphone: +212650193656,"[""PHONE_MA""]","[""+212650193656""]",1,single_phone
+Pour me joindre: 00212711868130,"[""PHONE_MA""]","[""00212711868130""]",1,single_phone
+"Je m'appelle Ahmed, mon CIN est TF594619","[""CIN_MAROC""]","[""TF594619""]",1,single_cin
+Mon numéro CNSS est 169346355334,"[""CNSS""]","[""169346355334""]",1,single_cnss
+Mobile: +212 6 95 28 24 70,"[""PHONE_MA""]","[""+212 6 95 28 24 70""]",1,single_phone
+Compte: MA97MSQV2RGA171XIZJ9R6CSVB4D,"[""IBAN_MA""]","[""MA97MSQV2RGA171XIZJ9R6CSVB4D""]",1,single_iban
+La réunion est prévue pour demain.,[],[],0,no_pii
+Appelez-moi au +212725585427,"[""PHONE_MA""]","[""+212725585427""]",1,single_phone
+"Informations: CIN IL858154, Tel: 00212782693120, IBAN: MA68AQJE0UR8PNJDIHJMBN3I2U4V","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""IL858154"", ""00212782693120"", ""MA68AQJE0UR8PNJDIHJMBN3I2U4V""]",3,multiple_entities
+Carte d'identité numéro: DF352206,"[""CIN_MAROC""]","[""DF352206""]",1,single_cin
+CNSS: 863296457613,"[""CNSS""]","[""863296457613""]",1,single_cnss
+CIN: UE 669917,"[""CIN_MAROC""]","[""varies""]",1,edge_cin_spaces
+Pour me joindre: 0658082464,"[""PHONE_MA""]","[""0658082464""]",1,single_phone
+Mon CIN est WV308904,"[""CIN_MAROC""]","[""WV308904""]",1,single_cin
+Mon numéro CNSS est 377623634474,"[""CNSS""]","[""377623634474""]",1,single_cnss
+Carte d'identité numéro: WF843720,"[""CIN_MAROC""]","[""WF843720""]",1,single_cin
+"Je m'appelle Ahmed, mon CIN est HN126704","[""CIN_MAROC""]","[""HN126704""]",1,single_cin
+J'aime beaucoup ce restaurant.,[],[],0,no_pii
+Document CIN HF763465 valide jusqu'en 2030,"[""CIN_MAROC""]","[""HF763465""]",1,single_cin
+Document CIN IU207856 valide jusqu'en 2030,"[""CIN_MAROC""]","[""IU207856""]",1,single_cin
+The price is 123456789012,[],[],0,edge_numeric
+"Informations: CIN EW122772, Tel: +212723825676, IBAN: MA18YMBUIZ3M3XE8QF4I61CWVGVX","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""EW122772"", ""+212723825676"", ""MA18YMBUIZ3M3XE8QF4I61CWVGVX""]",3,multiple_entities
++212 6 12 34 56 78,"[""PHONE_MA""]","[""+212612345678""]",1,edge_phone_spaces
++212 6 12 34 56 78,"[""PHONE_MA""]","[""+212612345678""]",1,edge_phone_spaces
+Mon compte bancaire: MA56ILGWINLMLCUMTPAM344A6OIF,"[""IBAN_MA""]","[""MA56ILGWINLMLCUMTPAM344A6OIF""]",1,single_iban
+Le document est prêt.,[],[],0,no_pii
+Code: 987654321,[],[],0,edge_numeric
+"Informations: CIN GQ889970, Tel: +212 6 58 89 21 18, IBAN: MA28GTTVEUWMU9A5O8850SBHZFW7","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""GQ889970"", ""+212 6 58 89 21 18"", ""MA28GTTVEUWMU9A5O8850SBHZFW7""]",3,multiple_entities
+"Informations: CIN ET332427, Tel: 00212546489118","[""CIN_MAROC"", ""PHONE_MA""]","[""ET332427"", ""00212546489118""]",2,multiple_entities
+Mon compte bancaire: MA74DBCXCPI68FFI5DAECLSN23OA,"[""IBAN_MA""]","[""MA74DBCXCPI68FFI5DAECLSN23OA""]",1,single_iban
+Mon numéro CNSS est 168815280005,"[""CNSS""]","[""168815280005""]",1,single_cnss
+"Informations: CIN UN046498, Tel: 0775874779","[""CIN_MAROC"", ""PHONE_MA""]","[""UN046498"", ""0775874779""]",2,multiple_entities
+"Informations: CIN JH611836, Tel: +212564327674","[""CIN_MAROC"", ""PHONE_MA""]","[""JH611836"", ""+212564327674""]",2,multiple_entities
+CNSS: 717238925701,"[""CNSS""]","[""717238925701""]",1,single_cnss
+"Informations: CIN EC738720, Tel: +212 6 59 87 31 03, IBAN: MA48FHCUSWF0HI6XQIR5VTXO4QGP","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""EC738720"", ""+212 6 59 87 31 03"", ""MA48FHCUSWF0HI6XQIR5VTXO4QGP""]",3,multiple_entities
+Carte d'identité numéro: EF738720,"[""CIN_MAROC""]","[""EF738720""]",1,single_cin
+Mon compte bancaire: MA50HCJNW6SZY2GAUBJ07KAMGLHR,"[""IBAN_MA""]","[""MA50HCJNW6SZY2GAUBJ07KAMGLHR""]",1,single_iban
+Le document est prêt.,[],[],0,no_pii
+"Informations: CIN YI157250, Tel: 0511876942, IBAN: MA34ZETAQXXUHP6O3UZFIERBGIHD","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""YI157250"", ""0511876942"", ""MA34ZETAQXXUHP6O3UZFIERBGIHD""]",3,multiple_entities
+Contact: +212566765623,"[""PHONE_MA""]","[""+212566765623""]",1,single_phone
+Contact: 00212622097496,"[""PHONE_MA""]","[""00212622097496""]",1,single_phone
+"Informations: CIN CZ126655, Tel: 00212787707540","[""CIN_MAROC"", ""PHONE_MA""]","[""CZ126655"", ""00212787707540""]",2,multiple_entities
+IBAN: MA41BXFG3BHO4YZ5NVHNRAA2RN8Q,"[""IBAN_MA""]","[""MA41BXFG3BHO4YZ5NVHNRAA2RN8Q""]",1,single_iban
+Compte: MA41SSKGBAGNBCVGSQRB7B1VQ0JL,"[""IBAN_MA""]","[""MA41SSKGBAGNBCVGSQRB7B1VQ0JL""]",1,single_iban
+Appelez-moi au 00212544210729,"[""PHONE_MA""]","[""00212544210729""]",1,single_phone
+"Bonjour, comment allez-vous?",[],[],0,no_pii
+Mon numéro CNSS est 406085772985,"[""CNSS""]","[""406085772985""]",1,single_cnss
+Code: 987654321,[],[],0,edge_numeric
+"Informations: CIN PR012760, Tel: +212511118594, IBAN: MA59RRXJ3AVDZIPWHL37YKP1XAHQ","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""PR012760"", ""+212511118594"", ""MA59RRXJ3AVDZIPWHL37YKP1XAHQ""]",3,multiple_entities
+Mon compte bancaire: MA21QKJJ61F9UK5P3OTER82DIYOX,"[""IBAN_MA""]","[""MA21QKJJ61F9UK5P3OTER82DIYOX""]",1,single_iban
+Affilié CNSS 985746914509,"[""CNSS""]","[""985746914509""]",1,single_cnss
+"Informations: CIN VV172747, Tel: +212 6 36 73 34 70, IBAN: MA22NZMRBBM1XI9M7VV74MB694S0","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""VV172747"", ""+212 6 36 73 34 70"", ""MA22NZMRBBM1XI9M7VV74MB694S0""]",3,multiple_entities
+Numéro de sécurité sociale: 221804909576,"[""CNSS""]","[""221804909576""]",1,single_cnss
+CIN: UE 669917,"[""CIN_MAROC""]","[""varies""]",1,edge_cin_spaces
+"Je m'appelle Ahmed, mon CIN est BA352457","[""CIN_MAROC""]","[""BA352457""]",1,single_cin
+"Informations: CIN CP030571, Tel: 0674548325, IBAN: MA72KOOZI89FOK4ED6CNR6CTSMFX","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""CP030571"", ""0674548325"", ""MA72KOOZI89FOK4ED6CNR6CTSMFX""]",3,multiple_entities
+"Je m'appelle Ahmed, mon CIN est JA378947","[""CIN_MAROC""]","[""JA378947""]",1,single_cin
+"Informations: CIN JH844605, Tel: +212 6 72 22 05 13, IBAN: MA21SCUYP4EG6LP7G9OWSP44GDID","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""JH844605"", ""+212 6 72 22 05 13"", ""MA21SCUYP4EG6LP7G9OWSP44GDID""]",3,multiple_entities
+Mon numéro CNSS est 494453070747,"[""CNSS""]","[""494453070747""]",1,single_cnss
+"Informations: CIN NN661769, Tel: 00212791171931, IBAN: MA64PINZC4KIMH6LPZ00M4USZECK","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""NN661769"", ""00212791171931"", ""MA64PINZC4KIMH6LPZ00M4USZECK""]",3,multiple_entities
+Reference XY12345,[],[],0,edge_partial_cin
+IBAN: MA60HBXYH4HLJZZX4UKDORYR0291,"[""IBAN_MA""]","[""MA60HBXYH4HLJZZX4UKDORYR0291""]",1,single_iban
+The price is 123456789012,[],[],0,edge_numeric
+Appelez-moi au +212563792364,"[""PHONE_MA""]","[""+212563792364""]",1,single_phone
+"Je m'appelle Ahmed, mon CIN est YZ571295","[""CIN_MAROC""]","[""YZ571295""]",1,single_cin
+Mon numéro CNSS est 986228483541,"[""CNSS""]","[""986228483541""]",1,single_cnss
+"Je m'appelle Ahmed, mon CIN est UK918104","[""CIN_MAROC""]","[""UK918104""]",1,single_cin
+Numéro de sécurité sociale: 255693255154,"[""CNSS""]","[""255693255154""]",1,single_cnss
+Le projet avance bien.,[],[],0,no_pii
+Code: 987654321,[],[],0,edge_numeric
+"Informations: CIN AY650405, Tel: +212551940463","[""CIN_MAROC"", ""PHONE_MA""]","[""AY650405"", ""+212551940463""]",2,multiple_entities
+Affilié CNSS 665263576603,"[""CNSS""]","[""665263576603""]",1,single_cnss
+Tel portable 0654098516,"[""PHONE_MA""]","[""0654098516""]",1,single_phone
+Pour me joindre: 00212682398083,"[""PHONE_MA""]","[""00212682398083""]",1,single_phone
+Affilié CNSS 096827821788,"[""CNSS""]","[""096827821788""]",1,single_cnss
+"Informations: CIN VG003990, Tel: +212 5 41 00 67 11","[""CIN_MAROC"", ""PHONE_MA""]","[""VG003990"", ""+212 5 41 00 67 11""]",2,multiple_entities
+Mobile: +212 7 63 51 66 59,"[""PHONE_MA""]","[""+212 7 63 51 66 59""]",1,single_phone
+Carte d'identité numéro: SQ960826,"[""CIN_MAROC""]","[""SQ960826""]",1,single_cin
+Tel portable +212 7 36 73 84 52,"[""PHONE_MA""]","[""+212 7 36 73 84 52""]",1,single_phone
+Affilié CNSS 861330689191,"[""CNSS""]","[""861330689191""]",1,single_cnss
+Contact: +212 7 40 66 78 88,"[""PHONE_MA""]","[""+212 7 40 66 78 88""]",1,single_phone
+"Informations: CIN EF322624, Tel: +212 7 88 77 50 38","[""CIN_MAROC"", ""PHONE_MA""]","[""EF322624"", ""+212 7 88 77 50 38""]",2,multiple_entities
+Compte: MA44LNVCWTVXEEDD28B3PC51XHTR,"[""IBAN_MA""]","[""MA44LNVCWTVXEEDD28B3PC51XHTR""]",1,single_iban
+Veuillez enregistrer le CIN UX424367,"[""CIN_MAROC""]","[""UX424367""]",1,single_cin
+RIB IBAN MA26PNLAC4UOH83T3DADTVNO2KL5,"[""IBAN_MA""]","[""MA26PNLAC4UOH83T3DADTVNO2KL5""]",1,single_iban
+Veuillez enregistrer le CIN WX103972,"[""CIN_MAROC""]","[""WX103972""]",1,single_cin
+Numéro CIN YT673638,"[""CIN_MAROC""]","[""YT673638""]",1,single_cin
+IBAN: MA10KVGS0IDMOMHH0J0J9Z0TOTW3,"[""IBAN_MA""]","[""MA10KVGS0IDMOMHH0J0J9Z0TOTW3""]",1,single_iban
+Veuillez enregistrer le CIN MK384115,"[""CIN_MAROC""]","[""MK384115""]",1,single_cin
+IBAN: MA83JEQSNZJH5BG1C04TYIHOEUH2,"[""IBAN_MA""]","[""MA83JEQSNZJH5BG1C04TYIHOEUH2""]",1,single_iban
+La réunion est prévue pour demain.,[],[],0,no_pii
+Mon compte bancaire: MA22MUDATZ4TDMNK9T02WF4WTB1G,"[""IBAN_MA""]","[""MA22MUDATZ4TDMNK9T02WF4WTB1G""]",1,single_iban
+Reference XY12345,[],[],0,edge_partial_cin
+"Informations: CIN VT921224, Tel: +212 5 17 50 61 80, IBAN: MA78JYILOYVXDPT0YLUNXOS8JBYD","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""VT921224"", ""+212 5 17 50 61 80"", ""MA78JYILOYVXDPT0YLUNXOS8JBYD""]",3,multiple_entities
+Veuillez enregistrer le CIN DN355431,"[""CIN_MAROC""]","[""DN355431""]",1,single_cin
+Mobile: 00212688714010,"[""PHONE_MA""]","[""00212688714010""]",1,single_phone
+Compte: MA59GFQXU3Q69OLV6RQKHVBY0XY4,"[""IBAN_MA""]","[""MA59GFQXU3Q69OLV6RQKHVBY0XY4""]",1,single_iban
+Numéro CIN NJ958827,"[""CIN_MAROC""]","[""NJ958827""]",1,single_cin
+Carte d'identité numéro: BZ899814,"[""CIN_MAROC""]","[""BZ899814""]",1,single_cin
+Mon numéro CNSS est 055859075711,"[""CNSS""]","[""055859075711""]",1,single_cnss
+Affilié CNSS 274678934159,"[""CNSS""]","[""274678934159""]",1,single_cnss
+Numéro de sécurité sociale: 367650180141,"[""CNSS""]","[""367650180141""]",1,single_cnss
+Carte d'identité numéro: HB212633,"[""CIN_MAROC""]","[""HB212633""]",1,single_cin
+Contact: +212 7 12 94 46 82,"[""PHONE_MA""]","[""+212 7 12 94 46 82""]",1,single_phone
+Mon CIN est DK969635,"[""CIN_MAROC""]","[""DK969635""]",1,single_cin
+IBAN: MA98GRMEOXVROMXD7YHGZDPWRSTR,"[""IBAN_MA""]","[""MA98GRMEOXVROMXD7YHGZDPWRSTR""]",1,single_iban
+Mon numéro CNSS est 559768584013,"[""CNSS""]","[""559768584013""]",1,single_cnss
+Carte d'identité numéro: ZN169156,"[""CIN_MAROC""]","[""ZN169156""]",1,single_cin
+Numéro CIN FH810967,"[""CIN_MAROC""]","[""FH810967""]",1,single_cin
+"Informations: CIN KF999840, Tel: +212777674770, IBAN: MA64NMUVG8K0QY4AN3HAPUQ0GRVE","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""KF999840"", ""+212777674770"", ""MA64NMUVG8K0QY4AN3HAPUQ0GRVE""]",3,multiple_entities
+"Informations: CIN YR896718, Tel: 0660460287","[""CIN_MAROC"", ""PHONE_MA""]","[""YR896718"", ""0660460287""]",2,multiple_entities
+Numéro CIN CJ332041,"[""CIN_MAROC""]","[""CJ332041""]",1,single_cin
+Mon compte bancaire: MA83QREBUABY26DQJW3LMH1X5W53,"[""IBAN_MA""]","[""MA83QREBUABY26DQJW3LMH1X5W53""]",1,single_iban
+Compte: MA85ZETAQX7ST2USO5A95FDGLKJX,"[""IBAN_MA""]","[""MA85ZETAQX7ST2USO5A95FDGLKJX""]",1,single_iban
+Veuillez enregistrer le CIN TV200593,"[""CIN_MAROC""]","[""TV200593""]",1,single_cin
+Tel portable 00212751827259,"[""PHONE_MA""]","[""00212751827259""]",1,single_phone
+Le rapport sera envoyé ce soir.,[],[],0,no_pii
+Mon numéro est +212531203129,"[""PHONE_MA""]","[""+212531203129""]",1,single_phone
+Random text 0612 without context,[],[],0,edge_false_positive
+Mon numéro CNSS est 492088836418,"[""CNSS""]","[""492088836418""]",1,single_cnss
+Mon CIN est RH370499,"[""CIN_MAROC""]","[""RH370499""]",1,single_cin
+RIB IBAN MA79AZSVLW38N5MKNNYBS337QKO7,"[""IBAN_MA""]","[""MA79AZSVLW38N5MKNNYBS337QKO7""]",1,single_iban
+IBAN: MA43ZUUPPL6MMU5O1Y30B5OERXVQ,"[""IBAN_MA""]","[""MA43ZUUPPL6MMU5O1Y30B5OERXVQ""]",1,single_iban
+Document CIN BH049505 valide jusqu'en 2030,"[""CIN_MAROC""]","[""BH049505""]",1,single_cin
+CIN: ZQ568720,"[""CIN_MAROC""]","[""ZQ568720""]",1,single_cin
+Tel portable 00212665137801,"[""PHONE_MA""]","[""00212665137801""]",1,single_phone
+Document CIN WX728645 valide jusqu'en 2030,"[""CIN_MAROC""]","[""WX728645""]",1,single_cin
+Mobile: 00212771682508,"[""PHONE_MA""]","[""00212771682508""]",1,single_phone
+CIN: TY217141,"[""CIN_MAROC""]","[""TY217141""]",1,single_cin
+Appelez-moi au +212624754064,"[""PHONE_MA""]","[""+212624754064""]",1,single_phone
+Le document est prêt.,[],[],0,no_pii
+Tel portable 00212576669607,"[""PHONE_MA""]","[""00212576669607""]",1,single_phone
+"Informations: CIN SG496924, Tel: 00212553406567","[""CIN_MAROC"", ""PHONE_MA""]","[""SG496924"", ""00212553406567""]",2,multiple_entities
+Mon numéro est 0724314759,"[""PHONE_MA""]","[""0724314759""]",1,single_phone
+Mon numéro CNSS est 416636626181,"[""CNSS""]","[""416636626181""]",1,single_cnss
+Compte: MA90ILMQSLC2G1DANZ3LDKYQ1WK6,"[""IBAN_MA""]","[""MA90ILMQSLC2G1DANZ3LDKYQ1WK6""]",1,single_iban
+Contact: +212 6 51 94 95 29,"[""PHONE_MA""]","[""+212 6 51 94 95 29""]",1,single_phone
+Mon compte bancaire: MA96UYTNJBFGSM6NEQVGF07APSKS,"[""IBAN_MA""]","[""MA96UYTNJBFGSM6NEQVGF07APSKS""]",1,single_iban
+"Informations: CIN ER595577, Tel: +212 5 58 04 50 29","[""CIN_MAROC"", ""PHONE_MA""]","[""ER595577"", ""+212 5 58 04 50 29""]",2,multiple_entities
+Contact: +212 6 75 67 90 47,"[""PHONE_MA""]","[""+212 6 75 67 90 47""]",1,single_phone
+Mon numéro est 0581200181,"[""PHONE_MA""]","[""0581200181""]",1,single_phone
+"Informations: CIN MR554583, Tel: +212 7 40 43 81 56, IBAN: MA57ZUBJG5XPAZUON581B496K1BC","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""MR554583"", ""+212 7 40 43 81 56"", ""MA57ZUBJG5XPAZUON581B496K1BC""]",3,multiple_entities
+"Informations: CIN DV727527, Tel: 00212563718703, IBAN: MA70RYZN5G4H8X1QTH06LBAMRNIH","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""DV727527"", ""00212563718703"", ""MA70RYZN5G4H8X1QTH06LBAMRNIH""]",3,multiple_entities
+CNSS: 859085832081,"[""CNSS""]","[""859085832081""]",1,single_cnss
+Affilié CNSS 880429026424,"[""CNSS""]","[""880429026424""]",1,single_cnss
+"Informations: CIN HC447221, Tel: 0592077910","[""CIN_MAROC"", ""PHONE_MA""]","[""HC447221"", ""0592077910""]",2,multiple_entities
+"Bonjour, comment allez-vous?",[],[],0,no_pii
+Mon numéro est +212 5 28 20 85 20,"[""PHONE_MA""]","[""+212 5 28 20 85 20""]",1,single_phone
+"Informations: CIN CW495827, Tel: 0543105363","[""CIN_MAROC"", ""PHONE_MA""]","[""CW495827"", ""0543105363""]",2,multiple_entities
+Document CIN GV544728 valide jusqu'en 2030,"[""CIN_MAROC""]","[""GV544728""]",1,single_cin
+"Informations: CIN JQ902601, Tel: +212534595062, IBAN: MA86TOWVOAOO3KT0IDHCW3576WMT","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""JQ902601"", ""+212534595062"", ""MA86TOWVOAOO3KT0IDHCW3576WMT""]",3,multiple_entities
+RIB IBAN MA92GETUKR6UWTI3O65B898RYAQ0,"[""IBAN_MA""]","[""MA92GETUKR6UWTI3O65B898RYAQ0""]",1,single_iban
+Téléphone: 0791644298,"[""PHONE_MA""]","[""0791644298""]",1,single_phone
+Pour me joindre: +212785291541,"[""PHONE_MA""]","[""+212785291541""]",1,single_phone
+Compte: MA28ICJIMYTOQC07OCSP1FF5EVCD,"[""IBAN_MA""]","[""MA28ICJIMYTOQC07OCSP1FF5EVCD""]",1,single_iban
+"Informations: CIN SA828121, Tel: +212 6 20 55 01 79","[""CIN_MAROC"", ""PHONE_MA""]","[""SA828121"", ""+212 6 20 55 01 79""]",2,multiple_entities
+Compte: MA83WUJVU6LTPW1PYKK6ZVHBH387,"[""IBAN_MA""]","[""MA83WUJVU6LTPW1PYKK6ZVHBH387""]",1,single_iban
+Téléphone: +212594982908,"[""PHONE_MA""]","[""+212594982908""]",1,single_phone
+Tel portable +212537542226,"[""PHONE_MA""]","[""+212537542226""]",1,single_phone
+Le rapport sera envoyé ce soir.,[],[],0,no_pii
+"Informations: CIN NE325179, Tel: 0676974557","[""CIN_MAROC"", ""PHONE_MA""]","[""NE325179"", ""0676974557""]",2,multiple_entities
+"Informations: CIN JH590538, Tel: 00212597518806, IBAN: MA52HUGPGO8ORIOZB002EIOCQ91M","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""JH590538"", ""00212597518806"", ""MA52HUGPGO8ORIOZB002EIOCQ91M""]",3,multiple_entities
+"Informations: CIN NZ338574, Tel: 0783085160","[""CIN_MAROC"", ""PHONE_MA""]","[""NZ338574"", ""0783085160""]",2,multiple_entities
+Appelez-moi au 0767805802,"[""PHONE_MA""]","[""0767805802""]",1,single_phone
+"Informations: CIN XM550412, Tel: 0543535226, IBAN: MA42VCKXQQS6TOKWLAQK22RCTEVV","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""XM550412"", ""0543535226"", ""MA42VCKXQQS6TOKWLAQK22RCTEVV""]",3,multiple_entities
+Veuillez enregistrer le CIN EF105295,"[""CIN_MAROC""]","[""EF105295""]",1,single_cin
+"Informations: CIN TN538294, Tel: +212787162674, IBAN: MA43ENONC4I9JS9FDH8CROWVH9DS","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""TN538294"", ""+212787162674"", ""MA43ENONC4I9JS9FDH8CROWVH9DS""]",3,multiple_entities
+C'est une excellente idée.,[],[],0,no_pii
+Appelez-moi au 00212691478884,"[""PHONE_MA""]","[""00212691478884""]",1,single_phone
+CNSS: 453732105450,"[""CNSS""]","[""453732105450""]",1,single_cnss
+Affilié CNSS 642151581195,"[""CNSS""]","[""642151581195""]",1,single_cnss
+"Informations: CIN NA495339, Tel: 0748816900, IBAN: MA14SPHU9MKKNAQ0H42S9M99QLWQ","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""NA495339"", ""0748816900"", ""MA14SPHU9MKKNAQ0H42S9M99QLWQ""]",3,multiple_entities
+Code AB123,[],[],0,edge_partial_cin
+CNSS: 899452007431,"[""CNSS""]","[""899452007431""]",1,single_cnss
+Affilié CNSS 356509985526,"[""CNSS""]","[""356509985526""]",1,single_cnss
+Affilié CNSS 743240302934,"[""CNSS""]","[""743240302934""]",1,single_cnss
+"Informations: CIN VC635736, Tel: 0768517739","[""CIN_MAROC"", ""PHONE_MA""]","[""VC635736"", ""0768517739""]",2,multiple_entities
+CNSS: 521168643164,"[""CNSS""]","[""521168643164""]",1,single_cnss
+"Je m'appelle Ahmed, mon CIN est ZA366358","[""CIN_MAROC""]","[""ZA366358""]",1,single_cin
+Contact: +212616086345,"[""PHONE_MA""]","[""+212616086345""]",1,single_phone
+IBAN: MA51PWWCYMPUSEYTHBAJ4USWR1MU,"[""IBAN_MA""]","[""MA51PWWCYMPUSEYTHBAJ4USWR1MU""]",1,single_iban
+CNSS: 554263009756,"[""CNSS""]","[""554263009756""]",1,single_cnss
+CIN: KW123438,"[""CIN_MAROC""]","[""KW123438""]",1,single_cin
+Mobile: 00212788862539,"[""PHONE_MA""]","[""00212788862539""]",1,single_phone
+Affilié CNSS 016389273314,"[""CNSS""]","[""016389273314""]",1,single_cnss
+CIN: UE 669917,"[""CIN_MAROC""]","[""varies""]",1,edge_cin_spaces
+RIB IBAN MA79TGAK8CUVY0NUQ3J8H2ZP3XWI,"[""IBAN_MA""]","[""MA79TGAK8CUVY0NUQ3J8H2ZP3XWI""]",1,single_iban
+"Informations: CIN IH096383, Tel: 0748917593, IBAN: MA32OZRHE3OHVF610Z8DSNHYTY0C","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""IH096383"", ""0748917593"", ""MA32OZRHE3OHVF610Z8DSNHYTY0C""]",3,multiple_entities
+Téléphone: +212590147573,"[""PHONE_MA""]","[""+212590147573""]",1,single_phone
+IBAN: MA83LSMJFCW9G5MMNHVH3DFNS8ZJ,"[""IBAN_MA""]","[""MA83LSMJFCW9G5MMNHVH3DFNS8ZJ""]",1,single_iban
+"Informations: CIN FR423859, Tel: +212667768169, IBAN: MA59LWLA6NSV5FBERKHJJGK529LD","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""FR423859"", ""+212667768169"", ""MA59LWLA6NSV5FBERKHJJGK529LD""]",3,multiple_entities
+Mon CIN est UK672173,"[""CIN_MAROC""]","[""UK672173""]",1,single_cin
+"Informations: CIN DX653428, Tel: +212663472598, IBAN: MA98EFGV3Q9CKTCECOLKNJZABIRG","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""DX653428"", ""+212663472598"", ""MA98EFGV3Q9CKTCECOLKNJZABIRG""]",3,multiple_entities
+Mobile: +212631127198,"[""PHONE_MA""]","[""+212631127198""]",1,single_phone
+Mon numéro CNSS est 319942717513,"[""CNSS""]","[""319942717513""]",1,single_cnss
+Téléphone: 00212741690501,"[""PHONE_MA""]","[""00212741690501""]",1,single_phone
+CIN: UE 669917,"[""CIN_MAROC""]","[""varies""]",1,edge_cin_spaces
+Téléphone: 00212559302863,"[""PHONE_MA""]","[""00212559302863""]",1,single_phone
+"Informations: CIN QF225762, Tel: +212646726921, IBAN: MA11YOCOJ9XSK6BWJ11W1D3EPWMO","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""QF225762"", ""+212646726921"", ""MA11YOCOJ9XSK6BWJ11W1D3EPWMO""]",3,multiple_entities
+"Informations: CIN IX540345, Tel: 00212673104323","[""CIN_MAROC"", ""PHONE_MA""]","[""IX540345"", ""00212673104323""]",2,multiple_entities
+Mobile: 00212714478111,"[""PHONE_MA""]","[""00212714478111""]",1,single_phone
+"Informations: CIN QU989084, Tel: 0662436517, IBAN: MA46YCEC557Y0EOXHFQ060SUICKN","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""QU989084"", ""0662436517"", ""MA46YCEC557Y0EOXHFQ060SUICKN""]",3,multiple_entities
+Document CIN UR191931 valide jusqu'en 2030,"[""CIN_MAROC""]","[""UR191931""]",1,single_cin
+Mobile: +212 5 30 73 97 12,"[""PHONE_MA""]","[""+212 5 30 73 97 12""]",1,single_phone
+Compte: MA82ZZXX8WOK9XOAJN6U075TTXAK,"[""IBAN_MA""]","[""MA82ZZXX8WOK9XOAJN6U075TTXAK""]",1,single_iban
+C'est une excellente idée.,[],[],0,no_pii
+CIN: LN474614,"[""CIN_MAROC""]","[""LN474614""]",1,single_cin
+Random text 0612 without context,[],[],0,edge_false_positive
+Mon numéro CNSS est 271747066493,"[""CNSS""]","[""271747066493""]",1,single_cnss
+"Informations: CIN RB954545, Tel: 00212733645674","[""CIN_MAROC"", ""PHONE_MA""]","[""RB954545"", ""00212733645674""]",2,multiple_entities
+Contact: +212694216001,"[""PHONE_MA""]","[""+212694216001""]",1,single_phone
+Téléphone: 00212551936181,"[""PHONE_MA""]","[""00212551936181""]",1,single_phone
+RIB IBAN MA52UBQN6RCYN53965R2YMGKKOVN,"[""IBAN_MA""]","[""MA52UBQN6RCYN53965R2YMGKKOVN""]",1,single_iban
+IBAN: MA60MRRDZHAX3TQCCSIC3PG21P0C,"[""IBAN_MA""]","[""MA60MRRDZHAX3TQCCSIC3PG21P0C""]",1,single_iban
+Code AB123,[],[],0,edge_partial_cin
+Mon numéro CNSS est 539538446511,"[""CNSS""]","[""539538446511""]",1,single_cnss
+"Informations: CIN BC873460, Tel: +212687949346, IBAN: MA28RLHQG7VASOXXPWZKMIUU2WY0","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""BC873460"", ""+212687949346"", ""MA28RLHQG7VASOXXPWZKMIUU2WY0""]",3,multiple_entities
+"Informations: CIN UH051385, Tel: +212 5 55 80 26 75, IBAN: MA22LZKB88B3OV46J1NFIF0G0BKB","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""UH051385"", ""+212 5 55 80 26 75"", ""MA22LZKB88B3OV46J1NFIF0G0BKB""]",3,multiple_entities
+Product code: MA123456,[],[],0,edge_false_positive
+Numéro de sécurité sociale: 966963993529,"[""CNSS""]","[""966963993529""]",1,single_cnss
+Appelez-moi au 0565767881,"[""PHONE_MA""]","[""0565767881""]",1,single_phone
+Affilié CNSS 950964486494,"[""CNSS""]","[""950964486494""]",1,single_cnss
+Compte: MA27NOZMDYGJJOVOS9HYAAXZRPOH,"[""IBAN_MA""]","[""MA27NOZMDYGJJOVOS9HYAAXZRPOH""]",1,single_iban
++212 6 12 34 56 78,"[""PHONE_MA""]","[""+212612345678""]",1,edge_phone_spaces
+Mon compte bancaire: MA41ZXVYP65ZGVH3EG8L1ALUOA03,"[""IBAN_MA""]","[""MA41ZXVYP65ZGVH3EG8L1ALUOA03""]",1,single_iban
+Appelez-moi au +212672858374,"[""PHONE_MA""]","[""+212672858374""]",1,single_phone
+The weather is nice today AB123.,[],[],0,edge_false_positive
+CNSS: 629380127782,"[""CNSS""]","[""629380127782""]",1,single_cnss
+"Informations: CIN XE143194, Tel: 00212752299387, IBAN: MA57KQVI8JDJQCGY01A04W0Z7BRX","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""XE143194"", ""00212752299387"", ""MA57KQVI8JDJQCGY01A04W0Z7BRX""]",3,multiple_entities
+"Informations: CIN HA016526, Tel: 0622184193","[""CIN_MAROC"", ""PHONE_MA""]","[""HA016526"", ""0622184193""]",2,multiple_entities
+Mon numéro CNSS est 379346512811,"[""CNSS""]","[""379346512811""]",1,single_cnss
+Product code: MA123456,[],[],0,edge_false_positive
+Numéro de sécurité sociale: 857202856138,"[""CNSS""]","[""857202856138""]",1,single_cnss
+Mon numéro CNSS est 579875007283,"[""CNSS""]","[""579875007283""]",1,single_cnss
+"Informations: CIN QS063652, Tel: 0792208524, IBAN: MA97CWTBYOV3DMD6K2P7Z84HXKY7","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""QS063652"", ""0792208524"", ""MA97CWTBYOV3DMD6K2P7Z84HXKY7""]",3,multiple_entities
+La formation commence lundi.,[],[],0,no_pii
+Numéro de sécurité sociale: 177510663316,"[""CNSS""]","[""177510663316""]",1,single_cnss
+Tel portable +212 7 43 56 76 15,"[""PHONE_MA""]","[""+212 7 43 56 76 15""]",1,single_phone
+Pour me joindre: 0560015814,"[""PHONE_MA""]","[""0560015814""]",1,single_phone
+"Informations: CIN RZ023642, Tel: +212619209640","[""CIN_MAROC"", ""PHONE_MA""]","[""RZ023642"", ""+212619209640""]",2,multiple_entities
+"Informations: CIN VD039937, Tel: 0546748299, IBAN: MA34CETP9K88OCOHILPDUH461R09","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""VD039937"", ""0546748299"", ""MA34CETP9K88OCOHILPDUH461R09""]",3,multiple_entities
+"Informations: CIN JT025146, Tel: +212731918943","[""CIN_MAROC"", ""PHONE_MA""]","[""JT025146"", ""+212731918943""]",2,multiple_entities
+CNSS: 299414772787,"[""CNSS""]","[""299414772787""]",1,single_cnss
+Tel portable 0742691263,"[""PHONE_MA""]","[""0742691263""]",1,single_phone
+"Informations: CIN EM172697, Tel: +212614678950, IBAN: MA19OGLX5NXN9PWKIXHFUSSJ0YTH","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""EM172697"", ""+212614678950"", ""MA19OGLX5NXN9PWKIXHFUSSJ0YTH""]",3,multiple_entities
+Mon compte bancaire: MA17OPTEOK1CNDIPEA6J88U5G2EE,"[""IBAN_MA""]","[""MA17OPTEOK1CNDIPEA6J88U5G2EE""]",1,single_iban
+Affilié CNSS 474661886095,"[""CNSS""]","[""474661886095""]",1,single_cnss
+"Informations: CIN TW222611, Tel: +212 6 99 04 32 72","[""CIN_MAROC"", ""PHONE_MA""]","[""TW222611"", ""+212 6 99 04 32 72""]",2,multiple_entities
+Mon numéro est 00212579987997,"[""PHONE_MA""]","[""00212579987997""]",1,single_phone
+Mon numéro CNSS est 617122862708,"[""CNSS""]","[""617122862708""]",1,single_cnss
+Mobile: 0554024257,"[""PHONE_MA""]","[""0554024257""]",1,single_phone
+Téléphone: +212590023800,"[""PHONE_MA""]","[""+212590023800""]",1,single_phone
+Compte: MA60NQNKP2JM9BI7TJEMUO2PQU23,"[""IBAN_MA""]","[""MA60NQNKP2JM9BI7TJEMUO2PQU23""]",1,single_iban
+RIB IBAN MA36BPLRV81FJRR5Z8WKKRT8VZIE,"[""IBAN_MA""]","[""MA36BPLRV81FJRR5Z8WKKRT8VZIE""]",1,single_iban
+Mobile: 00212558178682,"[""PHONE_MA""]","[""00212558178682""]",1,single_phone
+Mobile: 00212535519083,"[""PHONE_MA""]","[""00212535519083""]",1,single_phone
+Random text 0612 without context,[],[],0,edge_false_positive
+Mon compte bancaire: MA54OYSHKJWECR51Y2XNQ7T9K93Q,"[""IBAN_MA""]","[""MA54OYSHKJWECR51Y2XNQ7T9K93Q""]",1,single_iban
++212 6 12 34 56 78,"[""PHONE_MA""]","[""+212612345678""]",1,edge_phone_spaces
+"Bonjour, comment allez-vous?",[],[],0,no_pii
+Numéro de sécurité sociale: 389854279055,"[""CNSS""]","[""389854279055""]",1,single_cnss
+Contact: 0546578001,"[""PHONE_MA""]","[""0546578001""]",1,single_phone
+La réunion est prévue pour demain.,[],[],0,no_pii
+Affilié CNSS 660283964332,"[""CNSS""]","[""660283964332""]",1,single_cnss
+J'aime beaucoup ce restaurant.,[],[],0,no_pii
+La réunion est prévue pour demain.,[],[],0,no_pii
+Mobile: +212 6 41 16 38 05,"[""PHONE_MA""]","[""+212 6 41 16 38 05""]",1,single_phone
+The weather is nice today AB123.,[],[],0,edge_false_positive
+"Informations: CIN AY698463, Tel: 00212565828293","[""CIN_MAROC"", ""PHONE_MA""]","[""AY698463"", ""00212565828293""]",2,multiple_entities
+Tel portable +212 5 45 18 67 08,"[""PHONE_MA""]","[""+212 5 45 18 67 08""]",1,single_phone
+"Informations: CIN KX110361, Tel: 00212790215042","[""CIN_MAROC"", ""PHONE_MA""]","[""KX110361"", ""00212790215042""]",2,multiple_entities
+"Je m'appelle Ahmed, mon CIN est QR195636","[""CIN_MAROC""]","[""QR195636""]",1,single_cin
+Mon numéro est 00212646912022,"[""PHONE_MA""]","[""00212646912022""]",1,single_phone
+Document CIN ZU343538 valide jusqu'en 2030,"[""CIN_MAROC""]","[""ZU343538""]",1,single_cin
+Mon numéro CNSS est 244945382800,"[""CNSS""]","[""244945382800""]",1,single_cnss
+Numéro CIN BT469156,"[""CIN_MAROC""]","[""BT469156""]",1,single_cin
+Compte: MA11HKCXWZK6D4AH2FFH298ML73A,"[""IBAN_MA""]","[""MA11HKCXWZK6D4AH2FFH298ML73A""]",1,single_iban
+Téléphone: 00212656991504,"[""PHONE_MA""]","[""00212656991504""]",1,single_phone
+Random text 0612 without context,[],[],0,edge_false_positive
+Contact: 0712118101,"[""PHONE_MA""]","[""0712118101""]",1,single_phone
+Veuillez enregistrer le CIN XT732107,"[""CIN_MAROC""]","[""XT732107""]",1,single_cin
+Document CIN XN851138 valide jusqu'en 2030,"[""CIN_MAROC""]","[""XN851138""]",1,single_cin
+Carte d'identité numéro: CR532632,"[""CIN_MAROC""]","[""CR532632""]",1,single_cin
+Mon numéro est 00212581210133,"[""PHONE_MA""]","[""00212581210133""]",1,single_phone
+Pour me joindre: +212 7 99 99 11 36,"[""PHONE_MA""]","[""+212 7 99 99 11 36""]",1,single_phone
+J'aime beaucoup ce restaurant.,[],[],0,no_pii
+"Bonjour, comment allez-vous?",[],[],0,no_pii
+Compte: MA52UNDX5XBEMULIIHKH0B3EBWVM,"[""IBAN_MA""]","[""MA52UNDX5XBEMULIIHKH0B3EBWVM""]",1,single_iban
+Product code: MA123456,[],[],0,edge_false_positive
+Veuillez enregistrer le CIN FJ843493,"[""CIN_MAROC""]","[""FJ843493""]",1,single_cin
+Document CIN DD455374 valide jusqu'en 2030,"[""CIN_MAROC""]","[""DD455374""]",1,single_cin
+Compte: MA96XITDZQIZ1FUCRYER19ZHCXFO,"[""IBAN_MA""]","[""MA96XITDZQIZ1FUCRYER19ZHCXFO""]",1,single_iban
+"Informations: CIN QM063743, Tel: 00212648205125, IBAN: MA54ILOFVQEF5QWQEUL5AZICXLD0","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""QM063743"", ""00212648205125"", ""MA54ILOFVQEF5QWQEUL5AZICXLD0""]",3,multiple_entities
+"Informations: CIN FR820552, Tel: 00212614840043","[""CIN_MAROC"", ""PHONE_MA""]","[""FR820552"", ""00212614840043""]",2,multiple_entities
+"Informations: CIN NB312639, Tel: +212 7 40 31 62 18, IBAN: MA47ZLWXSXD0OOEIO4EPZQW6D77U","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""NB312639"", ""+212 7 40 31 62 18"", ""MA47ZLWXSXD0OOEIO4EPZQW6D77U""]",3,multiple_entities
+Téléphone: +212 6 22 51 31 32,"[""PHONE_MA""]","[""+212 6 22 51 31 32""]",1,single_phone
+Code AB123,[],[],0,edge_partial_cin
+Veuillez enregistrer le CIN YC919214,"[""CIN_MAROC""]","[""YC919214""]",1,single_cin
+Le rapport sera envoyé ce soir.,[],[],0,no_pii
+"Informations: CIN NF409993, Tel: 0649919426","[""CIN_MAROC"", ""PHONE_MA""]","[""NF409993"", ""0649919426""]",2,multiple_entities
+Compte: MA34FDCV3RUV1CR4D5TRT5FEO8FA,"[""IBAN_MA""]","[""MA34FDCV3RUV1CR4D5TRT5FEO8FA""]",1,single_iban
+"Informations: CIN HU461126, Tel: +212 7 11 63 84 98, IBAN: MA73WOAW8LHE2L8JMKT15N1UOUAX","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""HU461126"", ""+212 7 11 63 84 98"", ""MA73WOAW8LHE2L8JMKT15N1UOUAX""]",3,multiple_entities
+Mon numéro CNSS est 182000313439,"[""CNSS""]","[""182000313439""]",1,single_cnss
+"Informations: CIN JT154903, Tel: +212 5 33 46 13 07, IBAN: MA25SLRA7KBM9J8GMDH7PDUA64K8","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""JT154903"", ""+212 5 33 46 13 07"", ""MA25SLRA7KBM9J8GMDH7PDUA64K8""]",3,multiple_entities
+"Informations: CIN TQ013369, Tel: 0696657974, IBAN: MA71ELWXGTX2IKOJ0KBWS25UCDJ5","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""TQ013369"", ""0696657974"", ""MA71ELWXGTX2IKOJ0KBWS25UCDJ5""]",3,multiple_entities
+IBAN: MA25YELZFZWVAVV3C2NN1MQRF337,"[""IBAN_MA""]","[""MA25YELZFZWVAVV3C2NN1MQRF337""]",1,single_iban
+Code: 987654321,[],[],0,edge_numeric
+Document CIN BH683106 valide jusqu'en 2030,"[""CIN_MAROC""]","[""BH683106""]",1,single_cin
+Mon compte bancaire: MA37QDKRU33RLDYB593JLLSOUNAI,"[""IBAN_MA""]","[""MA37QDKRU33RLDYB593JLLSOUNAI""]",1,single_iban
+C'est une excellente idée.,[],[],0,no_pii
+Mon numéro est +212723212812,"[""PHONE_MA""]","[""+212723212812""]",1,single_phone
+Compte: MA32KVYAUS6QVA1ALXCGNIW4I9TB,"[""IBAN_MA""]","[""MA32KVYAUS6QVA1ALXCGNIW4I9TB""]",1,single_iban
+CIN: UE 669917,"[""CIN_MAROC""]","[""varies""]",1,edge_cin_spaces
+RIB IBAN MA45QUBREIQ51UOF48NDY15GDF24,"[""IBAN_MA""]","[""MA45QUBREIQ51UOF48NDY15GDF24""]",1,single_iban
+Random text 0612 without context,[],[],0,edge_false_positive
+Téléphone: +212 5 91 25 90 08,"[""PHONE_MA""]","[""+212 5 91 25 90 08""]",1,single_phone
+Veuillez enregistrer le CIN IS688833,"[""CIN_MAROC""]","[""IS688833""]",1,single_cin
+Affilié CNSS 398918103930,"[""CNSS""]","[""398918103930""]",1,single_cnss
+IBAN: MA80OXWSXMSI474S0JDSJM3BZPIR,"[""IBAN_MA""]","[""MA80OXWSXMSI474S0JDSJM3BZPIR""]",1,single_iban
+Numéro CIN BY002862,"[""CIN_MAROC""]","[""BY002862""]",1,single_cin
+"Informations: CIN CH045674, Tel: 0783164605, IBAN: MA94EDOVCFAV40N5VNZ44TUWPXMG","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""CH045674"", ""0783164605"", ""MA94EDOVCFAV40N5VNZ44TUWPXMG""]",3,multiple_entities
+Document CIN XU105638 valide jusqu'en 2030,"[""CIN_MAROC""]","[""XU105638""]",1,single_cin
+Document CIN GX712236 valide jusqu'en 2030,"[""CIN_MAROC""]","[""GX712236""]",1,single_cin
+"Informations: CIN IZ518775, Tel: +212718485498, IBAN: MA45DKSOFX13UMR0H063NVETRO7N","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""IZ518775"", ""+212718485498"", ""MA45DKSOFX13UMR0H063NVETRO7N""]",3,multiple_entities
+Mon compte bancaire: MA58UJOMWID6B7WS2ZJRZZ3N9TX2,"[""IBAN_MA""]","[""MA58UJOMWID6B7WS2ZJRZZ3N9TX2""]",1,single_iban
+Numéro de sécurité sociale: 070012089444,"[""CNSS""]","[""070012089444""]",1,single_cnss
+RIB IBAN MA64MLHT4FAOHO1EL0A749B0Q6DP,"[""IBAN_MA""]","[""MA64MLHT4FAOHO1EL0A749B0Q6DP""]",1,single_iban
+Mobile: +212559858348,"[""PHONE_MA""]","[""+212559858348""]",1,single_phone
+"Je m'appelle Ahmed, mon CIN est EP621825","[""CIN_MAROC""]","[""EP621825""]",1,single_cin
+"Informations: CIN SW886536, Tel: +212 5 53 85 81 04, IBAN: MA98ABQQS4EMB25IYTRUOSBHQ9OT","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""SW886536"", ""+212 5 53 85 81 04"", ""MA98ABQQS4EMB25IYTRUOSBHQ9OT""]",3,multiple_entities
+Mon compte bancaire: MA42VTPBC2ZX2X1ERRZNFZDVWDON,"[""IBAN_MA""]","[""MA42VTPBC2ZX2X1ERRZNFZDVWDON""]",1,single_iban
+Compte: MA73LJMOD93KQ8I1V8GD5XUJWQFB,"[""IBAN_MA""]","[""MA73LJMOD93KQ8I1V8GD5XUJWQFB""]",1,single_iban
+"Informations: CIN TW966053, Tel: 00212530076290","[""CIN_MAROC"", ""PHONE_MA""]","[""TW966053"", ""00212530076290""]",2,multiple_entities
+CNSS: 667692430751,"[""CNSS""]","[""667692430751""]",1,single_cnss
+"Informations: CIN KY601496, Tel: +212 7 56 68 81 15, IBAN: MA10OEZZMVZIGM7145UWH5X1D79M","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""KY601496"", ""+212 7 56 68 81 15"", ""MA10OEZZMVZIGM7145UWH5X1D79M""]",3,multiple_entities
+Mon numéro est +212778885632,"[""PHONE_MA""]","[""+212778885632""]",1,single_phone
+"Informations: CIN JJ795618, Tel: +212 6 16 88 67 77","[""CIN_MAROC"", ""PHONE_MA""]","[""JJ795618"", ""+212 6 16 88 67 77""]",2,multiple_entities
+Code AB123,[],[],0,edge_partial_cin
+Téléphone: +212 7 97 13 94 43,"[""PHONE_MA""]","[""+212 7 97 13 94 43""]",1,single_phone
+Mon CIN est RP267167,"[""CIN_MAROC""]","[""RP267167""]",1,single_cin
+Pour me joindre: +212673280554,"[""PHONE_MA""]","[""+212673280554""]",1,single_phone
+Tel portable 00212749613214,"[""PHONE_MA""]","[""00212749613214""]",1,single_phone
+C'est une excellente idée.,[],[],0,no_pii
+Veuillez enregistrer le CIN KB957248,"[""CIN_MAROC""]","[""KB957248""]",1,single_cin
+CNSS: 678415797697,"[""CNSS""]","[""678415797697""]",1,single_cnss
+CNSS: 781627345231,"[""CNSS""]","[""781627345231""]",1,single_cnss
+Document CIN EP826368 valide jusqu'en 2030,"[""CIN_MAROC""]","[""EP826368""]",1,single_cin
+CNSS: 306986105712,"[""CNSS""]","[""306986105712""]",1,single_cnss
+CIN: JE999541,"[""CIN_MAROC""]","[""JE999541""]",1,single_cin
+Tel portable 00212627447248,"[""PHONE_MA""]","[""00212627447248""]",1,single_phone
+CIN: JG073568,"[""CIN_MAROC""]","[""JG073568""]",1,single_cin
+"Informations: CIN DR997504, Tel: 0729865888","[""CIN_MAROC"", ""PHONE_MA""]","[""DR997504"", ""0729865888""]",2,multiple_entities
+Tel portable 0787054398,"[""PHONE_MA""]","[""0787054398""]",1,single_phone
+0612 345 678,"[""PHONE_MA""]","[""0612345678""]",1,edge_phone_spaces
+RIB IBAN MA26ZQLRCVSN6YFW1455BPCXWU9M,"[""IBAN_MA""]","[""MA26ZQLRCVSN6YFW1455BPCXWU9M""]",1,single_iban
+"Informations: CIN JE721509, Tel: 0689932574, IBAN: MA73TKJRQ6KU19T1GHHYX8OE9JFA","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""JE721509"", ""0689932574"", ""MA73TKJRQ6KU19T1GHHYX8OE9JFA""]",3,multiple_entities
+Numéro de sécurité sociale: 664386042337,"[""CNSS""]","[""664386042337""]",1,single_cnss
+C'est une excellente idée.,[],[],0,no_pii
+The price is 123456789012,[],[],0,edge_numeric
+CNSS: 150302996711,"[""CNSS""]","[""150302996711""]",1,single_cnss
+IBAN: MA47DIJVHNO9TYNH6S6PHXJN21UY,"[""IBAN_MA""]","[""MA47DIJVHNO9TYNH6S6PHXJN21UY""]",1,single_iban
+Mon compte bancaire: MA39NIVMUDYZGADIYTS49NVJ3UUA,"[""IBAN_MA""]","[""MA39NIVMUDYZGADIYTS49NVJ3UUA""]",1,single_iban
+Compte: MA66XKZMHXISQ2LTJB2NBLFOC1VC,"[""IBAN_MA""]","[""MA66XKZMHXISQ2LTJB2NBLFOC1VC""]",1,single_iban
+Affilié CNSS 351822753893,"[""CNSS""]","[""351822753893""]",1,single_cnss
+Le temps est très agréable aujourd'hui.,[],[],0,no_pii
+IBAN: MA21LZUGTLCPM55772CAJBPA9UZO,"[""IBAN_MA""]","[""MA21LZUGTLCPM55772CAJBPA9UZO""]",1,single_iban
+Le rapport sera envoyé ce soir.,[],[],0,no_pii
+Reference XY12345,[],[],0,edge_partial_cin
+The weather is nice today AB123.,[],[],0,edge_false_positive
+Le temps est très agréable aujourd'hui.,[],[],0,no_pii
+Affilié CNSS 238767160914,"[""CNSS""]","[""238767160914""]",1,single_cnss
+"Informations: CIN UJ181279, Tel: +212 6 38 78 40 84, IBAN: MA53UPRBEMSTGL39DLQXENAY2R6H","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""UJ181279"", ""+212 6 38 78 40 84"", ""MA53UPRBEMSTGL39DLQXENAY2R6H""]",3,multiple_entities
+Compte: MA10IPUI6SV25P53ID2PNLCBZQFN,"[""IBAN_MA""]","[""MA10IPUI6SV25P53ID2PNLCBZQFN""]",1,single_iban
+"Informations: CIN DG861894, Tel: +212617425900, IBAN: MA50PWXKDN3XQ54QXITYX9V84TBL","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""DG861894"", ""+212617425900"", ""MA50PWXKDN3XQ54QXITYX9V84TBL""]",3,multiple_entities
+Mon compte bancaire: MA19KTLL2BFENAEY6YGODF3FE2VQ,"[""IBAN_MA""]","[""MA19KTLL2BFENAEY6YGODF3FE2VQ""]",1,single_iban
+Mon numéro est +212 6 18 53 06 15,"[""PHONE_MA""]","[""+212 6 18 53 06 15""]",1,single_phone
+CIN: YN776306,"[""CIN_MAROC""]","[""YN776306""]",1,single_cin
+RIB IBAN MA26QPCQLK6MWCX1V2YR97KM1WJN,"[""IBAN_MA""]","[""MA26QPCQLK6MWCX1V2YR97KM1WJN""]",1,single_iban
+"Informations: CIN QH876597, Tel: 0786207390, IBAN: MA21VXMLOPG88UMWEPNSVG1HCG6R","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""QH876597"", ""0786207390"", ""MA21VXMLOPG88UMWEPNSVG1HCG6R""]",3,multiple_entities
+Contact: 00212751471222,"[""PHONE_MA""]","[""00212751471222""]",1,single_phone
+Product code: MA123456,[],[],0,edge_false_positive
+Numéro de sécurité sociale: 856438883757,"[""CNSS""]","[""856438883757""]",1,single_cnss
+IBAN: MA24LPITQ4PP5YISP64S9VR1T92P,"[""IBAN_MA""]","[""MA24LPITQ4PP5YISP64S9VR1T92P""]",1,single_iban
+Pour me joindre: +212 6 20 59 89 52,"[""PHONE_MA""]","[""+212 6 20 59 89 52""]",1,single_phone
+CIN: VG742472,"[""CIN_MAROC""]","[""VG742472""]",1,single_cin
+"Informations: CIN FR221946, Tel: +212 5 53 60 67 52, IBAN: MA41LUPVPEXKJNP13GVV8JZ1DRY6","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""FR221946"", ""+212 5 53 60 67 52"", ""MA41LUPVPEXKJNP13GVV8JZ1DRY6""]",3,multiple_entities
+Numéro CIN AC265774,"[""CIN_MAROC""]","[""AC265774""]",1,single_cin
+La réunion est prévue pour demain.,[],[],0,no_pii
+"Informations: CIN TV581874, Tel: +212 6 33 70 38 27","[""CIN_MAROC"", ""PHONE_MA""]","[""TV581874"", ""+212 6 33 70 38 27""]",2,multiple_entities
+Document CIN KQ164260 valide jusqu'en 2030,"[""CIN_MAROC""]","[""KQ164260""]",1,single_cin
+"Informations: CIN BT917418, Tel: 00212569702849, IBAN: MA63FRIUB3QVD7GHW5XGD4PMZ74O","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""BT917418"", ""00212569702849"", ""MA63FRIUB3QVD7GHW5XGD4PMZ74O""]",3,multiple_entities
+CIN: SL022802,"[""CIN_MAROC""]","[""SL022802""]",1,single_cin
+Compte: MA52CRXINN4P3KNB4PYZW3OI0BYC,"[""IBAN_MA""]","[""MA52CRXINN4P3KNB4PYZW3OI0BYC""]",1,single_iban
+Veuillez enregistrer le CIN DZ147519,"[""CIN_MAROC""]","[""DZ147519""]",1,single_cin
+"Informations: CIN KN771135, Tel: 00212650532800, IBAN: MA73OMAA9YUHNWFHO849Z2QKKVMH","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""KN771135"", ""00212650532800"", ""MA73OMAA9YUHNWFHO849Z2QKKVMH""]",3,multiple_entities
+Compte: MA68ZCCDT2KFY89BSPQB927SL55G,"[""IBAN_MA""]","[""MA68ZCCDT2KFY89BSPQB927SL55G""]",1,single_iban
+"Informations: CIN LZ510979, Tel: +212730945115, IBAN: MA79ZISMAXZK5KWFOQW5JBEUG31N","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""LZ510979"", ""+212730945115"", ""MA79ZISMAXZK5KWFOQW5JBEUG31N""]",3,multiple_entities
+0612 345 678,"[""PHONE_MA""]","[""0612345678""]",1,edge_phone_spaces
+"Informations: CIN QZ082225, Tel: +212693828673, IBAN: MA84CIBUH7SNASFJ7EMGR60PVK7Y","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""QZ082225"", ""+212693828673"", ""MA84CIBUH7SNASFJ7EMGR60PVK7Y""]",3,multiple_entities
+"Informations: CIN KW126626, Tel: +212653036072, IBAN: MA29BNEC9PQ85HCBSZGSBUY2R2G6","[""CIN_MAROC"", ""PHONE_MA"", ""IBAN_MA""]","[""KW126626"", ""+212653036072"", ""MA29BNEC9PQ85HCBSZGSBUY2R2G6""]",3,multiple_entities
+Numéro CIN RD927444,"[""CIN_MAROC""]","[""RD927444""]",1,single_cin
+Mon numéro CNSS est 806196275533,"[""CNSS""]","[""806196275533""]",1,single_cnss
+La réunion est prévue pour demain.,[],[],0,no_pii
+Carte d'identité numéro: SM858742,"[""CIN_MAROC""]","[""SM858742""]",1,single_cin
+CNSS: 596861958570,"[""CNSS""]","[""596861958570""]",1,single_cnss
+Mon compte bancaire: MA25NZFI945OTP1UB38CIO9Z1EGQ,"[""IBAN_MA""]","[""MA25NZFI945OTP1UB38CIO9Z1EGQ""]",1,single_iban
+Le rapport sera envoyé ce soir.,[],[],0,no_pii
+Compte: MA20UHGB9DS5EC3XGR33FKI33JLS,"[""IBAN_MA""]","[""MA20UHGB9DS5EC3XGR33FKI33JLS""]",1,single_iban
+Carte d'identité numéro: GM198266,"[""CIN_MAROC""]","[""GM198266""]",1,single_cin
+Numéro de sécurité sociale: 262369695631,"[""CNSS""]","[""262369695631""]",1,single_cnss
+Numéro CIN VA840564,"[""CIN_MAROC""]","[""VA840564""]",1,single_cin
+"Informations: CIN KX765105, Tel: 0525889673","[""CIN_MAROC"", ""PHONE_MA""]","[""KX765105"", ""0525889673""]",2,multiple_entities
+RIB IBAN MA34KOYONA3EJH103TMH37MZH4SG,"[""IBAN_MA""]","[""MA34KOYONA3EJH103TMH37MZH4SG""]",1,single_iban
+Mon numéro est +212767213476,"[""PHONE_MA""]","[""+212767213476""]",1,single_phone
+Merci pour votre aide.,[],[],0,no_pii
+0612 345 678,"[""PHONE_MA""]","[""0612345678""]",1,edge_phone_spaces
+C'est une excellente idée.,[],[],0,no_pii
+C'est une excellente idée.,[],[],0,no_pii
+Mon compte bancaire: MA52VJWLFTNLALPH6EBQMYSBASDX,"[""IBAN_MA""]","[""MA52VJWLFTNLALPH6EBQMYSBASDX""]",1,single_iban
+Appelez-moi au +212545896226,"[""PHONE_MA""]","[""+212545896226""]",1,single_phone
+The weather is nice today AB123.,[],[],0,edge_false_positive
+J'aime beaucoup ce restaurant.,[],[],0,no_pii
+Veuillez enregistrer le CIN EL160350,"[""CIN_MAROC""]","[""EL160350""]",1,single_cin
+0612 345 678,"[""PHONE_MA""]","[""0612345678""]",1,edge_phone_spaces
+Compte: MA27ZUXZV4V8PTROHK9EGMV3IAXD,"[""IBAN_MA""]","[""MA27ZUXZV4V8PTROHK9EGMV3IAXD""]",1,single_iban
+Carte d'identité numéro: TR904382,"[""CIN_MAROC""]","[""TR904382""]",1,single_cin
+CNSS: 979618166384,"[""CNSS""]","[""979618166384""]",1,single_cnss
+Code: 987654321,[],[],0,edge_numeric
+Pour me joindre: +212 6 27 01 32 43,"[""PHONE_MA""]","[""+212 6 27 01 32 43""]",1,single_phone
+Mon numéro CNSS est 981494968299,"[""CNSS""]","[""981494968299""]",1,single_cnss
+Pour me joindre: 0634347841,"[""PHONE_MA""]","[""0634347841""]",1,single_phone
+"Informations: CIN DX603966, Tel: 0666013532","[""CIN_MAROC"", ""PHONE_MA""]","[""DX603966"", ""0666013532""]",2,multiple_entities
+"Informations: CIN UG039281, Tel: 0675997780","[""CIN_MAROC"", ""PHONE_MA""]","[""UG039281"", ""0675997780""]",2,multiple_entities
+Reference XY12345,[],[],0,edge_partial_cin
+CNSS: 550762049818,"[""CNSS""]","[""550762049818""]",1,single_cnss
+Numéro de sécurité sociale: 043970405879,"[""CNSS""]","[""043970405879""]",1,single_cnss
+Téléphone: 00212663339667,"[""PHONE_MA""]","[""00212663339667""]",1,single_phone
+Mon CIN est XM562622,"[""CIN_MAROC""]","[""XM562622""]",1,single_cin
+"Informations: CIN CE063465, Tel: 0659171204","[""CIN_MAROC"", ""PHONE_MA""]","[""CE063465"", ""0659171204""]",2,multiple_entities
+"Je m'appelle Ahmed, mon CIN est YV543394","[""CIN_MAROC""]","[""YV543394""]",1,single_cin
+The price is 123456789012,[],[],0,edge_numeric
+Mon numéro CNSS est 289869081053,"[""CNSS""]","[""289869081053""]",1,single_cnss
+IBAN: MA60IHYA6IW4RP7MOZ7426PZTYZO,"[""IBAN_MA""]","[""MA60IHYA6IW4RP7MOZ7426PZTYZO""]",1,single_iban
+Product code: MA123456,[],[],0,edge_false_positive
+Mobile: 0598473848,"[""PHONE_MA""]","[""0598473848""]",1,single_phone
+Document CIN PG440634 valide jusqu'en 2030,"[""CIN_MAROC""]","[""PG440634""]",1,single_cin
+"Je m'appelle Ahmed, mon CIN est HK263539","[""CIN_MAROC""]","[""HK263539""]",1,single_cin
+Pour me joindre: +212 5 42 32 36 27,"[""PHONE_MA""]","[""+212 5 42 32 36 27""]",1,single_phone
+Compte: MA93ISOXMCNTDQA60PKURK6BTMN3,"[""IBAN_MA""]","[""MA93ISOXMCNTDQA60PKURK6BTMN3""]",1,single_iban
+"Informations: CIN BU701750, Tel: +212643958759","[""CIN_MAROC"", ""PHONE_MA""]","[""BU701750"", ""+212643958759""]",2,multiple_entities
+Contact: 00212717532195,"[""PHONE_MA""]","[""00212717532195""]",1,single_phone
