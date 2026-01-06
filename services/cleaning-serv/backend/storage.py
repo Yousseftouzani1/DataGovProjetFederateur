@@ -7,7 +7,7 @@ from bson import ObjectId
 # --------------------------------------------------
 # MongoDB configuration (via environment variables)
 # --------------------------------------------------
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+MONGO_URL = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "datagov")
 
 client = AsyncIOMotorClient(MONGO_URL)
@@ -72,6 +72,6 @@ async def save_metadata(dataset_id: str, metadata: dict, metadata_type: str):
         "dataset_id": dataset_id,
         "type": metadata_type,  # "profiling" or "cleaning"
         "metadata": metadata,
-        "created_at": datetime.time
+        "created_at": datetime.utcnow()
     }
     await metadata_col.insert_one(document)

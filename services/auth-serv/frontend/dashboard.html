@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataGov Platform - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.8);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
+            color: #e2e8f0;
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 27, 75, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, transparent 100%);
+            border-left-color: #6366f1;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .role-admin {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .role-steward {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+
+        .role-annotator {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .role-labeler {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="flex">
+    <!-- SIDEBAR -->
+    <aside class="sidebar fixed left-0 top-0 h-screen flex flex-col z-50">
+        <!-- Logo -->
+        <div class="p-6 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-shield-halved text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg">DataGov</h1>
+                    <p class="text-xs text-gray-400">Platform</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info -->
+        <div class="p-4 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center font-bold"
+                    id="userAvatar">U</div>
+                <div>
+                    <p class="font-medium" id="userName">User</p>
+                    <span class="role-badge role-steward" id="userRole">Role</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 py-4 overflow-y-auto">
+            <p class="px-6 text-xs text-gray-500 uppercase tracking-wider mb-2">Main</p>
+
+            <a href="#" class="nav-item active flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white"
+                data-tab="dashboard">
+                <i class="fas fa-home w-5"></i> Dashboard
+            </a>
+
+            <!-- Steward + Admin Only -->
+            <div class="role-steward role-admin">
+                <p class="px-6 text-xs text-gray-500 uppercase tracking-wider mt-4 mb-2">Data Pipeline</p>
+
+                <a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white"
+                    data-tab="upload">
+                    <i class="fas fa-cloud-upload-alt w-5"></i> Upload & Profile
+                </a>
+                <a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white"
+                    data-tab="pii">
+                    <i class="fas fa-search w-5"></i> PII Detection
+                </a>
+                <a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white"
+                    data-tab="quality">
+                    <i class="fas fa-chart-line w-5"></i> Quality ISO
+                </a>
+                <a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white"
+                    data-tab="correction">
+                    <i class="fas fa-wrench w-5"></i> Correction
+                </a>
+            </div>
+
+            <!-- Annotator Only -->
+            <div class="role-annotator role-steward role-admin">
+                <p class="px-6 text-xs text-gray-500 uppercase tracking-wider mt-4 mb-2">Annotation</p>
+
+                <a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white"
+                    data-tab="annotation">
+                    <i class="fas fa-tags w-5"></i> Tasks
+                </a>
+            </div>
+
+            <!-- All Users -->
+            <p class="px-6 text-xs text-gray-500 uppercase tracking-wider mt-4 mb-2">View</p>
+
+            <a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white"
+                data-tab="ethimask">
+                <i class="fas fa-mask w-5"></i> EthiMask Preview
+            </a>
+
+            <!-- Admin Only -->
+            <div class="role-admin">
+                <p class="px-6 text-xs text-gray-500 uppercase tracking-wider mt-4 mb-2">Admin</p>
+
+                <a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white"
+                    data-tab="users">
+                    <i class="fas fa-users w-5"></i> Users
+                </a>
+                <a href="#" class="nav-item flex items-center gap-3 px-6 py-3 text-gray-300 hover:text-white"
+                    data-tab="services">
+                    <i class="fas fa-server w-5"></i> Services
+                </a>
+            </div>
+        </nav>
+
+        <!-- Logout -->
+        <div class="p-4 border-t border-white/10">
+            <button onclick="logout()"
+                class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="ml-[280px] flex-1 p-8">
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-2xl font-bold" id="pageTitle">Dashboard</h2>
+                <p class="text-gray-400" id="pageSubtitle">Welcome to DataGov Platform</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="glass px-4 py-2 rounded-xl flex items-center gap-2">
+                    <div class="status-dot bg-green-500"></div>
+                    <span class="text-sm" id="servicesStatus">Loading...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- TAB: Dashboard -->
+        <div id="tab-dashboard" class="tab-content active fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-database text-indigo-400 text-xl"></i>
+                        </div>
+                        <span class="text-green-400 text-sm">+12%</span>
+                    </div>
+                    <h3 class="text-3xl font-bold" id="statDatasets">0</h3>
+                    <p class="text-gray-400">Datasets</p>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-pink-500/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-eye-slash text-pink-400 text-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold" id="statPII">0</h3>
+                    <p class="text-gray-400">PII Detected</p>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-check-circle text-emerald-400 text-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold" id="statQuality">--</h3>
+                    <p class="text-gray-400">Quality Score</p>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-clipboard-list text-amber-400 text-xl"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold" id="statTasks">0</h3>
+                    <p class="text-gray-400">Pending Tasks</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card p-6 mb-8">
+                <h3 class="text-lg font-bold mb-4">Quick Actions</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="showTab('upload')" class="btn-primary px-4 py-3 rounded-xl font-medium">
+                        <i class="fas fa-upload mr-2"></i> Upload Data
+                    </button>
+                    <button onclick="showTab('pii')" class="btn-primary px-4 py-3 rounded-xl font-medium">
+                        <i class="fas fa-search mr-2"></i> Detect PII
+                    </button>
+                    <button onclick="showTab('quality')" class="btn-primary px-4 py-3 rounded-xl font-medium">
+                        <i class="fas fa-chart-bar mr-2"></i> Quality Check
+                    </button>
+                    <button onclick="showTab('ethimask')" class="btn-primary px-4 py-3 rounded-xl font-medium">
+                        <i class="fas fa-mask mr-2"></i> View Masked
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card p-6">
+                <h3 class="text-lg font-bold mb-4">Service Health</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="serviceHealth">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Upload & Profile -->
+        <div id="tab-upload" class="tab-content fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Upload Card -->
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold mb-4"><i
+                            class="fas fa-cloud-upload-alt mr-2 text-indigo-400"></i>Upload Dataset</h3>
+                    <div class="border-2 border-dashed border-gray-600 rounded-xl p-8 text-center hover:border-indigo-500 transition cursor-pointer"
+                        onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-file-csv text-4xl text-gray-500 mb-4"></i>
+                        <p class="text-gray-400 mb-2">Drop CSV, Excel, or JSON file</p>
+                        <p class="text-sm text-gray-500">or click to browse</p>
+                        <input type="file" id="fileInput" class="hidden" accept=".csv,.xlsx,.xls,.json"
+                            onchange="uploadFile(this)">
+                    </div>
+                    <div id="uploadStatus" class="mt-4 hidden">
+                        <div class="flex items-center gap-2 text-green-400">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="uploadMessage">File uploaded successfully</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dataset Info -->
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold mb-4"><i class="fas fa-info-circle mr-2 text-emerald-400"></i>Dataset
+                        Info</h3>
+                    <div id="datasetInfo" class="space-y-4">
+                        <p class="text-gray-400">Upload a file to see info</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Preview -->
+            <div class="card p-6 mt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold"><i class="fas fa-table mr-2 text-blue-400"></i>Data Preview</h3>
+                    <div class="flex gap-2">
+                        <button onclick="profileData()"
+                            class="px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-lg hover:bg-indigo-500/30 transition">
+                            <i class="fas fa-chart-pie mr-2"></i>Profile
+                        </button>
+                        <button onclick="cleanData()"
+                            class="px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-lg hover:bg-emerald-500/30 transition">
+                            <i class="fas fa-broom mr-2"></i>Auto Clean
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="previewTable">
+                        <thead>
+                            <tr>
+                                <th>No data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-gray-400">Upload a file to preview</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: PII Detection -->
+        <div id="tab-pii" class="tab-content fade-in">
+            <div class="card p-6 mb-6">
+                <h3 class="text-lg font-bold mb-4"><i class="fas fa-search mr-2 text-pink-400"></i>PII/SPI Detection
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Taxonomie Results -->
+                    <div>
+                        <h4 class="font-medium text-indigo-400 mb-3">🇲🇦 Moroccan Taxonomy</h4>
+                        <p class="text-sm text-gray-400 mb-4">CIN, CNSS, Phone, IBAN, Passport</p>
+                        <button onclick="detectTaxonomie()" class="btn-primary px-4 py-2 rounded-lg w-full">
+                            <i class="fas fa-play mr-2"></i>Run Detection
+                        </button>
+                        <div id="taxonomieResults" class="mt-4 space-y-2"></div>
+                    </div>
+                    <!-- Presidio Results -->
+                    <div>
+                        <h4 class="font-medium text-purple-400 mb-3">🔒 Microsoft Presidio</h4>
+                        <p class="text-sm text-gray-400 mb-4">Names, Emails, Locations, Custom</p>
+                        <button onclick="detectPresidio()" class="btn-primary px-4 py-2 rounded-lg w-full">
+                            <i class="fas fa-play mr-2"></i>Run Detection
+                        </button>
+                        <div id="presidioResults" class="mt-4 space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classification -->
+            <div class="card p-6">
+                <h3 class="text-lg font-bold mb-4"><i class="fas fa-brain mr-2 text-amber-400"></i>Sensitivity
+                    Classification</h3>
+                <button onclick="classifyData()" class="btn-primary px-4 py-2 rounded-lg mb-4">
+                    <i class="fas fa-cogs mr-2"></i>Classify All Columns
+                </button>
+                <div id="classificationResults" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+            </div>
+        </div>
+
+        <!-- TAB: Quality ISO -->
+        <div id="tab-quality" class="tab-content fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <div class="card p-6 col-span-1">
+                    <h3 class="text-lg font-bold mb-4 text-center">Global Score</h3>
+                    <div class="text-center">
+                        <div class="text-6xl font-bold text-indigo-400" id="globalScore">--</div>
+                        <div class="text-2xl mt-2" id="qualityGrade">-</div>
+                    </div>
+                    <button onclick="evaluateQuality()" class="btn-primary px-4 py-2 rounded-lg w-full mt-6">
+                        <i class="fas fa-chart-line mr-2"></i>Evaluate Quality
+                    </button>
+                </div>
+                <div class="card p-6 col-span-2">
+                    <h3 class="text-lg font-bold mb-4">ISO 25012 Dimensions</h3>
+                    <div class="space-y-4" id="qualityDimensions">
+                        <div class="flex items-center gap-4">
+                            <span class="w-32 text-sm">Completeness</span>
+                            <div class="flex-1 progress-bar">
+                                <div class="progress-fill bg-indigo-500" style="width:0%" id="completenessBar"></div>
+                            </div>
+                            <span class="w-12 text-right" id="completenessScore">0%</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="w-32 text-sm">Accuracy</span>
+                            <div class="flex-1 progress-bar">
+                                <div class="progress-fill bg-pink-500" style="width:0%" id="accuracyBar"></div>
+                            </div>
+                            <span class="w-12 text-right" id="accuracyScore">0%</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="w-32 text-sm">Consistency</span>
+                            <div class="flex-1 progress-bar">
+                                <div class="progress-fill bg-emerald-500" style="width:0%" id="consistencyBar"></div>
+                            </div>
+                            <span class="w-12 text-right" id="consistencyScore">0%</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="w-32 text-sm">Timeliness</span>
+                            <div class="flex-1 progress-bar">
+                                <div class="progress-fill bg-amber-500" style="width:0%" id="timelinessBar"></div>
+                            </div>
+                            <span class="w-12 text-right" id="timelinessScore">0%</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="w-32 text-sm">Uniqueness</span>
+                            <div class="flex-1 progress-bar">
+                                <div class="progress-fill bg-cyan-500" style="width:0%" id="uniquenessBar"></div>
+                            </div>
+                            <span class="w-12 text-right" id="uniquenessScore">0%</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="w-32 text-sm">Validity</span>
+                            <div class="flex-1 progress-bar">
+                                <div class="progress-fill bg-violet-500" style="width:0%" id="validityBar"></div>
+                            </div>
+                            <span class="w-12 text-right" id="validityScore">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <h3 class="text-lg font-bold mb-4"><i class="fas fa-lightbulb mr-2 text-amber-400"></i>Recommendations
+                </h3>
+                <ul id="qualityRecommendations" class="space-y-2 text-gray-300"></ul>
+            </div>
+        </div>
+
+        <!-- TAB: Correction -->
+        <div id="tab-correction" class="tab-content fade-in">
+            <div class="card p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold"><i class="fas fa-wrench mr-2 text-orange-400"></i>Inconsistency
+                        Detection</h3>
+                    <div class="flex gap-2">
+                        <button onclick="detectInconsistencies()"
+                            class="px-4 py-2 bg-orange-500/20 text-orange-400 rounded-lg hover:bg-orange-500/30 transition">
+                            <i class="fas fa-search mr-2"></i>Detect Issues
+                        </button>
+                        <button onclick="autoCorrect()"
+                            class="px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-lg hover:bg-emerald-500/30 transition">
+                            <i class="fas fa-magic mr-2"></i>Auto Correct
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table id="inconsistencyTable">
+                        <thead>
+                            <tr>
+                                <th>Column</th>
+                                <th>Row</th>
+                                <th>Issue</th>
+                                <th>Value</th>
+                                <th>Suggestion</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inconsistencyBody">
+                            <tr>
+                                <td colspan="6" class="text-gray-400 text-center">Click "Detect Issues" to scan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Annotation -->
+        <div id="tab-annotation" class="tab-content fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <div class="card p-6 text-center">
+                    <i class="fas fa-clipboard-list text-4xl text-indigo-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold" id="pendingTasks">0</h3>
+                    <p class="text-gray-400">Pending Tasks</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <i class="fas fa-check-double text-4xl text-emerald-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold" id="completedTasks">0</h3>
+                    <p class="text-gray-400">Completed</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <i class="fas fa-chart-pie text-4xl text-amber-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold" id="kappaScore">--</h3>
+                    <p class="text-gray-400">Cohen's Kappa</p>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold"><i class="fas fa-tasks mr-2 text-indigo-400"></i>My Tasks</h3>
+                    <button onclick="loadTasks()" class="px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-lg">
+                        <i class="fas fa-sync mr-2"></i>Refresh
+                    </button>
+                </div>
+                <div id="taskList" class="space-y-3">
+                    <p class="text-gray-400">Click refresh to load tasks</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: EthiMask -->
+        <div id="tab-ethimask" class="tab-content fade-in">
+            <div class="card p-6 mb-6">
+                <h3 class="text-lg font-bold mb-4"><i class="fas fa-mask mr-2 text-purple-400"></i>EthiMask - Role-Based
+                    Data View</h3>
+                <p class="text-gray-400 mb-4">See how data appears based on your role. Higher roles see more data.</p>
+                <div class="flex gap-2 mb-6">
+                    <button onclick="previewMask('admin')" class="px-4 py-2 rounded-lg role-admin">Admin View</button>
+                    <button onclick="previewMask('steward')" class="px-4 py-2 rounded-lg role-steward">Steward
+                        View</button>
+                    <button onclick="previewMask('annotator')" class="px-4 py-2 rounded-lg role-annotator">Annotator
+                        View</button>
+                    <button onclick="previewMask('labeler')" class="px-4 py-2 rounded-lg role-labeler">Labeler
+                        View</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-6">
+                    <h4 class="font-bold mb-4 text-emerald-400">Original Data</h4>
+                    <div id="originalData" class="font-mono text-sm space-y-2"></div>
+                </div>
+                <div class="card p-6">
+                    <h4 class="font-bold mb-4 text-pink-400">Masked Data</h4>
+                    <div id="maskedData" class="font-mono text-sm space-y-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Users (Admin) -->
+        <div id="tab-users" class="tab-content fade-in">
+            <div class="card p-6">
+                <h3 class="text-lg font-bold mb-4"><i class="fas fa-users mr-2 text-indigo-400"></i>User Management</h3>
+                <p class="text-gray-400">Coming soon - Manage users, roles, and permissions</p>
+            </div>
+        </div>
+
+        <!-- TAB: Services (Admin) -->
+        <div id="tab-services" class="tab-content fade-in">
+            <div class="card p-6">
+                <h3 class="text-lg font-bold mb-4"><i class="fas fa-server mr-2 text-emerald-400"></i>Service Status
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="serviceStatusGrid"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ====================================================================
+        // CONFIGURATION
+        // ====================================================================
+        const API = {
+            auth: 'http://localhost:8001',
+            taxonomie: 'http://localhost:8002',
+            presidio: 'http://localhost:8003',
+            cleaning: 'http://localhost:8004',
+            classification: 'http://localhost:8005',
+            correction: 'http://localhost:8006',
+            annotation: 'http://localhost:8007',
+            quality: 'http://localhost:8008',
+            ethimask: 'http://localhost:8009'
+        };
+
+        let currentUser = null;
+        let currentDatasetId = null;
+        let currentData = [];
+
+        // ====================================================================
+        // AUTH
+        // ====================================================================
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/frontend/login.html';
+                return;
+            }
+
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                currentUser = {
+                    username: payload.sub,
+                    role: payload.role
+                };
+
+                document.getElementById('userName').textContent = currentUser.username;
+                document.getElementById('userAvatar').textContent = currentUser.username[0].toUpperCase();
+                document.getElementById('userRole').textContent = currentUser.role;
+
+                // Update role badge class
+                const roleClass = currentUser.role.toLowerCase().replace(' ', '-');
+                document.getElementById('userRole').className = `role-badge role-${roleClass}`;
+
+                // Hide elements based on role
+                applyRoleRestrictions();
+
+            } catch (e) {
+                console.error('Invalid token', e);
+                localStorage.removeItem('token');
+                window.location.href = '/frontend/login.html';
+            }
+        }
+
+        function applyRoleRestrictions() {
+            const role = currentUser.role.toLowerCase();
+
+            // Hide admin-only elements
+            if (role !== 'admin') {
+                document.querySelectorAll('.role-admin').forEach(el => {
+                    if (!el.classList.contains(`role-${role.replace(' ', '-')}`)) {
+                        el.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Hide steward-only elements for labelers/annotators
+            if (role === 'labeler') {
+                document.querySelectorAll('.role-steward').forEach(el => {
+                    if (!el.classList.contains('role-labeler')) {
+                        el.classList.add('hidden');
+                    }
+                });
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/frontend/login.html';
+        }
+
+        // ====================================================================
+        // NAVIGATION
+        // ====================================================================
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+
+            // Show selected tab
+            const tab = document.getElementById(`tab-${tabName}`);
+            if (tab) tab.classList.add('active');
+
+            // Update nav
+            document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
+
+            // Update header
+            const titles = {
+                dashboard: ['Dashboard', 'Welcome to DataGov Platform'],
+                upload: ['Upload & Profile', 'Manage your datasets'],
+                pii: ['PII Detection', 'Detect sensitive data'],
+                quality: ['Quality Assessment', 'ISO 25012 Evaluation'],
+                correction: ['Data Correction', 'Fix inconsistencies'],
+                annotation: ['Annotation Tasks', 'Validate PII detections'],
+                ethimask: ['EthiMask Preview', 'Role-based data masking'],
+                users: ['User Management', 'Manage platform users'],
+                services: ['Service Status', 'Monitor microservices']
+            };
+
+            if (titles[tabName]) {
+                document.getElementById('pageTitle').textContent = titles[tabName][0];
+                document.getElementById('pageSubtitle').textContent = titles[tabName][1];
+            }
+        }
+
+        // ====================================================================
+        // SERVICE HEALTH
+        // ====================================================================
+        async function checkServices() {
+            const services = [
+                { name: 'Taxonomie', port: 8002, icon: 'flag' },
+                { name: 'Presidio', port: 8003, icon: 'shield' },
+                { name: 'Cleaning', port: 8004, icon: 'broom' },
+                { name: 'Classification', port: 8005, icon: 'brain' },
+                { name: 'Correction', port: 8006, icon: 'wrench' },
+                { name: 'Annotation', port: 8007, icon: 'tags' },
+                { name: 'Quality', port: 8008, icon: 'chart-line' },
+                { name: 'EthiMask', port: 8009, icon: 'mask' }
+            ];
+
+            let healthy = 0;
+            const healthHtml = [];
+            const statusHtml = [];
+
+            for (const svc of services) {
+                try {
+                    const resp = await fetch(`http://localhost:${svc.port}/health`, { timeout: 2000 });
+                    if (resp.ok) {
+                        healthy++;
+                        healthHtml.push(`
+                        <div class="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+                            <i class="fas fa-${svc.icon} text-emerald-400"></i>
+                            <span class="text-sm">${svc.name}</span>
+                            <span class="ml-auto text-emerald-400"><i class="fas fa-check"></i></span>
+                        </div>
+                    `);
+                        statusHtml.push(`
+                        <div class="card p-4 text-center">
+                            <i class="fas fa-${svc.icon} text-2xl text-emerald-400 mb-2"></i>
+                            <p class="font-medium">${svc.name}</p>
+                            <p class="text-xs text-emerald-400">Online :${svc.port}</p>
+                        </div>
+                    `);
+                    } else throw new Error();
+                } catch {
+                    healthHtml.push(`
+                    <div class="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/30">
+                        <i class="fas fa-${svc.icon} text-red-400"></i>
+                        <span class="text-sm">${svc.name}</span>
+                        <span class="ml-auto text-red-400"><i class="fas fa-times"></i></span>
+                    </div>
+                `);
+                    statusHtml.push(`
+                    <div class="card p-4 text-center">
+                        <i class="fas fa-${svc.icon} text-2xl text-red-400 mb-2"></i>
+                        <p class="font-medium">${svc.name}</p>
+                        <p class="text-xs text-red-400">Offline</p>
+                    </div>
+                `);
+                }
+            }
+
+            document.getElementById('servicesStatus').textContent = `${healthy}/${services.length} Services`;
+            document.getElementById('serviceHealth').innerHTML = healthHtml.join('');
+            document.getElementById('serviceStatusGrid').innerHTML = statusHtml.join('');
+        }
+
+        // ====================================================================
+        // DATA OPERATIONS
+        // ====================================================================
+        async function uploadFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const resp = await fetch(`${API.cleaning}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!resp.ok) throw new Error('Upload failed');
+
+                const data = await resp.json();
+                currentDatasetId = data.dataset_id;
+
+                document.getElementById('uploadStatus').classList.remove('hidden');
+                document.getElementById('uploadMessage').textContent = `Uploaded: ${data.rows} rows, ${data.columns} columns`;
+
+                // Update info
+                document.getElementById('datasetInfo').innerHTML = `
+                <p><strong>File:</strong> ${data.filename}</p>
+                <p><strong>Rows:</strong> ${data.rows}</p>
+                <p><strong>Columns:</strong> ${data.columns}</p>
+                <p><strong>ID:</strong> <code class="text-xs bg-gray-700 px-2 py-1 rounded">${data.dataset_id}</code></p>
+            `;
+
+                document.getElementById('statDatasets').textContent = '1';
+
+                // Load preview
+                await loadPreview();
+
+            } catch (e) {
+                alert('Upload failed: ' + e.message);
+            }
+        }
+
+        async function loadPreview() {
+            if (!currentDatasetId) return;
+
+            try {
+                const resp = await fetch(`${API.cleaning}/datasets/${currentDatasetId}/preview?rows=10`);
+                const data = await resp.json();
+
+                currentData = data.preview || [];
+
+                if (currentData.length === 0) {
+                    document.getElementById('previewTable').innerHTML = '<tr><td>No data</td></tr>';
+                    return;
+                }
+
+                const cols = Object.keys(currentData[0]);
+                const thead = `<tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr>`;
+                const tbody = currentData.map(row =>
+                    `<tr>${cols.map(c => `<td>${row[c] ?? ''}</td>`).join('')}</tr>`
+                ).join('');
+
+                document.getElementById('previewTable').innerHTML = `<thead>${thead}</thead><tbody>${tbody}</tbody>`;
+
+            } catch (e) {
+                console.error('Preview failed', e);
+            }
+        }
+
+        async function profileData() {
+            if (!currentDatasetId) { alert('Upload a dataset first'); return; }
+
+            try {
+                const resp = await fetch(`${API.cleaning}/profile/${currentDatasetId}`);
+                const data = await resp.json();
+                alert('Profile generated! Check console for details.');
+                console.log('Profile:', data);
+            } catch (e) {
+                alert('Profile failed: ' + e.message);
+            }
+        }
+
+        async function cleanData() {
+            if (!currentDatasetId) { alert('Upload a dataset first'); return; }
+
+            try {
+                const resp = await fetch(`${API.cleaning}/clean/${currentDatasetId}/auto`, { method: 'POST' });
+                const data = await resp.json();
+                alert(`Cleaned! Removed ${data.rows_removed} rows.`);
+                await loadPreview();
+            } catch (e) {
+                alert('Clean failed: ' + e.message);
+            }
+        }
+
+        // ====================================================================
+        // PII DETECTION
+        // ====================================================================
+        async function detectTaxonomie() {
+            if (currentData.length === 0) { alert('Upload data first'); return; }
+
+            const text = JSON.stringify(currentData);
+
+            try {
+                const resp = await fetch(`${API.taxonomie}/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, language: 'fr' })
+                });
+
+                const data = await resp.json();
+
+                const html = data.detections.slice(0, 10).map(d => `
+                <div class="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/30">
+                    <div class="flex items-center justify-between">
+                        <span class="font-medium text-indigo-300">${d.entity_type}</span>
+                        <span class="text-xs text-gray-400">${Math.round(d.confidence_score * 100)}%</span>
+                    </div>
+                    <p class="text-sm text-gray-300 mt-1">${d.value}</p>
+                </div>
+            `).join('');
+
+                document.getElementById('taxonomieResults').innerHTML = html || '<p class="text-gray-400">No PII found</p>';
+                document.getElementById('statPII').textContent = data.detections_count;
+
+            } catch (e) {
+                document.getElementById('taxonomieResults').innerHTML = `<p class="text-red-400">Error: ${e.message}</p>`;
+            }
+        }
+
+        async function detectPresidio() {
+            if (currentData.length === 0) { alert('Upload data first'); return; }
+
+            const text = JSON.stringify(currentData);
+
+            try {
+                const resp = await fetch(`${API.presidio}/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, language: 'fr' })
+                });
+
+                const data = await resp.json();
+
+                const html = data.detections.slice(0, 10).map(d => `
+                <div class="p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                    <div class="flex items-center justify-between">
+                        <span class="font-medium text-purple-300">${d.entity_type}</span>
+                        <span class="text-xs text-gray-400">${Math.round(d.score * 100)}%</span>
+                    </div>
+                    <p class="text-sm text-gray-300 mt-1">${d.value}</p>
+                </div>
+            `).join('');
+
+                document.getElementById('presidioResults').innerHTML = html || '<p class="text-gray-400">No PII found</p>';
+
+            } catch (e) {
+                document.getElementById('presidioResults').innerHTML = `<p class="text-red-400">Error: ${e.message}</p>`;
+            }
+        }
+
+        async function classifyData() {
+            if (currentData.length === 0) { alert('Upload data first'); return; }
+
+            const cols = Object.keys(currentData[0]);
+            const results = [];
+
+            for (const col of cols.slice(0, 8)) {
+                try {
+                    const resp = await fetch(`${API.classification}/classify`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: col + ' ' + String(currentData[0][col]) })
+                    });
+                    const data = await resp.json();
+                    results.push({ column: col, ...data });
+                } catch { results.push({ column: col, sensitivity_level: 'unknown' }); }
+            }
+
+            const colors = { critical: 'red', high: 'orange', medium: 'yellow', low: 'green', unknown: 'gray' };
+            const html = results.map(r => `
+            <div class="p-3 rounded-lg bg-${colors[r.sensitivity_level] || 'gray'}-500/10 border border-${colors[r.sensitivity_level] || 'gray'}-500/30">
+                <p class="font-medium">${r.column}</p>
+                <p class="text-sm text-${colors[r.sensitivity_level] || 'gray'}-400">${r.sensitivity_level}</p>
+            </div>
+        `).join('');
+
+            document.getElementById('classificationResults').innerHTML = html;
+        }
+
+        // ====================================================================
+        // QUALITY
+        // ====================================================================
+        async function evaluateQuality() {
+            if (!currentDatasetId) { alert('Upload data first'); return; }
+
+            try {
+                // Register with quality service
+                const preview = await fetch(`${API.cleaning}/datasets/${currentDatasetId}/preview?rows=100`);
+                const previewData = await preview.json();
+
+                await fetch(`${API.quality}/datasets/${currentDatasetId}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ records: previewData.preview })
+                });
+
+                const resp = await fetch(`${API.quality}/evaluate/${currentDatasetId}`, { method: 'POST' });
+                const data = await resp.json();
+
+                document.getElementById('globalScore').textContent = data.global_score + '%';
+                document.getElementById('qualityGrade').textContent = 'Grade ' + data.grade;
+                document.getElementById('statQuality').textContent = data.global_score + '%';
+
+                // Update bars
+                data.dimensions.forEach(d => {
+                    const bar = document.getElementById(`${d.dimension}Bar`);
+                    const score = document.getElementById(`${d.dimension}Score`);
+                    if (bar) bar.style.width = d.score + '%';
+                    if (score) score.textContent = d.score + '%';
+                });
+
+                // Recommendations
+                const recHtml = data.recommendations.map(r => `<li class="p-2 bg-amber-500/10 rounded">${r}</li>`).join('');
+                document.getElementById('qualityRecommendations').innerHTML = recHtml;
+
+            } catch (e) {
+                alert('Quality evaluation failed: ' + e.message);
+            }
+        }
+
+        // ====================================================================
+        // CORRECTION
+        // ====================================================================
+        async function detectInconsistencies() {
+            if (!currentDatasetId) { alert('Upload data first'); return; }
+
+            try {
+                // Register with correction service
+                const preview = await fetch(`${API.cleaning}/datasets/${currentDatasetId}/preview?rows=100`);
+                const previewData = await preview.json();
+
+                await fetch(`${API.correction}/datasets/${currentDatasetId}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ records: previewData.preview })
+                });
+
+                const resp = await fetch(`${API.correction}/detect/${currentDatasetId}`, { method: 'POST' });
+                const data = await resp.json();
+
+                if (data.inconsistencies.length === 0) {
+                    document.getElementById('inconsistencyBody').innerHTML =
+                        '<tr><td colspan="6" class="text-green-400 text-center">No issues found! ✓</td></tr>';
+                    return;
+                }
+
+                const html = data.inconsistencies.slice(0, 20).map(i => `
+                <tr>
+                    <td>${i.column}</td>
+                    <td>${i.row_index}</td>
+                    <td><span class="text-orange-400">${i.inconsistency_type}</span></td>
+                    <td><code class="text-red-400">${i.original_value}</code></td>
+                    <td><code class="text-green-400">${i.suggested_correction || '-'}</code></td>
+                    <td>
+                        <button onclick="approveCorrection('${i.id}')" class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">✓</button>
+                        <button onclick="rejectCorrection('${i.id}')" class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs">✗</button>
+                    </td>
+                </tr>
+            `).join('');
+
+                document.getElementById('inconsistencyBody').innerHTML = html;
+
+            } catch (e) {
+                alert('Detection failed: ' + e.message);
+            }
+        }
+
+        async function autoCorrect() {
+            if (!currentDatasetId) return;
+
+            try {
+                const resp = await fetch(`${API.correction}/correct/${currentDatasetId}/auto`, { method: 'POST' });
+                const data = await resp.json();
+                alert(`Applied ${data.corrections_applied} corrections!`);
+                await detectInconsistencies();
+            } catch (e) {
+                alert('Auto-correct failed: ' + e.message);
+            }
+        }
+
+        // ====================================================================
+        // ETHIMASK
+        // ====================================================================
+        async function previewMask(role) {
+            if (currentData.length === 0) {
+                document.getElementById('originalData').innerHTML = '<p class="text-gray-400">Upload data first</p>';
+                document.getElementById('maskedData').innerHTML = '<p class="text-gray-400">Upload data first</p>';
+                return;
+            }
+
+            const sample = currentData[0];
+            document.getElementById('originalData').innerHTML = Object.entries(sample)
+                .map(([k, v]) => `<p><span class="text-gray-400">${k}:</span> ${v}</p>`).join('');
+
+            try {
+                const resp = await fetch(`${API.ethimask}/mask`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        data: sample,
+                        user_role: role,
+                        detections: Object.keys(sample).map(k => ({ field: k, entity_type: k }))
+                    })
+                });
+
+                const data = await resp.json();
+                document.getElementById('maskedData').innerHTML = Object.entries(data.masked_data || sample)
+                    .map(([k, v]) => `<p><span class="text-gray-400">${k}:</span> <span class="text-pink-400">${v}</span></p>`).join('');
+
+            } catch (e) {
+                document.getElementById('maskedData').innerHTML = `<p class="text-red-400">Error: ${e.message}</p>`;
+            }
+        }
+
+        // ====================================================================
+        // ANNOTATION
+        // ====================================================================
+        async function loadTasks() {
+            try {
+                const resp = await fetch(`${API.annotation}/tasks?limit=10`);
+                const data = await resp.json();
+
+                document.getElementById('pendingTasks').textContent = data.pending || 0;
+                document.getElementById('completedTasks').textContent = data.completed || 0;
+                document.getElementById('statTasks').textContent = data.pending || 0;
+
+                if (!data.tasks || data.tasks.length === 0) {
+                    document.getElementById('taskList').innerHTML = '<p class="text-gray-400">No tasks available</p>';
+                    return;
+                }
+
+                const html = data.tasks.map(t => `
+                <div class="p-4 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-between">
+                    <div>
+                        <p class="font-medium">${t.id.substring(0, 8)}</p>
+                        <p class="text-sm text-gray-400">${t.status}</p>
+                    </div>
+                    <button class="btn-primary px-3 py-1 rounded text-sm">Annotate</button>
+                </div>
+            `).join('');
+
+                document.getElementById('taskList').innerHTML = html;
+
+            } catch (e) {
+                document.getElementById('taskList').innerHTML = `<p class="text-red-400">Error: ${e.message}</p>`;
+            }
+        }
+
+        // ====================================================================
+        // INIT
+        // ====================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            checkServices();
+
+            // Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tab = item.dataset.tab;
+                    if (tab) showTab(tab);
+                });
+            });
+
+            // Refresh services every 30s
+            setInterval(checkServices, 30000);
+        });
+    </script>
+</body>
+
+</html>

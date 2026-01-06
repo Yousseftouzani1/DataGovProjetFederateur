@@ -1,0 +1,26 @@
+id,full_name,email,phone_number,cin,salary,notes
+1,Ahmed Amrani,ahmed.amrani@gmail.com,0661234567,AB123456,15000,Employee needs updated contract
+2,Fatima Zahra,fatima.z@koutoubia.ma,+212 600 00 00 00,BE987654,12500.00,Responsable RH - Bon profil
+3,Pierre Dubois,pierre.dubois@consulting.fr,01.23.45.67.89,Z999999,5000 EUR,Consultant externe (France)
+4,John Smith,john.smith_at_google.com,AB123456,USA555,120k USD,Invalid format test row - CIN in phone field
+5,خالد بن الوليد,khalid.walid@yahoo.fr,0522123123,HA654321,9000 MAD,ملاحظات بالعربية حول الموظف
+6,Sarah Connors,,06-77-88-99-00,CJ112233,20000,Missing email address testing
+7,Driss Chraibi,driss@company,0661998877,BK445566,18000 MAD,Email format incorrect
+8,Meryem El Fassi,meryem.elfassi@univ.ma,06 61 77 88 99,CD876543,14.500,Academic partner
+9,,,0600000000,XX000000,9999,Missing name and email (Critical)
+10,Zineb Tazi,zineb.tazi@start.up,0661-123-456,EE554433,16500,Double space  in  name
+11,Youssef Benali,youssef.benali@gmail.com,0661112233,A123456,11000,Standard entry
+12,Maria Garcia,maria.garcia@gmail.com,06 61 22 33 44,B654321,13000,Foreign resident
+13,Omar Sy,omar.sy@netflix.com,06-61-33-44-55,C987654,Unknown,Salary field text instead of number
+14,Amine Harit,amine.harit@lions.ma,+212661445566,D456789,250000,High net worth individual
+15,Test User,test.user@test.com,0000000000,TEST1234,0,Test row for zero values
+16,Leila Haddad,leila.h@tech.ma,0661234567,E112233,18000.50,Duplicate phone number
+17,Karim Benzema,kb9@real.madrid,,F445566,1000000,Missing phone number
+18,Salma Hayek,salma@hollywood.com,0661-99-88-77,,50000,Missing CIN
+19,عبد الله,abdallah@awqaf.ma,0537778899,G778899,8500,Arabic name only
+20,Jean-Pierre,jp@francetelecom.fr,+33 6 12 34 56 78,H998877,4000 EUR,French phone number format
+21,Khadija Sbai,khadija.sbai@domain..com,0661556677,I112233,12000,Double dot in email domain
+22,Rachid Taha,rachid.taha@music.com,0661 66 77 88,J334455,15,000,Comma in salary (CSV parsing risk)
+23,Nobody,,,,,Empty row content except name
+24,Data Leak,leak@hack.com,0661000000,K556677,5000,Suspicious domain
+25,Final Row,final@row.com,0661999999,L999999,99999,End of dataset marker

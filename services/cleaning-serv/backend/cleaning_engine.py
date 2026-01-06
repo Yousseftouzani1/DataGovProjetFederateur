@@ -135,4 +135,3 @@ def clean_dataframe(df: pd.DataFrame, config: dict):
     metrics["missing_rate_after"] = missing_rate(df)
 
     return df.reset_index(drop=True), metrics
-

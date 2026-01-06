@@ -1,52 +1,241 @@
 version: "3.9"
 
+# ============================================
+# DataGov - Complete Microservices Stack
+# Updated with Persistence & Orchestration
+# ============================================
+
 services:
-
-  auth-service:
-    build: ./services/auth-serv
-    container_name: auth-backend
-    env_file:
-      - ./services/auth-serv/.env
-    ports:
-      - "8001:8001"
-    environment:
-      - MONGO_URL=mongodb://mongo:27017
-      - DATABASE_NAME=datagov
-    depends_on:
-      - mongo
-    networks:
-      - backend
-
+  # ─────────────────────────────────────────
+  # INFRASTRUCTURE: Database (MongoDB)
+  # ─────────────────────────────────────────
   mongo:
-    image: mongo:6
-    container_name: mongo
-    restart: always
+    image: mongo:latest
+    container_name: datagov-mongo
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
     networks:
-      - backend
+      - datagov-network
+    restart: unless-stopped
 
+  # ─────────────────────────────────────────
+  # INFRASTRUCTURE: Orchestration (Airflow)
+  # ─────────────────────────────────────────
+  airflow:
+    image: apache/airflow:2.7.1
+    container_name: datagov-airflow
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__RBAC=True
+      - _AIRFLOW_DB_UPGRADE=True
+      - _AIRFLOW_WWW_USER_CREATE=True
+      - _AIRFLOW_WWW_USER_USERNAME=admin
+      - _AIRFLOW_WWW_USER_PASSWORD=admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./datasets:/opt/airflow/datasets
+    command: standalone
+    networks:
+      - datagov-network
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # SERVICE 1: Authentication (Port 8001)
+  # ─────────────────────────────────────────
+  auth-service:
+    build: ./services/auth-serv
+    container_name: auth-service
+    env_file:
+      - .env
+    ports:
+      - "8001:8001"
+    depends_on:
+      - mongo
+    networks:
+      - datagov-network
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # SERVICE 2: Taxonomie PII/SPI (Port 8002)
+  # ─────────────────────────────────────────
+  taxonomie-service:
+    build: ./services/taxonomie-serv
+    container_name: taxonomie-service
+    env_file:
+      - .env
+    ports:
+      - "8002:8002"
+    depends_on:
+      - mongo
+    networks:
+      - datagov-network
+    volumes:
+      - ./services/common:/common
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # SERVICE 3: Presidio Detection (Port 8003)
+  # ─────────────────────────────────────────
+  presidio-service:
+    build: ./services/presidio-serv
+    container_name: presidio-service
+    env_file:
+      - .env
+    ports:
+      - "8003:8003"
+    depends_on:
+      - mongo
+    networks:
+      - datagov-network
+    volumes:
+      - ./services/presidio-serv:/app
+      - ./services/common:/common
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # SERVICE 4: Data Cleaning (Port 8004)
+  # ─────────────────────────────────────────
+  cleaning-service:
+    build: ./services/cleaning-serv
+    container_name: cleaning-service
+    env_file:
+      - .env
+    ports:
+      - "8004:8004"
+    depends_on:
+      - mongo
+    networks:
+      - datagov-network
+    volumes:
+      - ./services/common:/common
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # SERVICE 5: ML Classification (Port 8005)
+  # ─────────────────────────────────────────
+  classification-service:
+    build: ./services/classification-serv
+    container_name: classification-service
+    env_file:
+      - .env
+    ports:
+      - "8005:8005"
+    depends_on:
+      - mongo
+    networks:
+      - datagov-network
+    volumes:
+      - ./services/common:/common
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # SERVICE 6: Correction (Port 8006)
+  # ─────────────────────────────────────────
+  correction-service:
+    build: ./services/correction-serv
+    container_name: correction-service
+    env_file:
+      - .env
+    ports:
+      - "8006:8006"
+    depends_on:
+      - mongo
+    networks:
+      - datagov-network
+    volumes:
+      - ./services/common:/common
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # SERVICE 7: Annotation (Port 8007)
+  # ─────────────────────────────────────────
+  annotation-service:
+    build: ./services/annotation-serv
+    container_name: annotation-service
+    env_file:
+      - .env
+    ports:
+      - "8007:8007"
+    depends_on:
+      - mongo
+    networks:
+      - datagov-network
+    volumes:
+      - ./services/common:/common
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # SERVICE 8: Quality ISO 25012 (Port 8008)
+  # ─────────────────────────────────────────
+  quality-service:
+    build: ./services/quality-serv
+    container_name: quality-service
+    env_file:
+      - .env
+    ports:
+      - "8008:8008"
+    depends_on:
+      - mongo
+    networks:
+      - datagov-network
+    volumes:
+      - ./services/common:/common
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # SERVICE 9: EthiMask (Port 8009)
+  # ─────────────────────────────────────────
+  ethimask-service:
+    build: ./services/ethimask-serv
+    container_name: ethimask-service
+    env_file:
+      - .env
+    ports:
+      - "8009:8009"
+    volumes:
+      - ./services/ethimask-serv:/app
+      - ./services/common:/common
+    depends_on:
+      - mongo
+    networks:
+      - datagov-network
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────
+  # NGINX GATEWAY (Port 8000)
+  # Single entry point for all services
+  # ─────────────────────────────────────────
   nginx-gateway:
-    image: nginx:latest          # no Dockerfile needed
+    image: nginx:latest
     container_name: nginx-gateway
     ports:
       - "8000:8000"
     volumes:
-      # Mount your nginx.conf
       - ./gateway-nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      
-      # Mount frontend HTML files
-      - ./services/auth-serv/frontend:/usr/share/nginx/html:ro
-      
+      - ./frontend:/usr/share/nginx/html:ro
     depends_on:
       - auth-service
+      - taxonomie-service
+      - cleaning-service
+      - annotation-service
+      # Wait for critical services
     networks:
-      - backend
+      - datagov-network
+    restart: unless-stopped
 
+# ─────────────────────────────────────────
+# NETWORK & VOLUMES
+# ─────────────────────────────────────────
 networks:
-  backend:
+  datagov-network:
+    driver: bridge
 
 volumes:
   mongo_data:
