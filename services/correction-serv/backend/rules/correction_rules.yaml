@@ -1,124 +1,207 @@
-# ======================================================
-# DATA QUALITY – CORRECTION RULES
-# Gouverné par Data Steward
-# ======================================================
+# ============================================================
+# DATA QUALITY V2 – CORRECTION RULES
+# Section 8 - Correction Automatique des Incohérences
+# Gouverné par Data Steward (US-CORR-02)
+# ============================================================
 
 # ------------------------------------------------------
-# FORMAT INCOHERENCES
+# FORMAT INCONSISTENCIES (Section 8.3)
 # ------------------------------------------------------
 FORMAT:
   date:
-    format: "%d/%m/%Y"
+    format: "%Y-%m-%d"
+    examples: ["2024-01-15", "2023-12-31"]
+    invalid_examples: ["32/13/2024", "2024-13-01"]
 
   patterns:
     EMAIL:
-      regex: "^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$"
+      regex: '^[\w\.\-]+@[\w\.\-]+\.\w{2,}$'
+      description: "Valid email format"
     PHONE_MA:
-      regex: "\\b0[5-7]\\d{8}\\b"
+      regex: '^(\+212|0)[5-7]\d{8}$'
+      description: "Morocco phone number"
+    PHONE_SHORT:
+      regex: '^\d{6,9}$'
+      description: "Incomplete phone (for correction)"
+    CIN_MA:
+      regex: '^[A-Z]{1,2}\d{5,7}$'
+      description: "Morocco CIN"
+    POSTAL_CODE_MA:
+      regex: '^\d{5}$'
+      description: "Morocco postal code"
+    URL:
+      regex: '^https?://[\w\.-]+\.\w+'
+      description: "Valid URL"
+    NUMBER:
+      regex: '^\d+(\.\d+)?$'
+      description: "Numeric value"
     IBAN:
-      regex: "\\b[A-Z]{2}\\d{2}[A-Z0-9]{11,30}\\b"
+      regex: '\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b'
+      description: "IBAN format"
 
   corrections:
+    - field: email
+      type: FORMAT
+      strategy: LOWERCASE_TRIM
+      confidence: 0.95
     - field: date_naissance
       type: FORMAT
-      strategy: RESET_NULL
-      confidence: 0.95
-
+      strategy: NORMALIZE_DATE
+      target_format: "%Y-%m-%d"
+      confidence: 0.90
     - field: telephone
       type: FORMAT
-      strategy: RESET_NULL
-      confidence: 0.9
+      strategy: NORMALIZE_PHONE_MA
+      confidence: 0.85
 
 # ------------------------------------------------------
-# DOMAIN INCOHERENCES
+# DOMAIN INCONSISTENCIES (Section 8.3)
 # ------------------------------------------------------
 DOMAIN:
   numeric_ranges:
     age:
       min: 0
-      max: 120
+      max: 150
+      description: "Valid human age"
     temperature:
       min: -50
       max: 60
+      description: "Temperature in Celsius"
+    percentage:
+      min: 0
+      max: 100
+      description: "Percentage value"
     salary:
       min: 0
-      max: 200000
+      max: 1000000
+      description: "Reasonable salary"
+    latitude:
+      min: -90
+      max: 90
+    longitude:
+      min: -180
+      max: 180
 
   corrections:
     - field: age
       type: DOMAIN
-      strategy: CLAMP_MIN
+      strategy: CLAMP_RANGE
       min: 0
-      confidence: 0.9
-
-    - field: age
-      type: DOMAIN
-      strategy: CLAMP_MAX
-      max: 120
-      confidence: 0.9
-
+      max: 150
+      confidence: 0.85
     - field: temperature
       type: DOMAIN
-      strategy: RESET_NULL
-      confidence: 0.85
+      strategy: FLAG_FOR_REVIEW
+      confidence: 0.60
 
 # ------------------------------------------------------
-# TEMPORAL INCOHERENCES
+# REFERENTIAL INCONSISTENCIES (Section 8.3)
+# ------------------------------------------------------
+REFERENTIAL:
+  invalid_pairs:
+    - field_1: ville
+      value_1: Paris
+      field_2: pays
+      value_2: Maroc
+      message: "Paris is not in Morocco"
+    - field_1: ville
+      value_1: Casablanca
+      field_2: pays
+      value_2: France
+      message: "Casablanca is not in France"
+
+  valid_pairs:
+    Morocco:
+      cities: ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir", "Meknès", "Oujda"]
+    France:
+      cities: ["Paris", "Lyon", "Marseille", "Toulouse", "Nice"]
+
+  corrections:
+    - type: REFERENTIAL
+      strategy: FLAG_FOR_REVIEW
+      confidence: 0.50
+
+# ------------------------------------------------------
+# TEMPORAL INCONSISTENCIES (Section 8.3)
 # ------------------------------------------------------
 TEMPORAL:
   date_order:
     start_field: date_debut
     end_field: date_fin
+    rule: start_before_end
+
+  date_pairs:
+    - start: date_naissance
+      end: date_embauche
+      min_gap_years: 16
+      message: "Employment must be 16+ years after birth"
+    - start: date_creation
+      end: date_modification
+      rule: start_before_or_equal_end
 
   corrections:
-    - field: date_fin
-      type: TEMPORAL
-      strategy: RESET_NULL
-      confidence: 0.9
+    - type: TEMPORAL
+      strategy: SWAP_DATES
+      confidence: 0.80
+      condition: end_before_start
 
 # ------------------------------------------------------
-# REFERENTIAL INCOHERENCES
-# ------------------------------------------------------
-REFERENTIAL:
-  invalid_pairs:
-    - field_1: city
-      value_1: Paris
-      field_2: country
-      value_2: Maroc
-      message: "Paris is not a city in Morocco"
-
-  corrections:
-    # Pas d’auto-correction référentielle
-    []
-
-# ------------------------------------------------------
-# STATISTICAL INCOHERENCES
+# STATISTICAL INCONSISTENCIES (Section 8.3)
 # ------------------------------------------------------
 STATISTICAL:
   outliers:
-    default_threshold: 1000000
+    method: IQR  # or Z_SCORE
+    default_threshold: 3.0
+    iqr_multiplier: 1.5
+
+  field_specific:
+    salary:
+      method: Z_SCORE
+      threshold: 2.5
+    age:
+      method: IQR
+      multiplier: 2.0
 
   corrections:
     - type: STATISTICAL
-      strategy: RESET_NULL
-      confidence: 0.8
+      strategy: FLAG_FOR_REVIEW
+      confidence: 0.65
 
 # ------------------------------------------------------
-# SEMANTIC INCOHERENCES
-# TYPE MISMATCH (CORE CDC REQUIREMENT)
+# SEMANTIC INCONSISTENCIES (Section 8.3)
+# TYPE MISMATCH - Email contains phone, etc.
 # ------------------------------------------------------
 SEMANTIC:
   type_mismatch:
     - expected_type: EMAIL
-      forbidden_types: [PHONE_MA, IBAN]
-
+      forbidden_types: [PHONE_MA, PHONE_SHORT, NUMBER, URL]
+      message: "Email field contains non-email data"
     - expected_type: PHONE_MA
-      forbidden_types: [EMAIL, IBAN]
-
-    - expected_type: TEXT
-      forbidden_types: [EMAIL, PHONE_MA, IBAN]
+      forbidden_types: [EMAIL, URL]
+      message: "Phone field contains non-phone data"
+    - expected_type: NUMBER
+      forbidden_types: [EMAIL, PHONE_MA, URL]
+      message: "Numeric field contains text"
 
   corrections:
     - type: SEMANTIC
-      strategy: RESET_NULL
-      confidence: 0.85
+      strategy: ML_CORRECTION
+      confidence: 0.70
+      fallback: FLAG_FOR_REVIEW
+
+# ------------------------------------------------------
+# GLOBAL CONFIGURATION
+# ------------------------------------------------------
+confidence:
+  auto_apply_threshold: 0.9  # Section 8.5 - Auto-apply if >= 0.9
+  manual_review_threshold: 0.6
+  reject_threshold: 0.5
+
+# KPI Targets (Section 8.7)
+kpi_targets:
+  detection_rate: 0.95
+  auto_correction_precision: 0.90
+  auto_correction_rate: 0.70
+  processing_time_per_1000_rows: 5.0
+  monthly_accuracy_improvement: 0.05
+
