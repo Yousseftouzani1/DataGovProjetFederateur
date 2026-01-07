@@ -1,0 +1,124 @@
+# ======================================================
+# DATA QUALITY – CORRECTION RULES
+# Gouverné par Data Steward
+# ======================================================
+
+# ------------------------------------------------------
+# FORMAT INCOHERENCES
+# ------------------------------------------------------
+FORMAT:
+  date:
+    format: "%d/%m/%Y"
+
+  patterns:
+    EMAIL:
+      regex: "^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$"
+    PHONE_MA:
+      regex: "\\b0[5-7]\\d{8}\\b"
+    IBAN:
+      regex: "\\b[A-Z]{2}\\d{2}[A-Z0-9]{11,30}\\b"
+
+  corrections:
+    - field: date_naissance
+      type: FORMAT
+      strategy: RESET_NULL
+      confidence: 0.95
+
+    - field: telephone
+      type: FORMAT
+      strategy: RESET_NULL
+      confidence: 0.9
+
+# ------------------------------------------------------
+# DOMAIN INCOHERENCES
+# ------------------------------------------------------
+DOMAIN:
+  numeric_ranges:
+    age:
+      min: 0
+      max: 120
+    temperature:
+      min: -50
+      max: 60
+    salary:
+      min: 0
+      max: 200000
+
+  corrections:
+    - field: age
+      type: DOMAIN
+      strategy: CLAMP_MIN
+      min: 0
+      confidence: 0.9
+
+    - field: age
+      type: DOMAIN
+      strategy: CLAMP_MAX
+      max: 120
+      confidence: 0.9
+
+    - field: temperature
+      type: DOMAIN
+      strategy: RESET_NULL
+      confidence: 0.85
+
+# ------------------------------------------------------
+# TEMPORAL INCOHERENCES
+# ------------------------------------------------------
+TEMPORAL:
+  date_order:
+    start_field: date_debut
+    end_field: date_fin
+
+  corrections:
+    - field: date_fin
+      type: TEMPORAL
+      strategy: RESET_NULL
+      confidence: 0.9
+
+# ------------------------------------------------------
+# REFERENTIAL INCOHERENCES
+# ------------------------------------------------------
+REFERENTIAL:
+  invalid_pairs:
+    - field_1: city
+      value_1: Paris
+      field_2: country
+      value_2: Maroc
+      message: "Paris is not a city in Morocco"
+
+  corrections:
+    # Pas d’auto-correction référentielle
+    []
+
+# ------------------------------------------------------
+# STATISTICAL INCOHERENCES
+# ------------------------------------------------------
+STATISTICAL:
+  outliers:
+    default_threshold: 1000000
+
+  corrections:
+    - type: STATISTICAL
+      strategy: RESET_NULL
+      confidence: 0.8
+
+# ------------------------------------------------------
+# SEMANTIC INCOHERENCES
+# TYPE MISMATCH (CORE CDC REQUIREMENT)
+# ------------------------------------------------------
+SEMANTIC:
+  type_mismatch:
+    - expected_type: EMAIL
+      forbidden_types: [PHONE_MA, IBAN]
+
+    - expected_type: PHONE_MA
+      forbidden_types: [EMAIL, IBAN]
+
+    - expected_type: TEXT
+      forbidden_types: [EMAIL, PHONE_MA, IBAN]
+
+  corrections:
+    - type: SEMANTIC
+      strategy: RESET_NULL
+      confidence: 0.85
