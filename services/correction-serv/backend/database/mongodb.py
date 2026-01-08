@@ -1,15 +1,19 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv(os.path.join(os.path.dirname(__file__), "../../../../.env"))
+# Load .env from project root
+env_path = Path(__file__).resolve().parents[4] / ".env"
+load_dotenv(env_path)
 
-MONGO_URL = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DATABASE_NAME", "datagov")
+# Environment variables
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://mongo:27017")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "datagov")
 
 try:
     client = AsyncIOMotorClient(MONGO_URL)
-    db = client[DB_NAME]
+    db = client[DATABASE_NAME]
     print("✅ Correction Service connected to MongoDB")
 except Exception as e:
     print(f"⚠️ Mongo error: {e}")

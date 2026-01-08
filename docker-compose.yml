@@ -1,4 +1,4 @@
-version: "3.9"
+
 
 # ============================================
 # DataGov - Complete Microservices Stack
@@ -10,7 +10,7 @@ services:
   # INFRASTRUCTURE: Database (MongoDB)
   # ─────────────────────────────────────────
   mongo:
-    image: mongo:latest
+    image: mongo:6.0
     container_name: datagov-mongo
     ports:
       - "27017:27017"

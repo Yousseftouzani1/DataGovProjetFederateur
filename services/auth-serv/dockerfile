@@ -2,16 +2,23 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Install system dependencies if needed
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend and main files
+# Ensure uvicorn and fastapi are installed (in case requirements.txt is incomplete)
+RUN pip install --no-cache-dir uvicorn[standard] fastapi
+
+# Copy application files
 COPY backend ./backend
+COPY frontend ./frontend
 COPY main.py .
 COPY create_steward.py .
-
-# Copy frontend (needed if FastAPI mounts it)
-COPY frontend ./frontend
 
 EXPOSE 8001
 

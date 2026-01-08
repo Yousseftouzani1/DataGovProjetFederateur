@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "../../../../.env"))
 
 # Load from environment variables
-MONGO_URL = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+MONGO_URL = os.getenv("MONGODB_URI", "mongodb://mongo:27017")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "datagov")
 
 try:
