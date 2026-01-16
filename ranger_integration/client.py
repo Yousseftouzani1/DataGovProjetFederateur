@@ -5,7 +5,13 @@ from ranger_integration.config import RANGER_CONFIG
 
 class RangerClient:
     def __init__(self):
-        self.base_url = RANGER_CONFIG["BASE_URL"] + RANGER_CONFIG["API_PREFIX"]
+        base = RANGER_CONFIG["BASE_URL"]
+        prefix = RANGER_CONFIG["API_PREFIX"]
+        # Eviter le double-prefixage
+        if base.endswith(prefix):
+            self.base_url = base
+        else:
+            self.base_url = base + prefix
         self.auth = (RANGER_CONFIG["USERNAME"], RANGER_CONFIG["PASSWORD"])
         self.timeout = RANGER_CONFIG["TIMEOUT"]
         self.headers = {"Content-Type": "application/json"}

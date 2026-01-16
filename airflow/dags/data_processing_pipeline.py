@@ -86,8 +86,8 @@ def profile_data(**context):
     response = requests.get(url)
     if response.status_code == 200:
         profile = response.json()
-        print(f"✅ Profile complete: {profile['profile']['rows']} rows")
-        context['ti'].xcom_push(key='profile', value=profile['profile'])
+        print(f"✅ Profile complete: {profile['rows']} rows")
+        context['ti'].xcom_push(key='profile', value=profile)
         return profile
     else:
         raise Exception(f"Profiling failed: {response.text}")
@@ -263,29 +263,116 @@ def evaluate_quality(**context):
 
 
 def create_annotation_tasks(**context):
-    """Create annotation tasks for human validation"""
+    """Create annotation tasks for human validation - ONLY for rows with issues per Cahier des Charges"""
     dataset_id = context['ti'].xcom_pull(key='dataset_id')
-    detections = context['ti'].xcom_pull(key='taxonomie_detections') or []
+    pii_detections = context['ti'].xcom_pull(key='taxonomie_detections') or []
+    presidio_detections = context['ti'].xcom_pull(key='presidio_detections') or []
+    data_errors = context['ti'].xcom_pull(key='data_quality_errors') or []
     
-    # Create tasks for items with detections
+    # Combine all detections from Presidio and Taxonomie
+    all_detections = pii_detections + presidio_detections
+    
+    # Get rows that have detections (each detection has a row_index or we extract from context)
+    detected_row_indices = set()
+    for d in all_detections:
+        if 'row' in d:
+            detected_row_indices.add(d['row'])
+        elif 'row_index' in d:
+            detected_row_indices.add(d['row_index'])
+    
+    # Also add rows with data quality errors
+    for err in data_errors:
+        if 'row' in err:
+            detected_row_indices.add(err['row'])
+    
+    # If no specific rows detected, check ALL rows for PII columns (fallback)
+    if not detected_row_indices:
+        print("⚠️ No row-level detections found, creating tasks for rows with PII columns")
+        # Fallback: fetch preview and check which rows have values in PII columns
+        preview_url = f"{SERVICE_URLS['cleaning']}/datasets/{dataset_id}/preview?rows=30"
+        try:
+            preview_resp = requests.get(preview_url)
+            preview_data = preview_resp.json().get('preview', [])
+            
+            # Columns that are typically PII
+            pii_columns = ['cin_ma', 'phone_ma', 'rib_ma', 'credit_card', 'email', 'salary_mad']
+            
+            for idx, row in enumerate(preview_data):
+                has_pii = False
+                has_error = False
+                
+                # Check if row has PII values
+                for col in pii_columns:
+                    if col in row and row[col]:
+                        has_pii = True
+                        break
+                
+                # Check for data quality issues (simple validation)
+                if row.get('cin_ma') and (len(str(row['cin_ma'])) < 6 or 'INVALID' in str(row.get('cin_ma', ''))):
+                    has_error = True
+                if row.get('phone_ma') and (len(str(row['phone_ma'])) < 10 or not str(row['phone_ma']).replace('+', '').isdigit()):
+                    has_error = True
+                if row.get('rib_ma') and ('INVALID' in str(row.get('rib_ma', '')) or 'WRONG' in str(row.get('rib_ma', ''))):
+                    has_error = True
+                if row.get('email') and ('@' not in str(row.get('email', '')) or '@@' in str(row.get('email', '')) or str(row.get('email', '')).endswith('@')):
+                    has_error = True
+                if row.get('salary_mad') and (isinstance(row.get('salary_mad'), (int, float)) and row['salary_mad'] < 0):
+                    has_error = True
+                
+                # Add row if it has PII AND/OR has errors
+                if has_pii or has_error:
+                    detected_row_indices.add(idx)
+                    
+        except Exception as e:
+            print(f"⚠️ Could not fetch preview: {e}")
+            detected_row_indices = set(range(10))  # Fallback to first 10
+    
+    # Convert to list and sort
+    row_indices = sorted(list(detected_row_indices))
+    print(f"📋 Creating tasks for {len(row_indices)} rows with PII/errors: {row_indices[:10]}...")
+    
+    # Fetch the actual data samples for these rows
+    preview_url = f"{SERVICE_URLS['cleaning']}/datasets/{dataset_id}/preview?rows=30"
+    try:
+        preview_resp = requests.get(preview_url)
+        all_samples = preview_resp.json().get('preview', [])
+        # Filter to only the rows with issues
+        samples = [all_samples[i] for i in row_indices if i < len(all_samples)]
+    except:
+        samples = []
+
+    # Create tasks only for the filtered rows
     response = requests.post(
         f"{SERVICE_URLS['annotation']}/tasks",
         json={
             "dataset_id": dataset_id,
-            "row_indices": list(range(10)),  # First 10 rows for review
+            "row_indices": row_indices,
             "annotation_type": "pii_validation",
             "priority": "medium",
-            "detections": detections[:50]
+            "detections": all_detections[:50],
+            "data_samples": samples
         }
     )
     
     if response.status_code == 200:
         result = response.json()
-        print(f"✅ Created {result['created']} annotation tasks")
+        print(f"✅ Created {result['created']} annotation tasks for DETECTED rows (not all)")
+        
+        # Auto-assign tasks to 'annotator'
+        try:
+            requests.post(
+                f"{SERVICE_URLS['annotation']}/assign",
+                json={"strategy": "round_robin", "users": ["annotator"]}
+            )
+            print("✅ Auto-assigned tasks to 'annotator'")
+        except:
+            print("⚠️ Auto-assignment failed")
+            
         return result
     else:
         print(f"⚠️ Task creation failed: {response.text}")
         return None
+
 
 
 def apply_masking(**context):
@@ -393,7 +480,7 @@ check_presidio = PythonOperator(
 upload = PythonOperator(
     task_id='upload_dataset',
     python_callable=upload_dataset,
-    op_kwargs={'file_path': '/opt/airflow/datasets/test_data/test_data_morocco.csv'},
+    op_kwargs={'file_path': '/opt/airflow/datasets/test_data/MASTER_DATAGOV_TEST.csv'},
     dag=dag,
 )
 

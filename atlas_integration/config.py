@@ -10,10 +10,10 @@ ATLAS_CONFIG = {
     # Adresse Atlas (HDP Sandbox expose Atlas sur 21000)
     # Cas Docker local : http://localhost:21000
     # Cas Docker VM : http://<VM_IP>:21000
-    "BASE_URL": os.getenv("ATLAS_BASE_URL", "http://localhost:21000"),
+    "BASE_URL": os.getenv("ATLAS_URL", "http://localhost:21000"),
 
     # Auth par défaut HDP Sandbox
-    "USERNAME": os.getenv("ATLAS_USERNAME", "admin"),
+    "USERNAME": os.getenv("ATLAS_USER", "admin"),
     "PASSWORD": os.getenv("ATLAS_PASSWORD", "admin"),
 
     # API officielle Atlas v2 (CDC)

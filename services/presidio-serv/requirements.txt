@@ -4,3 +4,6 @@ presidio-analyzer
 presidio-anonymizer
 spacy
 python-dotenv
+fastapi
+uvicorn
+requests

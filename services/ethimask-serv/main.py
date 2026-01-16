@@ -23,6 +23,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from backend.database.mongodb import db
+from backend.score_calculator import MaskingPerceptron, UserRole, MaskingLevel
+from backend.masking_techniques import ContextualMasker, MaskingTechnique
 
 # Optional: TenSEAL for homomorphic encryption
 try:
@@ -35,29 +37,6 @@ except ImportError:
 # ====================================================================
 # MODELS
 # ====================================================================
-
-class MaskingLevel(str, Enum):
-    NONE = "none"           # No masking (full access)
-    PARTIAL = "partial"     # Partial masking (show some info)
-    FULL = "full"           # Full masking (replace with placeholder)
-    ENCRYPTED = "encrypted" # Homomorphic encryption
-
-class MaskingTechnique(str, Enum):
-    PSEUDONYMIZATION = "pseudonymization"   # Replace with consistent fake value
-    GENERALIZATION = "generalization"       # Generalize to category
-    SUPPRESSION = "suppression"             # Remove entirely
-    PERTURBATION = "perturbation"           # Add noise
-    TOKENIZATION = "tokenization"           # Replace with token
-    HASHING = "hashing"                     # One-way hash
-    ENCRYPTION = "encryption"               # Encrypted value
-
-class UserRole(str, Enum):
-    ADMIN = "admin"                 # Full access
-    DATA_STEWARD = "steward"        # Partial access
-    DATA_ANNOTATOR = "annotator"    # Limited access
-    DATA_LABELER = "labeler"        # Minimal access
-    ANALYST = "analyst"             # Aggregated access only
-    EXTERNAL = "external"           # No PII access
 
 class SensitivityLevel(str, Enum):
     LOW = "low"
@@ -94,8 +73,6 @@ class MaskingPolicy(BaseModel):
     level: MaskingLevel
     technique: MaskingTechnique
 
-
-
 # ====================================================================
 # CONFIG MANAGER (MONGO PERSISTED)
 # ====================================================================
@@ -131,124 +108,6 @@ class ConfigManager:
             )
         # Update in-memory perceptron
         perceptron.update_weights(new_weights, config.bias)
-
-# ====================================================================
-# MASKING PERCEPTRON
-# ====================================================================
-
-class MaskingPerceptron:
-    def __init__(self):
-        self.weights = np.array([0.35, -0.30, 0.20, 0.15])
-        self.bias = 0.4
-        self.sensitivity_encoding = {"low": 0.2, "medium": 0.5, "high": 0.8, "critical": 1.0}
-        self.role_encoding = {
-            UserRole.ADMIN: 0.0, UserRole.DATA_STEWARD: 0.3, UserRole.ANALYST: 0.5,
-            UserRole.DATA_ANNOTATOR: 0.6, UserRole.DATA_LABELER: 0.8, UserRole.EXTERNAL: 1.0
-        }
-        self.context_encoding = {"internal": 0.2, "analysis": 0.3, "display": 0.5, "export": 0.7, "api": 0.6, "external": 0.9, "default": 0.5}
-        self.purpose_encoding = {"internal_research": 0.2, "compliance": 0.3, "research": 0.4, "general": 0.5, "marketing": 0.7, "third_party": 0.9}
-
-    def update_weights(self, weights: List[float], bias: float):
-        self.weights = np.array(weights)
-        self.bias = bias
-
-    def encode_features(self, sensitivity, role, context, purpose):
-        return np.array([
-            self.sensitivity_encoding.get(sensitivity.lower(), 0.5),
-            self.role_encoding.get(role, 0.5),
-            self.context_encoding.get(context.lower(), 0.5),
-            self.purpose_encoding.get(purpose.lower(), 0.5)
-        ])
-
-    def decide_masking(self, sensitivity: str, role: UserRole, context: str = "default", purpose: str = "general") -> Tuple[MaskingLevel, float]:
-        features = self.encode_features(sensitivity, role, context, purpose)
-        score = np.dot(features, self.weights) + self.bias
-        prob = 1 / (1 + np.exp(-score * 5))
-        
-        confidence = min(1.0, abs(score))
-        
-        if prob < 0.25: return MaskingLevel.NONE, confidence
-        elif prob < 0.50: return MaskingLevel.PARTIAL, confidence
-        elif prob < 0.75: return MaskingLevel.FULL, confidence
-        else: return MaskingLevel.ENCRYPTED, confidence
-
-    def get_decision_explanation(self, sensitivity: str, role: UserRole, context: str, purpose: str) -> Dict:
-        features = self.encode_features(sensitivity, role, context, purpose)
-        level, confidence = self.decide_masking(sensitivity, role, context, purpose)
-        contributions = features * self.weights
-        return {
-            "decision": level.value, "confidence": round(confidence, 3),
-            "feature_contributions": {
-                "sensitivity": round(contributions[0], 3), "role": round(contributions[1], 3),
-                "context": round(contributions[2], 3), "purpose": round(contributions[3], 3)
-            }
-        }
-
-# ====================================================================
-# CONTEXTUAL MASKER
-# ====================================================================
-
-class ContextualMasker:
-    def __init__(self):
-        self.pseudonym_cache = {}
-
-    def mask(self, value: Any, entity_type: str, level: MaskingLevel, technique: MaskingTechnique = None) -> Tuple[Any, str]:
-        if value is None or level == MaskingLevel.NONE: return value, "none"
-        str_value = str(value)
-        
-        if technique is None:
-            technique = self._select_technique(entity_type, level)
-
-        if technique == MaskingTechnique.PSEUDONYMIZATION:
-             return self._pseudonymize(str_value, entity_type), technique.value
-        elif technique == MaskingTechnique.GENERALIZATION:
-             return self._generalize(str_value, entity_type), technique.value
-        elif technique == MaskingTechnique.SUPPRESSION:
-             return f"[{entity_type.upper()}]", technique.value
-        elif technique == MaskingTechnique.PERTURBATION:
-             return self._perturb(str_value, entity_type), technique.value
-        elif technique == MaskingTechnique.TOKENIZATION:
-             return f"TKN_{hashlib.md5(str_value.encode()).hexdigest()[:12]}", technique.value
-        elif technique == MaskingTechnique.HASHING:
-             return hashlib.sha256(str_value.encode()).hexdigest()[:32], technique.value
-        elif technique == MaskingTechnique.ENCRYPTION:
-             return f"ENC_{hashlib.sha256(str_value.encode()).hexdigest()[:24]}", technique.value
-        
-        return self._partial_mask(str_value, entity_type), "partial"
-
-    def _select_technique(self, entity_type: str, level: MaskingLevel) -> MaskingTechnique:
-        if level == MaskingLevel.PARTIAL: return MaskingTechnique.PSEUDONYMIZATION
-        elif level == MaskingLevel.FULL: return MaskingTechnique.SUPPRESSION
-        elif level == MaskingLevel.ENCRYPTED: return MaskingTechnique.HASHING
-        return MaskingTechnique.PSEUDONYMIZATION
-
-    def _partial_mask(self, value: str, entity_type: str) -> str:
-        if entity_type == "email":
-             parts = value.split("@")
-             return (parts[0][:2] + "***@" + parts[1]) if len(parts) == 2 else value
-        return value[:2] + "*" * (len(value)-4) + value[-2:] if len(value) > 4 else "*"*len(value)
-
-    def _pseudonymize(self, value: str, entity_type: str) -> str:
-        key = f"{entity_type}:{value}"
-        if key in self.pseudonym_cache: return self.pseudonym_cache[key]
-        
-        if entity_type == "name": result = random.choice(["Mohammed A.", "Fatima B.", "Ahmed C."])
-        elif entity_type == "email": result = f"user_{random.randint(1000,9999)}@masked.com"
-        else: result = f"[PSEUDO_{uuid.uuid4().hex[:6]}]"
-        
-        self.pseudonym_cache[key] = result
-        return result
-
-    def _generalize(self, value: str, entity_type: str) -> str:
-        if entity_type == "age": return "30-49" # Simplification
-        if entity_type == "salary": return "10K-20K MAD"
-        return f"[{entity_type.upper()}_GEN]"
-
-    def _perturb(self, value: str, entity_type: str) -> str:
-        try:
-             val = float(value)
-             return str(round(val * random.uniform(0.9, 1.1), 2))
-        except: return value
 
 # ====================================================================
 # POLICY MANAGER (MONGO PERSISTED)

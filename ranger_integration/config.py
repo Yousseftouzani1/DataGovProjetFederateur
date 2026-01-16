@@ -4,9 +4,9 @@ import os
 
 RANGER_CONFIG = {
     # HDP Sandbox expose Ranger Admin sur 6080
-    "BASE_URL": os.getenv("RANGER_BASE_URL", "http://localhost:6080"),
+    "BASE_URL": os.getenv("RANGER_URL", "http://localhost:6080"),
 
-    "USERNAME": os.getenv("RANGER_USERNAME", "admin"),
+    "USERNAME": os.getenv("RANGER_USER", "admin"),
     "PASSWORD": os.getenv("RANGER_PASSWORD", "admin"),
 
     # API REST publique Ranger

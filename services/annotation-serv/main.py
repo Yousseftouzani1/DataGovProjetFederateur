@@ -56,7 +56,7 @@ class UserRole(str, Enum):
 
 class Annotation(BaseModel):
     field: str
-    original_value: Any
+    original_value: Optional[Any] = None  # Made optional for simple validation
     annotated_value: Optional[Any] = None
     label: Optional[str] = None
     is_valid: Optional[bool] = None
@@ -85,6 +85,7 @@ class CreateTaskRequest(BaseModel):
     annotation_type: AnnotationType = AnnotationType.PII_VALIDATION
     priority: TaskPriority = TaskPriority.MEDIUM
     detections: List[Dict] = []
+    data_samples: Optional[List[Dict[str, Any]]] = None # New: Real data from Airflow
 
 class AssignmentConfig(BaseModel):
     strategy: str = "round_robin"  # round_robin, load_based, random
@@ -198,10 +199,11 @@ class TaskQueue:
             else:
                 clean_updates[k] = v
 
-        await db["tasks"].update_one(
+        result = await db["tasks"].update_one(
             {"id": task_id},
             {"$set": clean_updates}
         )
+        print(f"🔍 Task Update [{task_id}]: {result.matched_count} matched, {result.modified_count} modified")
         return await self.get_task(task_id)
 
     async def get_all_tasks(self, limit: int = 100) -> List[AnnotationTask]:
@@ -375,10 +377,19 @@ async def create_tasks(request: CreateTaskRequest):
         request.row_indices = [0, 1, 2]
     
     created_tasks = []
-    for idx in request.row_indices:
-        if df is not None:
+    for i, idx in enumerate(request.row_indices):
+        data_sample = None
+        
+        # 1. Use passed samples first
+        if request.data_samples and i < len(request.data_samples):
+            data_sample = request.data_samples[i]
+            
+        # 2. Try datasets store
+        if data_sample is None and df is not None:
             data_sample = df.iloc[idx].to_dict()
-        else:
+            
+        # 3. Fallback to mock
+        if data_sample is None:
             data_sample = {"sample_field": f"value_{idx}"}
         
         task = await task_queue.create_task(
