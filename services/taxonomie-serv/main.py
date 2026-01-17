@@ -58,6 +58,7 @@ class DetectionResult(BaseModel):
     confidence_score: float
     detection_method: str = "regex"
     context: Optional[str] = None
+    analysis_explanation: Optional[str] = None # Added for explanation feature
 
 class AnalyzeResponse(BaseModel):
     success: bool
@@ -579,7 +580,8 @@ class TaxonomyEngine:
                         "sensitivity_breakdown": sensitivity["breakdown"],
                         "confidence_score": 0.9,
                         "detection_method": "regex",
-                        "context": self._get_context(text, match.start(), match.end())
+                        "context": self._get_context(text, match.start(), match.end()),
+                        "analysis_explanation": f"Matches regex pattern for {metadata['entity_type']} in category {metadata['category']}"
                     })
         
         # Arabic patterns (if Arabic text detected)
@@ -602,7 +604,8 @@ class TaxonomyEngine:
                             "sensitivity_breakdown": sensitivity["breakdown"],
                             "confidence_score": 0.85,
                             "detection_method": "regex_arabic",
-                            "context": self._get_context(text, match.start(), match.end())
+                            "context": self._get_context(text, match.start(), match.end()),
+                            "analysis_explanation": f"Matches Arabic pattern for {metadata['entity_type']} in category {metadata['category']}"
                         })
         
         # Also check custom taxonomy from files
@@ -622,7 +625,8 @@ class TaxonomyEngine:
                                 "sensitivity_level": subclass.get("sensitivity_level", "unknown"),
                                 "confidence_score": 0.85,
                                 "detection_method": "regex",
-                                "context": self._get_context(text, match.start(), match.end())
+                                "context": self._get_context(text, match.start(), match.end()),
+                                "analysis_explanation": f"Matches custom taxonomy pattern for {subclass.get('name', 'Unknown')}"
                             })
                     except re.error:
                         pass

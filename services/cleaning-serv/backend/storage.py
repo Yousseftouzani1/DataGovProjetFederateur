@@ -23,9 +23,10 @@ metadata_col = db["cleaning_metadata"]
 # --------------------------------------------------
 # Save raw dataset
 # --------------------------------------------------
-async def save_raw_dataset(dataset_id: str, df):
+async def save_raw_dataset(dataset_id: str, df, filename: str = None):
     document = {
         "dataset_id": dataset_id,
+        "filename": filename or "unknown_file",
         "data": df.to_dict(orient="records"),
         "created_at": datetime.utcnow()
     }

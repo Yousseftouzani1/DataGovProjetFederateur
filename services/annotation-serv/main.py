@@ -15,12 +15,15 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Any, Tuple
 from enum import Enum
 from collections import Counter
+import requests
 
 import uvicorn
 import numpy as np
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Body, Query, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
+import os
 
 from backend.database.mongodb import db
 
@@ -62,6 +65,7 @@ class Annotation(BaseModel):
     is_valid: Optional[bool] = None
     confidence: float = 1.0
     notes: Optional[str] = None
+    corrected_data: Optional[Dict[str, Any]] = None  # Added for persistence
 
 class AnnotationTask(BaseModel):
     id: str
@@ -510,8 +514,9 @@ async def start_task(task_id: str, user_id: str):
 # ====================================================================
 
 @app.post("/tasks/{task_id}/submit")
-async def submit_annotation(task_id: str, request: SubmitAnnotationRequest):
+async def submit_annotation(task_id: str, request: SubmitAnnotationRequest, background_tasks: BackgroundTasks):
     """Submit annotations for a task"""
+    print(f"📥 Processing submission for task: {task_id}")
     task = await task_queue.get_task(task_id)
     if not task:
         raise HTTPException(404, "Task not found")
@@ -526,7 +531,47 @@ async def submit_annotation(task_id: str, request: SubmitAnnotationRequest):
         time_spent_seconds=request.time_spent_seconds
     )
     
+    # Check if all tasks for this dataset are completed
+    if db is not None:
+        # Check for ANY task that is NOT completed or rejected (i.e., still needs work)
+        # This covers Pending, InProgress, Assigned, Review, etc.
+        pending_count = await db.tasks.count_documents({
+            "dataset_id": task.dataset_id,
+            "status": {"$nin": [TaskStatus.COMPLETED.value, TaskStatus.REJECTED.value]}
+        })
+        
+        print(f"🔍 Status Check | Dataset: {task.dataset_id} | Remaining Tasks: {pending_count}")
+
+        if pending_count == 0:
+            # Trigger Export Pipeline in Background
+            msg = f"✅ All tasks completed for {task.dataset_id}. Triggering Pipeline..."
+            print(msg)
+            background_tasks.add_task(trigger_airflow_dag, task.dataset_id)
+
     return {"status": "submitted", "task_id": task_id}
+
+async def trigger_airflow_dag(dataset_id: str):
+    """Refactored trigger logic with retries and logging"""
+    dag_id = "approved_data_export_pipeline"
+    url = f"http://airflow:8080/api/v1/dags/{dag_id}/dagRuns"
+    # url = f"http://datagov-airflow:8080/api/v1/dags/{dag_id}/dagRuns" # Docker DNS
+    
+    print(f"🚀 Triggering Airflow DAG: {dag_id} for dataset {dataset_id}")
+    try:
+        # We need to use the container name 'airflow' or 'datagov-airflow' depending on internal DNS
+        # docker-compose says service name is 'airflow' and container name is 'datagov-airflow'
+        # Usually service name works.
+        response = requests.post(
+            url,
+            json={"conf": {"dataset_id": dataset_id}},
+            auth=("admin", "admin"),
+            timeout=10 
+        )
+        print(f"📡 Airflow Response: {response.status_code} - {response.text}")
+        if response.status_code != 200:
+             print(f"⚠️ Failed to trigger DAG: {response.text}")
+    except Exception as e:
+        print(f"❌ CRITICAL: Airflow Connection Failed: {e}")
 
 @app.post("/tasks/{task_id}/review")
 async def request_review(task_id: str):
@@ -629,6 +674,49 @@ async def get_user_stats(user_id: str):
         "accuracy": accuracy,
         "kappa": 0.82 if completed_count > 5 else 0 # Mock high agreement
     }
+
+# --------------------------------------------------------------------
+# EXPORT HISTORY (REAL DATA)
+# --------------------------------------------------------------------
+EXPORT_DIR = "/opt/airflow/datasets/certified"
+
+@app.get("/exports")
+async def list_exports():
+    """List all available CSV exports on disk"""
+    if not os.path.exists(EXPORT_DIR):
+        return []
+    
+    files = []
+    for f in os.listdir(EXPORT_DIR):
+        if f.endswith(".csv"):
+            path = os.path.join(EXPORT_DIR, f)
+            stats = os.stat(path)
+            files.append({
+                "filename": f,
+                "size_kb": round(stats.st_size / 1024, 2),
+                "created_at": datetime.fromtimestamp(stats.st_mtime).isoformat(),
+                "type": "Golden Records (CSV)"
+            })
+    
+    # Sort by newest first
+    return sorted(files, key=lambda x: x["created_at"], reverse=True)
+
+@app.get("/exports/download/{filename}")
+async def download_export(filename: str):
+    """Download a specific CSV export from disk"""
+    # Security: prevent directory traversal
+    if ".." in filename or "/" in filename:
+        raise HTTPException(400, "Invalid filename")
+        
+    path = os.path.join(EXPORT_DIR, filename)
+    if not os.path.exists(path):
+        raise HTTPException(404, "Export file not found")
+        
+    return FileResponse(
+        path, 
+        media_type="text/csv", 
+        filename=filename
+    )
 
 if __name__ == "__main__":
     print(f"\\n" + "="*60)

@@ -1,0 +1,31 @@
+id,full_name,name_arabic,cin_ma,phone_ma,rib_ma,credit_card,salary_mad,birth_date,city,city_arabic,email,status,company,notes
+1,Ahmed El Mansouri,أحمد المنصوري,AB123456,0661234567,MA640110078500012345678901,4532789012345678,18500,1985-05-12,Casablanca,الدار البيضاء,ahmed.mans@gmail.com,Active,Maroc Telecom,موظف منذ 5 سنوات
+2,Fatima Zahra Bennani,فاطمة الزهراء البناني,CD987654,0522112233,MA640220078500098765432102,5412789012345678,12400,1992-11-20,Rabat,الرباط,fz.bennani@outlook.ma,Pending,BMCE Bank,في انتظار التحقق
+3,Youssef Ait Taleb,يوسف آيت الطالب,EF456789,066 199 88 77,MA640330078500045678901203,371234567890123,35000,1978-02-28,Marrakech,مراكش,ait.taleb@company.com,Active,OCP Group,مدير تقني
+4,Khadija Lahlou,خديجة لحلو,GH112233,061-010-2030,MA640440078500011223344504,4111111111111111,9800,1995-08-15,Fes,فاس,lahlou.k@gmail.com,Actif,Attijariwafa Bank,خطأ في الكتابة
+5,Omar Radi,عمر الراضي,IJ445566,0707123456,MA640550078500044556677805,5500123456789012,22000,1988-12-01,Tangier,طنجة,o.radi@press.ma,Suspended,Press Agency,حساب معلق
+6,Meryem Chakir,مريم شكير,KL778899,0622334455,MA640660078500077889911006,4000123412341234,15000,1990-03-22,Agadir,أكادير,m.chakir@gmail.com,Actve,Sonacos,typo in status
+7,Hamid Ouazzani,حميد الوزاني,MN001122,06-23-44-55-66,MA640770078500000112233407,5100003412349876,28000,1982-07-14,Oujda,وجدة,hamid.ouazzani@email,Active,Sonasid,email manque extension
+8,Samira El Alaoui,سميرة العلوي,OP334455,+212661778899,MA64088007850033445566,4500111122223333,19500,31/06/1987,Kenitra,القنيطرة,s.elalaoui@yahoo.fr,Active,ONEE,date format incorrect + RIB trop court
+9,Rachid Moussaoui,رشيد الموساوي,QR556677,,MA640990078500055667788809,,,1975-09-08,Meknes,مكناس,,Active,ONCF,missing phone email salary
+10,Nadia Benjelloun,نادية بنجلون,ST889900,0612345678123456,MA641000078500088990011010,4111222233334444,45000,1980-01-01,Tetouan,تطوان,nadia.b@hotmail.com,Active,RAM,phone trop long
+11,Mohammed Tazi,محمد التازي,UV112233,0661122334,INVALID_RIB_FORMAT,5200128765432109,32000,1977-11-25,Sale,سلا,m.tazi@company.ma,Active,Bank Al-Maghrib,RIB format invalide
+12,Laila Bennani,ليلى البناني,WX445566,0699887766,MA641110078500011223344511,4532-7890-1234-5678,16000,1993-04-17,Temara,تمارة,laila_bennani@@gmail.com,Active,CDG,double @ email + card with dashes
+13,Khalid El Fassi,خالد الفاسي,YZ778899,zero six cent vingt,MA641220078500077889911012,4000000000000000,0,1988-06-30,Essaouira,الصويرة,kef@email.ma,Active,TMSA,phone en texte + salary zero
+14,Amina Chraibi,آمنة الشرايبي,AB-999888,0655443322,MA641330078500099988877713,371000000000000,21000,1991-02-14,El Jadida,الجديدة,a.chraibi@work.com,Active,ONA,CIN format with dash
+15,Driss Benmoussa,إدريس بنموسى,CD.777666,0633221100,MA641440078500077766655514,5412000000000000,8500,1996-10-05,Mohammedia,المحمدية,driss.bm@email.com,en attente,Lafarge,CIN with dot + status french
+16,Houda El Ouafi,هدى الوافي,EF_555444,0677889900,MA641550078500055544433315,4111333355557777,13000,1994-08-23,Beni Mellal,بني ملال,houda@outlook.fr,Active,Holcim,CIN with underscore
+17,Samir Touzani,سمير التوزاني,GH/333222,0644556677,MA641660078500033322211116,5500444466668888,39000,1979-12-12,Khouribga,خريبكة,samir.t@professional.ma,Active,Managem,CIN with slash
+18,Zineb El Amrani,زينب العمراني,IJ 111000,0611223344,MA641770078500011100099917,4532111122223333,17500,1992-05-30,Settat,سطات,z.amrani@gmail.com,ACTIF,Lydec,CIN with space + status uppercase
+19,عبد الله القادري,Abdellah El Kadiri,KL888777,٠٦٧٧٣٣٢٢١١,MA641880078500088877766618,5100222233334444,26000,1986-03-18,Taza,تازة,abdellah@email.ma,Active,CTM,name Arabic first + Arabic phone
+20,فاطمة الحسيني,Fatima El Hassani,MN666555,0655667788,MA641990078500066655544419,4000333344445555,11000,1998-01-20,Nador,الناظور,fatima.h@yahoo.com,معلق,BMCI,name Arabic + status Arabic
+21,حسن الإدريسي,Hassan El Idrissi,OP444333,0622114455,MA642000078500044433322220,5412666677778888,33000,1983-09-15,Al Hoceima,الحسيمة,hassan.idrissi@work.ma,Active,Crédit Agricole,bilingual entry
+22,Karim Benchekroun,كريم بنشقرون,QR222111,0688990011,MA64211007850022211100021,4111888899990000,14500,02-30-1989,Larache,العرائش,karim.b@email.ma,Active,Wafa Assurance,impossible date + RIB one digit short
+23,سارة المغربي,Sara El Maghribi,ST000999,0611002233,MA642220078500000099988822,5500777788889999,20000,1995-07-07,Berkane,بركان,sara.m@hotmail.com,نشط,ANAPEC,fully bilingual
+24,يونس الأمين,Younes El Amine,UV999888,0699112233,MA642330078500099988877723,4532444455556666,42000,1981-04-25,Khémisset,الخميسات,younes@company.ma,Active,Cosumar,exec level salary
+25,نورة السعدي,Noura Saadi,WX777666,0633445566,MA642440078500077766655524,5100888899990011,7500,0000-00-00,Sidi Kacem,سيدي قاسم,noura.s@email.ma,en cours,Centrale Danone,invalid birth date
+26,أيوب الهاشمي,Ayoub El Hashimi,YZ555444,0677112233,MA642550078500055544433325,4000999900001111,29000,1984-11-11,Sefrou,صفرو,ayoub.h@gmail.com,Active,Marsa Maroc,
+27,إيمان الطاهري,Imane Tahiri,AB333222,0644778899,MA642660078500033322211126,5412999900001111,16500,1997-02-28,Guelmim,كلميم,imane.t@yahoo.fr,Active,ONHYM,southern region
+28,ياسين الرحماني,Yassine Rahmani,CD111000,0611889900,MA642770078500011100099927,4111000011112222,38000,1978-06-15,Ouarzazate,ورزازات,yassine@work.ma,مفعل,ONDA,atlas region
+29,هند العربي,Hind Larbi,EF999000,0655123456,MA642880078500099900011128,5500222233334455,12000,1993-10-03,Errachidia,الراشيدية,hind.l@email.ma,Active,Royal Air Maroc,saharan region
+30,طارق الغزواني,Tarik Ghazouani,GH777000,0688445566,MA642990078500077700099929,4532666677778899,51000,1976-08-20,Laayoune,العيون,tarik.g@company.ma,Active,Phosboucraa,southern territories

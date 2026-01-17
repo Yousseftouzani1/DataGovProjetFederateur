@@ -98,7 +98,7 @@ async def startup():
     t5_corrector = None  # Will be loaded by ModelCache when needed
     
     # Initialize database-backed engines if MongoDB available
-    if db:
+    if db is not None:
         validation_manager = ValidationManager(db)
         learning_engine = LearningEngine(db, None)  # T5 will be injected later
         report_generator = ReportGenerator(db)

@@ -6,9 +6,7 @@ version: "3.9"
 # ============================================
 
 services:
-  # ─────────────────────────────────────────
   # INFRASTRUCTURE: Database (MongoDB)
-  # ─────────────────────────────────────────
   mongo:
     image: mongo:latest
     container_name: datagov-mongo
@@ -20,9 +18,7 @@ services:
       - datagov-network
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
   # INFRASTRUCTURE: Orchestration (Airflow)
-  # ─────────────────────────────────────────
   airflow:
     image: apache/airflow:2.7.1
     container_name: datagov-airflow
@@ -35,20 +31,19 @@ services:
       - _AIRFLOW_WWW_USER_CREATE=True
       - _AIRFLOW_WWW_USER_USERNAME=admin
       - _AIRFLOW_WWW_USER_PASSWORD=admin
+      - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
     ports:
       - "8080:8080"
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
-      - ./datasets:/opt/airflow/datasets
+      - ./airflow/datasets:/opt/airflow/datasets
     command: standalone
     networks:
       - datagov-network
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
   # SERVICE 1: Authentication (Port 8001)
-  # ─────────────────────────────────────────
   auth-service:
     build: ./services/auth-serv
     container_name: auth-service
@@ -62,9 +57,7 @@ services:
       - datagov-network
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
   # SERVICE 2: Taxonomie PII/SPI (Port 8002)
-  # ─────────────────────────────────────────
   taxonomie-service:
     build: ./services/taxonomie-serv
     container_name: taxonomie-service
@@ -80,9 +73,7 @@ services:
       - ./services/common:/common
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
   # SERVICE 3: Presidio Detection (Port 8003)
-  # ─────────────────────────────────────────
   presidio-service:
     build: ./services/presidio-serv
     container_name: presidio-service
@@ -99,9 +90,7 @@ services:
       - ./services/common:/common
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
   # SERVICE 4: Data Cleaning (Port 8004)
-  # ─────────────────────────────────────────
   cleaning-service:
     build: ./services/cleaning-serv
     container_name: cleaning-service
@@ -115,11 +104,12 @@ services:
       - datagov-network
     volumes:
       - ./services/common:/common
+      - ./atlas_integration:/app/atlas_integration
+      - ./ranger_integration:/app/ranger_integration
+      - ./airflow/datasets:/opt/airflow/datasets # Shared volume for exports
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
   # SERVICE 5: ML Classification (Port 8005)
-  # ─────────────────────────────────────────
   classification-service:
     build: ./services/classification-serv
     container_name: classification-service
@@ -140,9 +130,7 @@ services:
       timeout: 10s
       retries: 3
 
-  # ─────────────────────────────────────────
   # SERVICE 6: Correction (Port 8006)
-  # ─────────────────────────────────────────
   correction-service:
     build: ./services/correction-serv
     container_name: correction-service
@@ -158,9 +146,7 @@ services:
       - ./services/common:/common
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
   # SERVICE 7: Annotation (Port 8007)
-  # ─────────────────────────────────────────
   annotation-service:
     build: ./services/annotation-serv
     container_name: annotation-service
@@ -174,11 +160,10 @@ services:
       - datagov-network
     volumes:
       - ./services/common:/common
+      - ./airflow/datasets:/opt/airflow/datasets:ro
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
   # SERVICE 8: Quality ISO 25012 (Port 8008)
-  # ─────────────────────────────────────────
   quality-service:
     build: ./services/quality-serv
     container_name: quality-service
@@ -194,9 +179,7 @@ services:
       - ./services/common:/common
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
   # SERVICE 9: EthiMask (Port 8009)
-  # ─────────────────────────────────────────
   ethimask-service:
     build: ./services/ethimask-serv
     container_name: ethimask-service
@@ -213,10 +196,17 @@ services:
       - datagov-network
     restart: unless-stopped
 
-  # ─────────────────────────────────────────
+  # MODERN FRONTEND: DataGov (Port 3000)
+  datagov-modern:
+    build: ./frontend-react
+    container_name: datagov-modern
+    ports:
+      - "3000:80"
+    networks:
+      - datagov-network
+    restart: unless-stopped
+
   # NGINX GATEWAY (Port 8000)
-  # Single entry point for all services
-  # ─────────────────────────────────────────
   nginx-gateway:
     image: nginx:latest
     container_name: nginx-gateway
@@ -224,20 +214,17 @@ services:
       - "8000:8000"
     volumes:
       - ./gateway-nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./frontend:/usr/share/nginx/html:ro
     depends_on:
       - auth-service
       - taxonomie-service
       - cleaning-service
       - annotation-service
-      # Wait for critical services
+      - datagov-modern
     networks:
       - datagov-network
     restart: unless-stopped
 
-# ─────────────────────────────────────────
 # NETWORK & VOLUMES
-# ─────────────────────────────────────────
 networks:
   datagov-network:
     driver: bridge

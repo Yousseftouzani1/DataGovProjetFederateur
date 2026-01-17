@@ -303,12 +303,38 @@ async def root():
         "service": "Quality Service",
         "status": "running",
         "db_connected": db is not None,
-        "total_reports": count
+        "total_evaluations": count
     }
 
 @app.get("/health")
-def health_check():
+async def health():
     return {"status": "healthy"}
+
+@app.get("/stats")
+async def get_stats():
+    """Get aggregate quality statistics for the dashboard"""
+    if db is None:
+        return {"average_score": 0, "total_evaluations": 0}
+    
+    try:
+        pipeline = [
+            {"$group": {
+                "_id": None, 
+                "avg_score": {"$avg": "$global_score"},
+                "total_evals": {"$sum": 1}
+            }}
+        ]
+        cursor = db.quality_reports.aggregate(pipeline)
+        result = await cursor.to_list(length=1)
+        
+        if result:
+            return {
+                "average_score": round(result[0]["avg_score"], 1),
+                "total_evaluations": result[0]["total_evals"]
+            }
+        return {"average_score": 0, "total_evaluations": 0}
+    except Exception as e:
+        return {"error": str(e), "average_score": 0, "total_evaluations": 0}
 
 @app.post("/evaluate/{dataset_id}", response_model=QualityReport)
 async def evaluate_quality(dataset_id: str, config: EvaluationConfig = None):

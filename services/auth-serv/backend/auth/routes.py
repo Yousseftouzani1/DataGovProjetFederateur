@@ -7,6 +7,11 @@ from backend.auth.utils import verify_password, create_token, decode_token
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+@router.get("/health")
+async def health():
+    return {"status": "healthy"}
+
+
 # LOGIN ROUTE -----------------------------------------
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):

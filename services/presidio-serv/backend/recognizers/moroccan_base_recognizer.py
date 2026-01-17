@@ -42,7 +42,7 @@ class MoroccanPatternRecognizer(PatternRecognizer):
         results = super().analyze(text, entities, nlp_artifacts)
         
         # If no results or we are not in the requested entities, return early
-        if not results or self.supported_entity not in entities:
+        if not results or (entities is not None and self.supported_entity not in entities):
             return results
 
         final_results = []

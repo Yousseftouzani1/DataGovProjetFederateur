@@ -33,6 +33,8 @@ if PRESIDIO_AVAILABLE:
     from backend.recognizers.arabic_recognizer import ArabicMoroccanRecognizer
     from backend.recognizers.passport_ma_recognizer import MoroccanPassportRecognizer
     from backend.recognizers.permis_ma_recognizer import MoroccanPermisRecognizer
+    # International recognizers
+    from backend.recognizers.international_recognizers import register_all_international
 
 # ====================================================================
 # MODELS
@@ -42,7 +44,7 @@ class AnalyzeRequest(BaseModel):
     text: str = Field(..., description="Text to analyze", min_length=1)
     language: str = Field(default="fr", description="Language (fr/en/ar)")
     entities: Optional[List[str]] = Field(default=None, description="Specific entities to detect")
-    score_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
+    score_threshold: float = Field(default=0.3, ge=0.0, le=1.0)
 
 class AnonymizeRequest(BaseModel):
     text: str = Field(..., description="Text to anonymize", min_length=1)
@@ -55,6 +57,7 @@ class Detection(BaseModel):
     end: int
     score: float
     value: str
+    analysis_explanation: Optional[str] = None
 
 class AnalyzeResponse(BaseModel):
     success: bool
@@ -98,6 +101,10 @@ class MoroccanPresidioEngine:
                 registry.add_recognizer(MoroccanPermisRecognizer(supported_language=lang))
                 # registry.add_recognizer(ArabicMoroccanRecognizer(supported_language=lang))
             
+            # Add International recognizers (Chinese, Japanese, Korean, Russian, etc.)
+            register_all_international(registry, languages=["en", "fr"])
+            print("🌍 International PII detection enabled")
+            
             # Use English model for all languages (Custom Recognizers handle the patterns)
             config = {
                 "nlp_engine_name": "spacy",
@@ -138,7 +145,8 @@ class MoroccanPresidioEngine:
             text=text,
             language=lang,
             entities=entities,
-            score_threshold=score_threshold
+            score_threshold=score_threshold,
+            return_decision_process=True # Enable explanations
         )
         
         return [
@@ -147,7 +155,8 @@ class MoroccanPresidioEngine:
                 "start": r.start,
                 "end": r.end,
                 "score": round(r.score, 3),
-                "value": text[r.start:r.end]
+                "value": text[r.start:r.end],
+                "analysis_explanation": getattr(r.analysis_explanation, 'textual_explanation', str(r.analysis_explanation)) if r.analysis_explanation else f"Detected {r.entity_type} with {round(r.score*100)}% confidence"
             }
             for r in results
         ]

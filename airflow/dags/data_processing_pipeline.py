@@ -444,7 +444,7 @@ dag = DAG(
     'data_processing_pipeline',
     default_args=default_args,
     description='Complete data processing pipeline with all microservices',
-    schedule_interval='0 2 * * *',  # Daily at 2AM
+    schedule_interval=None,  # Triggered manually or via API
     start_date=datetime(2024, 1, 1),
     catchup=False,
     max_active_runs=1,

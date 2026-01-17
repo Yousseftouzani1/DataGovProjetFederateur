@@ -3434,7 +3434,11 @@ rules:
                 const resp = await fetch(`${API.presidio}/analyze`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: textToAnalyze, language: 'fr' })
+                    body: JSON.stringify({
+                        text: textToAnalyze,
+                        language: 'fr',
+                        score_threshold: 0.3
+                    })
                 });
 
                 if (resp.ok) {

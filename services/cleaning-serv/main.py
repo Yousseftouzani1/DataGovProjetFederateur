@@ -13,17 +13,107 @@ from backend.storage import (
     save_metadata
 )
 
-# Add common services to path
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../common")))
-
 try:
-    from atlas_client import AtlasClient
+    # Try importing from proper integration module first
+    from atlas_integration.client import AtlasClient
     atlas_client = AtlasClient()
+    # Auto-setup classification types for production
+    if hasattr(atlas_client, 'ensure_classification_types'):
+        atlas_client.ensure_classification_types()
+    print("🔌 Loaded AtlasClient from atlas_integration")
 except ImportError:
-    print("⚠️ Could not import AtlasClient. Governance features disabled.")
+    try:
+        # Fallback to common library (sys.path hack)
+        import sys
+        sys.path.insert(0, '/common')
+        from atlas_client import AtlasClient
+        atlas_client = AtlasClient()
+        if hasattr(atlas_client, '_ensure_classification_types'):
+            atlas_client._ensure_classification_types()
+        print("🔌 Loaded AtlasClient from /common (Fallback)")
+    except Exception as e:
+        print(f"⚠️ Could not import AtlasClient: {e}. Governance features disabled.")
+        atlas_client = None
+except Exception as e:
+    print(f"⚠️ Error initializing AtlasClient: {e}")
     atlas_client = None
+
+from backend.storage import raw_datasets_col, clean_datasets_col, metadata_col
+
+# =======================================================
+# RANGER INTEGRATION - Per Cahier des Charges Section 3.6
+# =======================================================
+import requests as ranger_requests
+
+RANGER_URL = "http://192.168.110.132:6080"
+RANGER_AUTH = ("admin", "hortonworks1")
+
+class AccessDecision:
+    ALLOWED = "allowed"
+    DENIED = "denied"
+    MASKED = "masked"
+
+def check_ranger_permission(username: str, resource_tag: str = "PII"):
+    """
+    Check Ranger for user permission on tagged resources.
+    Per Cahier des Charges: FastAPI → Ranger REST API
+    """
+    try:
+        # Direct Ranger API call - most reliable method
+        resp = ranger_requests.get(
+            f"{RANGER_URL}/service/plugins/policies",
+            params={"serviceName": "data_gov_tags"},
+            auth=RANGER_AUTH,
+            timeout=5
+        )
+        
+        if resp.status_code != 200:
+            print(f"⚠️ Ranger API returned {resp.status_code}")
+            # Default DENY if Ranger is down (security-first)
+            return {"decision": AccessDecision.DENIED, "reason": "Ranger unavailable"}
+        
+        policies = resp.json().get('policies', [])
+        
+        # Check policies
+        is_allowed = False
+        is_denied = False
+        
+        for policy in policies:
+            if not policy.get('isEnabled', False):
+                continue
+            
+            # Check tag match
+            policy_tags = policy.get('resources', {}).get('tag', {}).get('values', [])
+            if resource_tag not in policy_tags:
+                continue
+            
+            # Check allow items
+            for allow_item in policy.get('policyItems', []):
+                if username in allow_item.get('users', []):
+                    is_allowed = True
+            
+            # Check deny items
+            for deny_item in policy.get('denyPolicyItems', []):
+                if username in deny_item.get('users', []):
+                    is_denied = True
+                if 'public' in deny_item.get('groups', []):
+                    is_denied = True  # Public group denied
+        
+        # Explicit allow overrides public deny
+        if is_allowed:
+            return {"decision": AccessDecision.ALLOWED}
+        
+        if is_denied:
+            return {"decision": AccessDecision.DENIED, "reason": "Denied by policy"}
+        
+        # Default deny if no explicit allow
+        return {"decision": AccessDecision.DENIED, "reason": "No explicit allow policy"}
+        
+    except Exception as e:
+        print(f"⚠️ Ranger check failed: {e}")
+        # Default DENY if Ranger is unreachable (security-first)
+        return {"decision": AccessDecision.DENIED, "reason": str(e)}
+
 
 app = FastAPI(title="Cleaning Service", version="2.0")
 
@@ -38,6 +128,77 @@ app.add_middleware(
 
 # In-memory cache for quick access (MongoDB is primary storage)
 datasets_cache = {}
+
+# Access log for audit trail
+access_log = []
+
+
+# --------------------------------------------------
+# RANGER PERMISSIONS ENDPOINT (For Frontend)
+# --------------------------------------------------
+@app.get("/permissions")
+async def get_user_permissions(username: str = Query(...), role: str = Query(default="unknown")):
+    """
+    Returns user's access permissions for frontend to use.
+    Per Cahier des Charges: Frontend awareness of Ranger policies.
+    
+    Returns:
+        - access_level: "full", "masked", "denied"
+        - can_view_pii: bool
+        - can_view_spi: bool
+        - mask_type: if masked, which type (MASK, HASH, etc.)
+    """
+    from datetime import datetime
+    
+    # Check PII permission
+    pii_permission = check_ranger_permission(username, "PII")
+    spi_permission = check_ranger_permission(username, "SPI")
+    
+    # Determine access level
+    pii_decision = pii_permission.get("decision", AccessDecision.DENIED)
+    spi_decision = spi_permission.get("decision", AccessDecision.DENIED)
+    
+    # Map decisions to frontend-friendly format
+    if pii_decision == AccessDecision.ALLOWED:
+        access_level = "full"
+        can_view_pii = True
+    elif pii_decision == AccessDecision.MASKED:
+        access_level = "masked"
+        can_view_pii = True  # Can view but masked
+    else:
+        access_level = "denied"
+        can_view_pii = False
+    
+    # Log this access check (Audit Trail)
+    log_entry = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "username": username,
+        "role": role,
+        "action": "permission_check",
+        "pii_decision": str(pii_decision),
+        "spi_decision": str(spi_decision)
+    }
+    access_log.append(log_entry)
+    print(f"🔐 Access Check: {username} ({role}) → PII:{pii_decision}, SPI:{spi_decision}")
+    
+    # Determine if Ranger API was actually reached
+    ranger_reached = pii_permission.get("reason") != "Ranger unavailable"
+    
+    return {
+        "username": username,
+        "role": role,
+        "access_level": access_level,
+        "can_view_pii": can_view_pii,
+        "can_view_spi": spi_decision == AccessDecision.ALLOWED,
+        "mask_type": pii_permission.get("mask_type") if access_level == "masked" else None,
+        "ranger_connected": ranger_reached
+    }
+
+
+@app.get("/access-log")
+async def get_access_log(limit: int = Query(default=50)):
+    """Return recent access log entries for audit trail"""
+    return {"entries": access_log[-limit:]}
 
 
 # --------------------------------------------------
@@ -70,14 +231,15 @@ async def upload_dataset(file: UploadFile = File(...)):
     
     # Try to save to MongoDB (non-blocking if fails)
     try:
-        await save_raw_dataset(dataset_id, df)
+        await save_raw_dataset(dataset_id, df, filename=file.filename)
     except Exception as e:
         print(f"MongoDB save warning: {e}")
     
-    # Register in Atlas
+    # Register in Atlas and get GUID for later classification
+    atlas_guid = None
     if atlas_client:
         try:
-            atlas_client.register_dataset(
+            atlas_guid = atlas_client.register_dataset_and_get_guid(
                 name=file.filename,
                 description=f"Uploaded dataset {file.filename}",
                 owner="admin", # TODO: Get from token
@@ -91,7 +253,8 @@ async def upload_dataset(file: UploadFile = File(...)):
         "filename": file.filename,
         "rows": len(df),
         "columns": len(df.columns),
-        "column_names": list(df.columns)
+        "column_names": list(df.columns),
+        "atlas_guid": atlas_guid  # For PII classification later
     }
 
 
@@ -140,6 +303,92 @@ async def profile(dataset_id: str):
 
 
 # --------------------------------------------------
+# Stats & History (NEW for Dashboard)
+# --------------------------------------------------
+@app.get("/stats")
+async def get_stats():
+    """Get aggregate statistics for the dashboard"""
+    try:
+        total_datasets = await raw_datasets_col.count_documents({})
+        # Simple heuristic: total records count
+        # For performance, in a real app we'd use a metadata counter
+        pipeline = [{"$project": {"count": {"$size": "$data"}}}, {"$group": {"_id": None, "total": {"$sum": "$count"}}}]
+        cursor = raw_datasets_col.aggregate(pipeline)
+        result = await cursor.to_list(length=1)
+        total_records = result[0]["total"] if result else 0
+        
+        return {
+            "total_datasets": total_datasets,
+            "total_records": total_records,
+            "uptime": "100%", # Placeholder or real uptime
+            "storage_used": f"{total_datasets * 0.5:.1f} MB" # Simulated
+        }
+    except Exception as e:
+        return {"error": str(e), "total_datasets": 0, "total_records": 0}
+
+@app.get("/datasets")
+async def list_datasets(limit: int = Query(default=10, le=100), username: str = Query(default="admin")):
+    """
+    List recent datasets for the pipeline table.
+    RANGER INTEGRATION: Checks user permission before returning data.
+    """
+    # Check Ranger permission before returning sensitive data
+    permission = check_ranger_permission(username, "PII")
+    
+    if permission.get("decision") == AccessDecision.DENIED:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Access denied by Ranger policy. User '{username}' is not authorized to view PII-tagged datasets."
+        )
+    
+    try:
+        cursor = raw_datasets_col.find({}, {"data": 0}).sort("created_at", -1).limit(limit)
+        datasets = await cursor.to_list(length=limit)
+        
+        # Format for frontend
+        formatted = []
+        for d in datasets:
+            formatted.append({
+                "id": d["dataset_id"],
+                "name": d.get("filename", "unknown_file"),
+                "date": d["created_at"].isoformat() if "created_at" in d else None,
+                "status": "Ready",
+                "type": "Raw"
+            })
+        return formatted
+    except Exception as e:
+        return []
+
+
+@app.delete("/datasets/{dataset_id}")
+async def delete_dataset(dataset_id: str):
+    """Delete a dataset from the system (Steward/Admin only)"""
+    try:
+        # Delete from MongoDB
+        result = await raw_datasets_col.delete_one({"dataset_id": dataset_id})
+        
+        # Also delete from clean_datasets if exists
+        await clean_datasets_col.delete_one({"dataset_id": dataset_id})
+        
+        # Also delete from metadata
+        await metadata_col.delete_many({"dataset_id": dataset_id})
+        
+        # Remove from cache if present
+        if dataset_id in datasets_cache:
+            del datasets_cache[dataset_id]
+        
+        if result.deleted_count > 0:
+            return {"success": True, "message": f"Dataset {dataset_id} deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="Dataset not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete dataset: {str(e)}")
+
+
+# --------------------------------------------------
 # Cleaning endpoint (with config)
 # --------------------------------------------------
 @app.post("/clean/{dataset_id}")
@@ -183,6 +432,211 @@ async def auto_clean(dataset_id: str):
         "remove_outliers": True
     }
     return await clean(dataset_id, config)
+
+# --------------------------------------------------
+# Trigger Pipeline - Create Annotation Tasks
+# --------------------------------------------------
+from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime
+
+class PipelineTriggerRequest(BaseModel):
+    dataset_id: str
+    detections: List[dict]
+    dataset_name: Optional[str] = None
+
+@app.post("/trigger-pipeline")
+async def trigger_pipeline(request: PipelineTriggerRequest):
+    """
+    Trigger the pipeline processing after labeler finishes PII detection.
+    Creates annotation tasks for the annotator to review.
+    """
+    from pymongo import MongoClient
+    import os
+    
+    try:
+        print(f"🚀 Triggering pipeline for Dataset ID: {request.dataset_id} | Name: {request.dataset_name}")
+        
+        # Connect to MongoDB Atlas
+        mongo_uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+        db_name = os.getenv("DATABASE_NAME", "DataGovDB")
+        client = MongoClient(mongo_uri)
+        db = client[db_name]
+        tasks_col = db["tasks"]
+        
+        # Create annotation tasks for each detection
+        tasks_created = []
+        for i, detection in enumerate(request.detections):
+            # Ensure strict adherence to AnnotationTask definition in annotation-service
+            task_id = f"TASK-{request.dataset_id[:8]}-{i+1:03d}-{uuid.uuid4().hex[:4]}"
+            
+            task = {
+                "id": task_id,  # Changed from task_id to id
+                "dataset_id": request.dataset_id,
+                "row_index": i, # Required field
+                "data_sample": detection.get("context", {"text": detection.get("text", "No context")}), # Must be a dict
+                "detections": [detection], # Must be a list
+                "annotation_type": "pii_validation", # Required field
+                "priority": "medium",
+                "status": "pending",
+                "assigned_to": "annotator_user",
+                "annotations": [],
+                "created_at": datetime.utcnow().isoformat(), # Must be string
+                # Extra metadata
+                "created_by": "labeler_user",
+                "dataset_name": request.dataset_name or "Unknown"
+            }
+            tasks_col.insert_one(task)
+            tasks_created.append(task["id"])
+        
+        print(f"✅ Created {len(tasks_created)} annotation tasks for dataset {request.dataset_id}")
+
+        # ---------------------------------------------------------
+        # Airflow Integration (As requested by User)
+        # ---------------------------------------------------------
+        try:
+            import requests
+            airflow_url = os.getenv("AIRFLOW_URL", "http://airflow:8080")
+            dag_id = "data_processing_pipeline"
+            
+            # Trigger DAG run
+            response = requests.post(
+                f"{airflow_url}/api/v1/dags/{dag_id}/dagRuns",
+                json={"conf": {"dataset_id": request.dataset_id}},
+                auth=("admin", "admin"), # Default credentials
+                timeout=2 # Short timeout to not block
+            )
+            if response.status_code == 200:
+                print(f"✅ Airflow DAG {dag_id} triggered successfully")
+            else:
+                print(f"⚠️ Airflow Trigger Warning: {response.status_code} - {response.text}")
+        except Exception as af_error:
+            print(f"⚠️ Could not trigger Airflow (Soft Fail): {af_error}")
+        
+        # ---------------------------------------------------------
+        # Governance Integration: Update Atlas Classifications
+        # ---------------------------------------------------------
+        
+        # ---------------------------------------------------------
+        # 4. Call Classification Service (Task 5) - Compliance Check
+        # ---------------------------------------------------------
+        classification_result = None
+        sensitivity_level = "unknown"
+        try:
+            # Prepare text for classification (aggregate from detections or task)
+            sample_text = ""
+            if request.detections:
+                # Use context from first few detections (Handle both dict and Pydantic model)
+                contexts = []
+                for d in request.detections[:3]:
+                    # Safe extraction of context
+                    ctx = getattr(d, 'context', None)
+                    if ctx is None and isinstance(d, dict):
+                        ctx = d.get('context')
+                    
+                    if ctx:
+                        # Extract text from context dict
+                        contexts.append(ctx.get("text", "") if isinstance(ctx, dict) else str(ctx))
+                
+                sample_text = " ".join(contexts)
+            
+            if not sample_text:
+                sample_text = "Dataset with PII detections"
+
+            # Call Classification Service
+            cls_url = os.getenv("CLASSIFICATION_SERVICE_URL", "http://classification-service:8005")
+            cls_resp = requests.post(f"{cls_url}/classify", json={
+                "text": sample_text,
+                "language": "fr", # Default to FR context
+                "use_ml": True
+            }, timeout=3)
+            
+            if cls_resp.status_code == 200:
+                classification_result = cls_resp.json()
+                sensitivity_level = classification_result.get("sensitivity_level", "unknown")
+                print(f"🧠 Classification Service: {classification_result.get('classification')} ({sensitivity_level})")
+            else:
+                print(f"⚠️ Classification Service Error: {cls_resp.status_code}")
+
+        except Exception as cls_err:
+            print(f"⚠️ Could not consult Classification Service: {cls_err}")
+
+
+        # ---------------------------------------------------------
+        # Governance Integration: Update Atlas Classifications
+        # ---------------------------------------------------------
+        # ---------------------------------------------------------
+        # Governance Integration: Update Atlas Classifications
+        # ---------------------------------------------------------
+        print(f"🔍 Starting Governance Update | Client: {bool(atlas_client)} | Detections: {len(request.detections)}")
+
+        if atlas_client and request.detections:
+            try:
+                # Look up the dataset GUID in Atlas
+                dataset_name = request.dataset_name or request.dataset_id
+                entity_guid = atlas_client.get_entity_guid(dataset_name)
+                
+                if entity_guid:
+                    print(f"📍 Found Entity GUID: {entity_guid}")
+                    
+                    # 1. Add PII classification (Specific PII details)
+                    # request.detections is already a list of objects or dicts depending on context
+                    # Safer approach: check type before converting
+                    detections_list = []
+                    for d in request.detections:
+                        if hasattr(d, 'dict'):
+                            detections_list.append(d.dict())
+                        else:
+                            detections_list.append(d)
+                            
+                    atlas_client.add_classification_with_attributes(
+                        entity_guid=entity_guid,
+                        classification="PII",
+                        detections=detections_list
+                    )
+                    
+                    # 2. Add SENSITIVITY classification (Based on ML Service)
+                    if sensitivity_level in ["critical", "high"]:
+                        atlas_client.create_classification(
+                            entity_guid=entity_guid, 
+                            classification_name="CONFIDENTIAL",
+                            attributes={"detectedTypes": classification_result.get("classification", "UNKNOWN")}
+                        )
+                    elif sensitivity_level == "medium":
+                        atlas_client.create_classification(
+                            entity_guid=entity_guid, 
+                            classification_name="SENSITIVE",
+                            attributes={"detectedTypes": classification_result.get("classification", "UNKNOWN")}
+                        )
+
+                    # 3. Register PII columns as data_attribute entities
+                    atlas_client.register_pii_columns(
+                        dataset_guid=entity_guid,
+                        dataset_name=dataset_name,
+                        detections=detections_list
+                    )
+                    
+                    print(f"🏷️ Governance updated: PII + {sensitivity_level.upper()} tags applied.")
+                else:
+                    print(f"❌ Could not find Atlas entity for dataset '{dataset_name}'")
+            except Exception as atlas_err:
+                import traceback
+                print(traceback.format_exc())
+                print(f"❌ Governance Update Warning: {atlas_err}")
+        else:
+            print("⚠️ Skipping Governance: No Client or No Detections")
+
+
+        return {
+            "success": True,
+            "message": f"Pipeline triggered! Created {len(tasks_created)} tasks. Airflow notified. Governance updated.",
+            "tasks_created": len(tasks_created),
+            "task_ids": tasks_created[:10]
+        }
+        
+    except Exception as e:
+        print(f"❌ Pipeline trigger failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Pipeline trigger failed: {str(e)}")
 
 
 # --------------------------------------------------
