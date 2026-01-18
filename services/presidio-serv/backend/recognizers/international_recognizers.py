@@ -73,12 +73,12 @@ class ChineseBankAccountRecognizer(PatternRecognizer):
         Pattern(
             "CHINESE_BANK_UNIONPAY",
             r"\b62\d{14,17}\b",
-            0.7,
+            0.6,
         ),
         Pattern(
             "CHINESE_BANK_GENERIC",
             r"\b\d{16,19}\b",
-            0.4,
+            0.3, # Low confidence to avoid noise
         ),
     ]
     CONTEXT = ["银行", "账户", "卡号", "bank", "account", "card"]
@@ -126,10 +126,11 @@ class JapanesePhoneRecognizer(PatternRecognizer):
     Format: +81 followed by 10 digits, or 0X-XXXX-XXXX
     """
     PATTERNS = [
+        # STRICT MODE: Only International format OR specific Japanese lengths/prefixes that don't overlap with Morocco
         Pattern(
             "JAPAN_PHONE",
-            r"\b(?:\+81|0)\d{1,4}[\s-]?\d{1,4}[\s-]?\d{4}\b",
-            0.7,
+            r"\b(?:\+81\d{9,10}|0(?:90|80|70)\d{8}|03\d{8})\b", 
+            0.85,
         ),
     ]
     CONTEXT = ["電話", "携帯", "phone", "tel", "連絡"]
@@ -192,13 +193,13 @@ class KoreanPhoneRecognizer(PatternRecognizer):
 class RussianPassportRecognizer(PatternRecognizer):
     """
     Recognizes Russian Passport Numbers
-    Format: 10 digits (series + number)
+    Format: 10 digits (series + number), usually separated
     """
     PATTERNS = [
         Pattern(
             "RUSSIAN_PASSPORT",
-            r"\b\d{2}[\s]?\d{2}[\s]?\d{6}\b",
-            0.7,
+            r"\b\d{4}[\s]\d{6}\b", # PROD FIX: Require space to differentiate from random 10 digits
+            0.85,
         ),
     ]
     CONTEXT = ["паспорт", "passport", "серия", "номер"]
@@ -220,8 +221,8 @@ class RussianPhoneRecognizer(PatternRecognizer):
     PATTERNS = [
         Pattern(
             "RUSSIAN_PHONE",
-            r"\b(?:\+7|8)[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}\b",
-            0.7,
+            r"\b(?:\+7)\d{10}\b", # Strict +7 only for international to avoid 0-start confusion
+            0.8,
         ),
     ]
     CONTEXT = ["телефон", "мобильный", "phone", "mobile"]

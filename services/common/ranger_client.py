@@ -16,7 +16,7 @@ from typing import Optional, Dict, Any
 from enum import Enum
 
 # Configuration
-RANGER_URL = os.getenv("RANGER_URL", "http://192.168.110.132:6080")
+RANGER_URL = os.getenv("RANGER_URL", "http://100.91.176.196:6080")
 RANGER_USER = os.getenv("RANGER_USER", "admin")
 RANGER_PASSWORD = os.getenv("RANGER_PASSWORD", "hortonworks1")
 

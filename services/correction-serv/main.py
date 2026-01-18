@@ -31,7 +31,7 @@ from datetime import datetime
 from enum import Enum
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -54,6 +54,14 @@ app = FastAPI(
     description="Automatic Detection, Correction and Learning of Data Inconsistencies",
     version="2.0.0"
 )
+
+@app.middleware("http")
+async def set_root_path(request: Request, call_next):
+    root_path = request.headers.get("x-forwarded-prefix")
+    if root_path:
+        request.scope["root_path"] = root_path
+    response = await call_next(request)
+    return response
 
 app.add_middleware(
     CORSMiddleware,

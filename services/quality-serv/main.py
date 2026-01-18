@@ -17,7 +17,7 @@ from enum import Enum
 import uvicorn
 import pandas as pd
 import numpy as np
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -286,6 +286,14 @@ app = FastAPI(
     version="2.1.0"
 )
 
+@app.middleware("http")
+async def set_root_path(request: Request, call_next):
+    root_path = request.headers.get("x-forwarded-prefix")
+    if root_path:
+        request.scope["root_path"] = root_path
+    response = await call_next(request)
+    return response
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -339,8 +347,27 @@ async def get_stats():
 @app.post("/evaluate/{dataset_id}", response_model=QualityReport)
 async def evaluate_quality(dataset_id: str, config: EvaluationConfig = None):
     """Evaluate dataset quality against ISO 25012 dimensions"""
+    import requests as req
+    
+    # Auto-fetch from cleaning-service if not in cache
     if dataset_id not in datasets_store:
-        raise HTTPException(404, "Dataset not found in cache")
+        try:
+            # Try to fetch dataset from cleaning-service
+            resp = req.get(f"http://cleaning-service:8004/dataset/{dataset_id}", timeout=10)
+            if resp.status_code == 200:
+                data = resp.json()
+                df = pd.DataFrame(data.get("data", []))
+                datasets_store[dataset_id] = {
+                    "df": df,
+                    "filename": data.get("filename", "auto_loaded"),
+                    "upload_time": datetime.now().isoformat()
+                }
+                print(f"✅ Auto-loaded dataset {dataset_id} from cleaning-service")
+            else:
+                raise HTTPException(404, f"Dataset not found in cache or cleaning-service (status: {resp.status_code})")
+        except Exception as e:
+            print(f"⚠️ Could not auto-fetch dataset: {e}")
+            raise HTTPException(404, f"Dataset not found in cache. Error: {str(e)}")
     
     if config is None: config = EvaluationConfig()
     
@@ -391,6 +418,21 @@ async def evaluate_quality(dataset_id: str, config: EvaluationConfig = None):
         # Repalce existing report for this dataset? usually we might want history
         # For simplicity, we upsert based on dataset_id or insert new
         await db.quality_reports.insert_one(report.dict())
+        
+        # Log audit event for quality evaluation
+        await db.audit_logs.insert_one({
+            "service": "QUALITY",
+            "action": "QUALITY_EVALUATION",
+            "user": "system",  # TODO: Get from token
+            "status": "INFO" if global_score >= 60 else "WARNING",
+            "timestamp": datetime.now().isoformat(),
+            "details": {
+                "dataset_id": dataset_id,
+                "global_score": global_score,
+                "grade": grade.value,
+                "recommendations_count": len(recommendations)
+            }
+        })
     
     return report
 

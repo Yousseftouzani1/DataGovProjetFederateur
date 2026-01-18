@@ -12,7 +12,7 @@ import uvicorn
 import uuid
 from datetime import datetime
 from typing import List, Optional, Dict
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import os
@@ -74,6 +74,14 @@ app = FastAPI(
     description="Fine-Grained ML/NLP Classification (Mongo Persisted)",
     version="1.1.0"
 )
+
+@app.middleware("http")
+async def set_root_path(request: Request, call_next):
+    root_path = request.headers.get("x-forwarded-prefix")
+    if root_path:
+        request.scope["root_path"] = root_path
+    response = await call_next(request)
+    return response
 
 app.add_middleware(
     CORSMiddleware,

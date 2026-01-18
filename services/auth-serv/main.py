@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
@@ -13,6 +13,14 @@ from backend.users.routes import router as user_router
 
 #youness        123456789
 app = FastAPI()
+
+@app.middleware("http")
+async def set_root_path(request: Request, call_next):
+    root_path = request.headers.get("x-forwarded-prefix")
+    if root_path:
+        request.scope["root_path"] = root_path
+    response = await call_next(request)
+    return response
 
 # Serve frontend
 app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")

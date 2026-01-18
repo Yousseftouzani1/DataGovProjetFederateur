@@ -18,7 +18,7 @@ from enum import Enum
 
 import uvicorn
 import numpy as np
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -162,6 +162,14 @@ app = FastAPI(
     description="Tâche 9 - Contextual Data Masking Framework (Mongo Persisted)",
     version="2.1.0"
 )
+
+@app.middleware("http")
+async def set_root_path(request: Request, call_next):
+    root_path = request.headers.get("x-forwarded-prefix")
+    if root_path:
+        request.scope["root_path"] = root_path
+    response = await call_next(request)
+    return response
 
 app.add_middleware(
     CORSMiddleware,

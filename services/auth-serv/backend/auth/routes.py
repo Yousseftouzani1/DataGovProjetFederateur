@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from backend.database.mongodb import db
 from backend.auth.utils import verify_password, create_token, decode_token
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter(tags=["Authentication"])
 
 
 @router.get("/health")
@@ -15,6 +15,8 @@ async def health():
 # LOGIN ROUTE -----------------------------------------
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    from datetime import datetime
+    
     print(f"🔐 Login attempt: username='{form_data.username}'")
     
     try:
@@ -26,11 +28,29 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
     if not user:
         print(f"   ❌ User '{form_data.username}' not found in database")
+        # Log failed login attempt
+        await db["audit_logs"].insert_one({
+            "service": "AUTH",
+            "action": "LOGIN_FAILED",
+            "user": form_data.username,
+            "status": "WARNING",
+            "timestamp": datetime.utcnow().isoformat(),
+            "details": {"reason": "User not found"}
+        })
         raise HTTPException(status_code=401, detail="User not found")
 
     print(f"   Checking password...")
     if not verify_password(form_data.password, user["password"]):
         print(f"   ❌ Password incorrect")
+        # Log failed login attempt
+        await db["audit_logs"].insert_one({
+            "service": "AUTH",
+            "action": "LOGIN_FAILED",
+            "user": form_data.username,
+            "status": "WARNING",
+            "timestamp": datetime.utcnow().isoformat(),
+            "details": {"reason": "Incorrect password"}
+        })
         raise HTTPException(status_code=401, detail="Incorrect password")
     
     # block pending users
@@ -46,6 +66,16 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     token = create_token({
         "sub": user["username"],
         "role": user["role"]
+    })
+
+    # Log successful login
+    await db["audit_logs"].insert_one({
+        "service": "AUTH",
+        "action": "LOGIN_SUCCESS",
+        "user": user["username"],
+        "status": "INFO",
+        "timestamp": datetime.utcnow().isoformat(),
+        "details": {"role": user["role"]}
     })
 
     print(f"   ✅ Login successful! Role: {user['role']}")

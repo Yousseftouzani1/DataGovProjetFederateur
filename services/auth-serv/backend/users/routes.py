@@ -4,7 +4,7 @@ from backend.users.models import User, VALID_ROLES
 from backend.auth.utils import hash_password
 from backend.auth.routes import require_role
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(tags=["Users"])
 
 # Create a new user (ONLY Data Steward)
 @router.post("/create")

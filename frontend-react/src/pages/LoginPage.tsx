@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useAuthStore } from '../store/authStore';
 import apiClient from '../services/api';
+import DynamicLogo from '../components/ui/DynamicLogo';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -60,9 +61,9 @@ const LoginPage = () => {
                     <motion.div
                         initial={{ scale: 0.5, rotate: -10 }}
                         animate={{ scale: 1, rotate: 0 }}
-                        className="inline-flex mb-6"
+                        className="inline-flex mb-6 text-brand-primary"
                     >
-                        <img src="/logo.png" alt="DataGov Logo" className="w-24 h-24 object-contain drop-shadow-[0_0_15px_rgba(99,102,241,0.5)]" />
+                        <DynamicLogo role="default" size={96} animate={true} />
                     </motion.div>
                     <h1 className="text-4xl font-bold tracking-tight text-white mb-2">DataGov</h1>
                     <p className="text-slate-400">Expert Data Intelligence & Governance</p>
@@ -76,14 +77,14 @@ const LoginPage = () => {
                     )}
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300 ml-1">Username</label>
+                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Access ID</label>
                         <div className="relative">
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-primary" size={18} />
                             <input
                                 type="text"
                                 required
-                                className="input-premium w-full pl-12"
-                                placeholder="e.g. admin_user"
+                                className="input-premium w-full pl-12 font-mono text-sm"
+                                placeholder="admin"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                             />
@@ -91,14 +92,14 @@ const LoginPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300 ml-1">Password</label>
+                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Secure Token</label>
                         <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-primary" size={18} />
                             <input
                                 type="password"
                                 required
-                                className="input-premium w-full pl-12"
-                                placeholder="********"
+                                className="input-premium w-full pl-12 font-mono tracking-widest"
+                                placeholder="••••••••"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />

@@ -19,7 +19,7 @@ import requests
 
 import uvicorn
 import numpy as np
-from fastapi import FastAPI, HTTPException, Body, Query, BackgroundTasks
+from fastapi import FastAPI, HTTPException, Body, Query, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
@@ -322,6 +322,14 @@ app = FastAPI(
     description="Tâche 7 - Human Validation Workflow (Mongo Persisted)",
     version="2.1.0"
 )
+
+@app.middleware("http")
+async def set_root_path(request: Request, call_next):
+    root_path = request.headers.get("x-forwarded-prefix")
+    if root_path:
+        request.scope["root_path"] = root_path
+    response = await call_next(request)
+    return response
 
 app.add_middleware(
     CORSMiddleware,

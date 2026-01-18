@@ -18,6 +18,7 @@ db = client[DATABASE_NAME]
 raw_datasets_col = db["raw_datasets"]
 clean_datasets_col = db["clean_datasets"]
 metadata_col = db["cleaning_metadata"]
+audit_logs_col = db["audit_logs"]
 
 
 # --------------------------------------------------
@@ -76,3 +77,32 @@ async def save_metadata(dataset_id: str, metadata: dict, metadata_type: str):
         "created_at": datetime.utcnow()
     }
     await metadata_col.insert_one(document)
+
+# --------------------------------------------------
+# Audit Logs (Persistent)
+# --------------------------------------------------
+async def log_audit_event(service: str, action: str, user: str, status: str, details: dict = None):
+    """
+    Log an event to the persistent audit trail.
+    """
+    document = {
+        "service": service,
+        "action": action,
+        "user": user,
+        "status": status,
+        "timestamp": datetime.utcnow().isoformat(),
+        "details": details or {}
+    }
+    await audit_logs_col.insert_one(document)
+
+async def get_recent_audit_logs(limit: int = 50):
+    """
+    Retrieve recent audit logs from MongoDB.
+    """
+    cursor = audit_logs_col.find({}, {'_id': 0}).sort("timestamp", -1).limit(limit)
+    logs = []
+    async for doc in cursor:
+        # doc["id"] = str(doc["_id"]) # _id removed by projection for cleaner JSON
+        # Generate a synthetic ID if needed or just use index
+        logs.append(doc)
+    return logs

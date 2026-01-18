@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Query
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 import io
@@ -10,8 +10,11 @@ from backend.storage import (
     save_raw_dataset,
     load_raw_dataset,
     save_clean_dataset,
-    save_metadata
+    save_metadata,
+    log_audit_event,
+    get_recent_audit_logs
 )
+
 
 try:
     # Try importing from proper integration module first
@@ -45,7 +48,7 @@ from backend.storage import raw_datasets_col, clean_datasets_col, metadata_col
 # =======================================================
 import requests as ranger_requests
 
-RANGER_URL = "http://192.168.110.132:6080"
+RANGER_URL = "http://100.91.176.196:6080"
 RANGER_AUTH = ("admin", "hortonworks1")
 
 class AccessDecision:
@@ -117,6 +120,14 @@ def check_ranger_permission(username: str, resource_tag: str = "PII"):
 
 app = FastAPI(title="Cleaning Service", version="2.0")
 
+@app.middleware("http")
+async def set_root_path(request: Request, call_next):
+    root_path = request.headers.get("x-forwarded-prefix")
+    if root_path:
+        request.scope["root_path"] = root_path
+    response = await call_next(request)
+    return response
+
 # CORS for frontend compatibility
 app.add_middleware(
     CORSMiddleware,
@@ -131,6 +142,27 @@ datasets_cache = {}
 
 # Access log for audit trail
 access_log = []
+
+
+# --------------------------------------------------
+# HEALTH AND AUDIT ENDPOINTS
+# --------------------------------------------------
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "service": "cleaning-service"}
+
+@app.get("/audit-logs")
+async def get_audit_logs():
+    """
+    Returns system audit logs from MongoDB.
+    """
+    try:
+        logs = await get_recent_audit_logs(limit=50)
+        return logs
+    except Exception as e:
+        print(f"⚠️ Failed to fetch audit logs: {e}")
+        return []
+
 
 
 # --------------------------------------------------
@@ -150,6 +182,18 @@ async def get_user_permissions(username: str = Query(...), role: str = Query(def
     """
     from datetime import datetime
     
+    # Check "PII" tag permission
+    ranger_check = check_ranger_permission(username, "PII")
+    
+    print(f"🔒 Ranger Permission Check for {username}: {ranger_check}")
+    
+    return {
+        "access_level": "full" if ranger_check['decision'] == AccessDecision.ALLOWED else "denied",
+        "can_view_pii": ranger_check['decision'] == AccessDecision.ALLOWED,
+        "can_view_spi": False, # Future use
+        "ranger_decision": ranger_check
+    }
+
     # Check PII permission
     pii_permission = check_ranger_permission(username, "PII")
     spi_permission = check_ranger_permission(username, "SPI")
@@ -170,15 +214,20 @@ async def get_user_permissions(username: str = Query(...), role: str = Query(def
         can_view_pii = False
     
     # Log this access check (Audit Trail)
-    log_entry = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "username": username,
-        "role": role,
-        "action": "permission_check",
-        "pii_decision": str(pii_decision),
-        "spi_decision": str(spi_decision)
-    }
-    access_log.append(log_entry)
+    # Use await log_audit_event from persistent storage
+    await log_audit_event(
+        service="RANGER",
+        action="PERMISSION_CHECK",
+        user=username,
+        status="INFO" if pii_decision == AccessDecision.ALLOWED else "WARNING",
+        details={
+            "role": role,
+            "pii_decision": str(pii_decision),
+            "spi_decision": str(spi_decision),
+            "ranger_reachable": ranger_reached
+        }
+    )
+    
     print(f"🔐 Access Check: {username} ({role}) → PII:{pii_decision}, SPI:{spi_decision}")
     
     # Determine if Ranger API was actually reached
@@ -248,13 +297,47 @@ async def upload_dataset(file: UploadFile = File(...)):
         except Exception as e:
             print(f"⚠️ Atlas registration failed: {e}")
     
+    # Log audit event for dataset upload
+    await log_audit_event(
+        service="CLEANING",
+        action="DATASET_UPLOAD",
+        user="admin",  # TODO: Get from token
+        status="INFO",
+        details={
+            "dataset_id": dataset_id,
+            "filename": file.filename,
+            "rows": len(df),
+            "columns": len(df.columns)
+        }
+    )
+    
+    # -------------------------------------------------------------------------
+    # TRIGGER AIRFLOW DAG (Critical Fix)
+    # -------------------------------------------------------------------------
+    try:
+        import requests
+        print(f"🚀 Triggering Airflow DAG for {file.filename}...")
+        airflow_url = "http://airflow:8080/api/v1/dags/data_processing_pipeline/dagRuns"
+        response = requests.post(
+            airflow_url,
+            json={"conf": {"dataset_id": dataset_id, "filename": file.filename}},
+            auth=("admin", "admin")
+        )
+        if response.status_code == 200:
+            print("✅ Airflow DAG triggered successfully")
+        else:
+            print(f"⚠️ Airflow Trigger Failed: {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"⚠️ Could not trigger Airflow: {e}")
+
     return {
         "dataset_id": dataset_id,
         "filename": file.filename,
         "rows": len(df),
         "columns": len(df.columns),
         "column_names": list(df.columns),
-        "atlas_guid": atlas_guid  # For PII classification later
+        "atlas_guid": atlas_guid,  # For PII classification later
+        "airflow_triggered": True
     }
 
 
@@ -269,6 +352,27 @@ async def get_dataset_info(dataset_id: str):
         "rows": len(df),
         "columns": len(df.columns),
         "column_names": list(df.columns)
+    }
+
+
+# --------------------------------------------------
+# Get full dataset data (for quality-service integration)
+# --------------------------------------------------
+@app.get("/dataset/{dataset_id}")
+async def get_dataset_full(dataset_id: str):
+    """Return full dataset records for quality evaluation"""
+    df = await _get_dataframe(dataset_id)
+    # Get metadata for filename
+    metadata = await load_raw_dataset(dataset_id)
+    filename = "unknown"
+    if metadata and "filename" in str(metadata):
+        filename = dataset_id  # Fallback to ID
+    
+    return {
+        "data": df.fillna("").to_dict(orient="records"),
+        "filename": filename,
+        "rows": len(df),
+        "columns": len(df.columns)
     }
 
 

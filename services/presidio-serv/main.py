@@ -9,7 +9,7 @@ According to Cahier des Charges:
 """
 import uvicorn
 from typing import List, Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -103,7 +103,7 @@ class MoroccanPresidioEngine:
             
             # Add International recognizers (Chinese, Japanese, Korean, Russian, etc.)
             register_all_international(registry, languages=["en", "fr"])
-            print("🌍 International PII detection enabled")
+            print("🌍 International PII detection ENABLED (Strict Mode)")
             
             # Use English model for all languages (Custom Recognizers handle the patterns)
             config = {
@@ -207,6 +207,14 @@ app = FastAPI(
     description="PII Detection with Custom Moroccan Recognizers (CIN, Phone, IBAN, CNSS)",
     version="1.0.0"
 )
+
+@app.middleware("http")
+async def set_root_path(request: Request, call_next):
+    root_path = request.headers.get("x-forwarded-prefix")
+    if root_path:
+        request.scope["root_path"] = root_path
+    response = await call_next(request)
+    return response
 
 app.add_middleware(
     CORSMiddleware,

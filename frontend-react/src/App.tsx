@@ -20,8 +20,15 @@ import { RoleThemeProvider } from './context/RoleThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { RangerProvider } from './context/RangerContext';
 
+import { useEffect } from 'react';
+import { updateFavicon } from './utils/dynamicFavicon';
+
 function App() {
   const user = useAuthStore((state) => state.user);
+
+  useEffect(() => {
+    updateFavicon(user?.role || 'default');
+  }, [user?.role]);
 
   return (
     <Router>

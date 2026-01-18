@@ -14,6 +14,7 @@ import {
     ChevronRight
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import DynamicLogo from '../ui/DynamicLogo';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -76,7 +77,13 @@ const Sidebar = () => {
             className="h-screen glass sticky top-0 flex flex-col p-4 z-50 overflow-hidden"
         >
             <div className="flex items-center gap-3 mb-10 px-2">
-                <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+                <div className={`transition-colors duration-500 ${role === 'admin' ? 'text-red-500' :
+                    role === 'steward' ? 'text-emerald-500' :
+                        role === 'annotator' ? 'text-purple-500' :
+                            role === 'labeler' ? 'text-cyan-500' : 'text-brand-primary'
+                    }`}>
+                    <DynamicLogo role={role} size={40} />
+                </div>
                 {!collapsed && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                         <h2 className="text-xl font-bold text-white tracking-tight">DataGov</h2>

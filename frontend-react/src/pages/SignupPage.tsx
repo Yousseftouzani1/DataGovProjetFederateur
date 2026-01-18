@@ -86,25 +86,25 @@ const SignupPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 ml-1">First Name</label>
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">First Name</label>
                             <input
                                 id="firstName"
                                 type="text"
                                 required
                                 className="input-premium w-full"
-                                placeholder="John"
+                                placeholder="Enter first name"
                                 value={formData.firstName}
                                 onChange={handleChange}
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 ml-1">Last Name</label>
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Last Name</label>
                             <input
                                 id="lastName"
                                 type="text"
                                 required
                                 className="input-premium w-full"
-                                placeholder="Doe"
+                                placeholder="Enter last name"
                                 value={formData.lastName}
                                 onChange={handleChange}
                             />
@@ -112,15 +112,15 @@ const SignupPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300 ml-1">Email Address</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                         <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-primary" size={18} />
                             <input
                                 id="email"
                                 type="email"
                                 required
                                 className="input-premium w-full pl-12"
-                                placeholder="john@company.com"
+                                placeholder="name@organization.com"
                                 value={formData.email}
                                 onChange={handleChange}
                             />
@@ -128,15 +128,15 @@ const SignupPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300 ml-1">Username</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Username</label>
                         <div className="relative">
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-primary" size={18} />
                             <input
                                 id="username"
                                 type="text"
                                 required
                                 className="input-premium w-full pl-12"
-                                placeholder="johndoe"
+                                placeholder="Choose a unique ID"
                                 value={formData.username}
                                 onChange={handleChange}
                             />
@@ -144,15 +144,15 @@ const SignupPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300 ml-1">Password</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Secure Password</label>
                         <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-primary" size={18} />
                             <input
                                 id="password"
                                 type={showPassword ? 'text' : 'password'}
                                 required
-                                className="input-premium w-full pl-12 pr-12"
-                                placeholder="Create a strong password"
+                                className="input-premium w-full pl-12 pr-12 font-mono tracking-widest"
+                                placeholder="••••••••"
                                 value={formData.password}
                                 onChange={handleChange}
                             />
@@ -175,8 +175,8 @@ const SignupPage = () => {
                                     type="button"
                                     onClick={() => handleRoleSelect(role.id)}
                                     className={`flex flex-col items-center p-3 rounded-2xl border transition-all duration-300 ${formData.role === role.id
-                                            ? 'bg-brand-primary/10 border-brand-primary text-white shadow-[0_0_15px_rgba(99,102,241,0.2)]'
-                                            : 'bg-slate-900/50 border-border-subtle text-slate-400 hover:border-slate-700'
+                                        ? 'bg-brand-primary/10 border-brand-primary text-white shadow-[0_0_15px_rgba(99,102,241,0.2)]'
+                                        : 'bg-slate-900/50 border-border-subtle text-slate-400 hover:border-slate-700'
                                         }`}
                                 >
                                     <role.icon size={20} className="mb-2" />

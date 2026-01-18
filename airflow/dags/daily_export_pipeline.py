@@ -183,7 +183,7 @@ def fetch_and_export_validated_data(**context):
                 import requests as atlas_requests
                 import os
                 
-                atlas_url = os.getenv("ATLAS_URL", "http://192.168.110.132:21000")
+                atlas_url = os.getenv("ATLAS_URL", "http://100.91.176.196:21000")
                 atlas_user = os.getenv("ATLAS_USER", "admin")
                 atlas_pass = os.getenv("ATLAS_PASSWORD", "ensias2025")
                 mock_mode = os.getenv("MOCK_GOVERNANCE", "true").lower() == "true"

@@ -6,11 +6,14 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
     RefreshCw,
     Activity,
     ShieldCheck,
     ChevronDown,
+    ArrowDownToLine
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import apiClient from '../services/api';
@@ -39,8 +42,6 @@ const QualityPage = () => {
         if (!selectedId) return;
         setIsLoading(true);
         try {
-            // First register dataset with quality service if not there (backend internal logic)
-            // For now, we assume the evaluate endpoint handles it or we call a register helper
             const resp = await apiClient.post(`/quality/evaluate/${selectedId}`);
             setReport(resp.data);
         } catch (err) {
@@ -48,6 +49,41 @@ const QualityPage = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleExportPDF = () => {
+        if (!report) return;
+        const doc = new jsPDF();
+
+        doc.setFillColor(15, 23, 42);
+        doc.rect(0, 0, 210, 40, 'F');
+
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.text("ISO 25012 Quality Report", 14, 20);
+
+        doc.setFontSize(12);
+        doc.text(`Grade: ${report.grade} (${report.global_score}%)`, 14, 30);
+
+        autoTable(doc, {
+            startY: 45,
+            head: [['Dimension', 'Score', 'Status']],
+            body: report.dimensions.map((d: any) => [
+                d.dimension.toUpperCase(),
+                `${d.score}%`,
+                d.score > 80 ? 'EXCELLENT' : d.score > 50 ? 'ACCEPTABLE' : 'CRITICAL'
+            ]),
+            headStyles: { fillColor: [16, 185, 129] }
+        });
+
+        doc.text("Recommendations:", 14, (doc as any).lastAutoTable.finalY + 10);
+
+        report.recommendations.forEach((rec: string, i: number) => {
+            doc.setFontSize(10);
+            doc.text(`• ${rec}`, 14, (doc as any).lastAutoTable.finalY + 20 + (i * 7));
+        });
+
+        doc.save(`quality_report_${selectedId}.pdf`);
     };
 
     const chartData = report ? report.dimensions.map((d: any) => ({
@@ -79,6 +115,11 @@ const QualityPage = () => {
                         </select>
                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={16} />
                     </div>
+                    {report && (
+                        <Button variant="ghost" onClick={handleExportPDF}>
+                            <ArrowDownToLine size={18} />
+                        </Button>
+                    )}
                     <Button onClick={handleEvaluate} isLoading={isLoading} disabled={!selectedId}>
                         <RefreshCw size={18} />
                         Trigger Audit

@@ -19,9 +19,12 @@ from enum import Enum
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+
+load_dotenv()  # Load .env explicitly for Atlas Client
 
 # Import Sensitivity Calculator (Cahier Section 4.4)
 from backend.sensitivity_calculator import SensitivityCalculator
@@ -669,6 +672,14 @@ app = FastAPI(
     version="2.0.0"
 )
 
+@app.middleware("http")
+async def set_root_path(request: Request, call_next):
+    root_path = request.headers.get("x-forwarded-prefix")
+    if root_path:
+        request.scope["root_path"] = root_path
+    response = await call_next(request)
+    return response
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -746,8 +757,9 @@ async def sync_taxonomy_to_atlas():
     """
     try:
         # Import Atlas client
+        # Import Atlas client
         import sys
-        sys.path.insert(0, '../common')
+        sys.path.append('/common')  # Mounted volume path
         from atlas_client import AtlasClient
         
         atlas = AtlasClient()
