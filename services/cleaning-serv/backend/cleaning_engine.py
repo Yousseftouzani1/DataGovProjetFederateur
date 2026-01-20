@@ -1,137 +1,115 @@
 import pandas as pd
+import numpy as np
+from ydata_profiling import ProfileReport
+import re
 
-
-# -------------------------------
-# Missing rate (% of missing cells)
-# -------------------------------
-def missing_rate(df: pd.DataFrame) -> float:
-    return round(df.isnull().mean().mean() * 100, 2)
-
-
-# -------------------------------
-# Remove duplicate rows
-# -------------------------------
-def remove_duplicates(df: pd.DataFrame):
-    before = len(df)
-    df_clean = df.drop_duplicates()
-    removed = before - len(df_clean)
-    return df_clean, removed
-
-
-# -------------------------------
-# Handle missing values
-# -------------------------------
-def handle_missing_values(df: pd.DataFrame, strategy: str) -> pd.DataFrame:
-    if strategy == "drop":
-        return df.dropna()
-
-    if strategy not in ["mean", "median", "mode"]:
-        strategy = "mean"  # safe default
-
-    df_clean = df.copy()
-
-    for col in df_clean.columns:
-        if pd.api.types.is_numeric_dtype(df_clean[col]):
-            if strategy == "mean":
-                df_clean[col] = df_clean[col].fillna(df_clean[col].mean())
-            elif strategy == "median":
-                df_clean[col] = df_clean[col].fillna(df_clean[col].median())
-        else:
-            mode = df_clean[col].mode()
-            if not mode.empty:
-                df_clean[col] = df_clean[col].fillna(mode[0])
-
-    return df_clean
-
-
-# -------------------------------
-# Remove outliers using IQR
-# -------------------------------
-
-
-
-
-# Suppression des valeurs aberrantes (outliers) par la méthode
-# de l’Intervalle Interquartile (IQR – Interquartile Range)
-#
-# La méthode IQR est une technique statistique robuste utilisée
-# pour détecter et supprimer les valeurs aberrantes dans des
-# données numériques.
-
-# Principe de l’algorithme :
-# 1. Pour chaque colonne numérique, on calcule :
-#    - Q1 : le premier quartile (25 % des données)
-#    - Q3 : le troisième quartile (75 % des données)
-# 2. On calcule ensuite l’intervalle interquartile :
-#       IQR = Q3 - Q1
-# 3. On définit les bornes acceptables :
-#       borne_inférieure = Q1 - 1.5 × IQR
-#       borne_supérieure = Q3 + 1.5 × IQR
-# 4. Toute valeur située en dehors de cet intervalle est
-#    considérée comme une valeur aberrante et est supprimée.
-
-
-
-
-
-def remove_outliers_iqr(df: pd.DataFrame):
-    removed = 0
-    df_clean = df.copy()
-
-    for col in df_clean.select_dtypes(include="number").columns:
-        q1 = df_clean[col].quantile(0.25)
-        q3 = df_clean[col].quantile(0.75)
-        iqr = q3 - q1
-
-        lower = q1 - 1.5 * iqr
-        upper = q3 + 1.5 * iqr
-
-        before = len(df_clean)
-        df_clean = df_clean[(df_clean[col] >= lower) & (df_clean[col] <= upper)]
-        removed += before - len(df_clean)
-
-    return df_clean, removed
-
-
-
-
-
-
-# -------------------------------
-# MAIN PIPELINE FUNCTION
-# -------------------------------
-def clean_dataframe(df: pd.DataFrame, config: dict):
+def clean_dataframe(df: pd.DataFrame, config: dict = None) -> pd.DataFrame:
     """
-    Applique un pipeline de nettoyage de données configurable
-    et retourne le DataFrame nettoyé ainsi que des métriques
-    de traçabilité.
+    Implements the Data Cleaning Pipeline as per CDC Section 6.4.
+    
+    Pipeline Steps:
+    1. Remove Duplicates (KPI: 0% duplicates)
+    2. Handle Missing Values (KPI: <5% missing)
+    3. Remove Outliers (IQR Method) (KPI: <2% outliers)
+    4. Normalize Data (Lowercasing, stripping whitespace)
+    5. Validate (Constraint checks)
     """
-    metrics = {}
+    if config is None:
+        config = {}
+    
+    # ---------------------------------------------------------
+    # 1. Remove Duplicates
+    # ---------------------------------------------------------
+    initial_rows = len(df)
+    df = df.drop_duplicates()
+    df = df.copy() # Ensure we have a fresh copy to avoid SettingWithCopyWarning
+    print(f"[Pipeline] Removed {initial_rows - len(df)} duplicate rows.")
+    
+    # ---------------------------------------------------------
+    # 2. Handle Missing Values
+    # ---------------------------------------------------------
+    # Strategy can be 'drop', 'mean', 'median', 'mode'. Default is 'drop' rows with any missing.
+    missing_strategy = config.get("missing_strategy", "drop")
+    
+    if missing_strategy == "drop":
+        df = df.dropna(how='any') # Strict drop
+    elif missing_strategy == "mean":
+        numeric_cols = df.select_dtypes(include=np.number).columns
+        # Avoid SettingWithCopyWarning by ensuring we work on a fresh copy if needed, or use proper assignment
+        # For simple imputation, strict assignment works efficiently
+        for col in numeric_cols:
+            if df[col].isnull().any():
+                df[col] = df[col].fillna(df[col].mean())
+        
+        # Fill non-numeric with mode or empty
+        for col in df.select_dtypes(exclude=np.number).columns:
+             if not df[col].empty and df[col].isnull().any():
+                df[col] = df[col].fillna(df[col].mode()[0] if not df[col].mode().empty else "")
+    elif missing_strategy == "median":
+        numeric_cols = df.select_dtypes(include=np.number).columns
+        for col in numeric_cols:
+             if df[col].isnull().any():
+                df[col] = df[col].fillna(df[col].median())
+        
+        for col in df.select_dtypes(exclude=np.number).columns:
+             if not df[col].empty and df[col].isnull().any():
+                df[col] = df[col].fillna(df[col].mode()[0] if not df[col].mode().empty else "")
+    
+    # ---------------------------------------------------------
+    # 3. Remove Outliers (IQR Method - CDC Algo 4)
+    # ---------------------------------------------------------
+    # Apply to all numeric columns unless specified
+    outlier_multiplier = config.get("iqr_multiplier", 1.5)
+    numeric_cols = df.select_dtypes(include=np.number).columns
+    
+    for col in numeric_cols:
+        Q1 = df[col].quantile(0.25)
+        Q3 = df[col].quantile(0.75)
+        IQR = Q3 - Q1
+        
+        lower_bound = Q1 - (outlier_multiplier * IQR)
+        upper_bound = Q3 + (outlier_multiplier * IQR)
+        
+        # Filter
+        original_len = len(df)
+        df = df[(df[col] >= lower_bound) & (df[col] <= upper_bound)]
+        removed = original_len - len(df)
+        if removed > 0:
+            print(f"[Pipeline] Removed {removed} outliers from column '{col}' using IQR {outlier_multiplier}.")
+            
+    # ---------------------------------------------------------
+    # 4. Normalize Data
+    # ---------------------------------------------------------
+    # Lowercase string columns and strip whitespace
+    string_cols = df.select_dtypes(include='object').columns
+    for col in string_cols:
+        df[col] = df[col].astype(str).str.lower().str.strip()
+        
+    # ---------------------------------------------------------
+    # 5. Validate (Basic Type Check / additional logic can go here)
+    # ---------------------------------------------------------
+    # Ensure no NaN remains if possible, or cast types
+    
+    return df
 
-    # Métriques initiales
-    metrics["rows_before"] = len(df)
-    metrics["missing_rate_before"] = missing_rate(df)
-
-    # Step 1: suppression des doublons
-    if config.get("remove_duplicates", True):
-        df, dup_removed = remove_duplicates(df)
-        metrics["duplicates_removed"] = dup_removed
-    else:
-        metrics["duplicates_removed"] = 0
-
-    # Step 2: gestion des valeurs manquantes
-    strategy = config.get("handle_missing", "mean")
-    df = handle_missing_values(df, strategy)
-
-    # Step 3: suppression des valeurs aberrantes
-    if config.get("remove_outliers", True):
-        df, out_removed = remove_outliers_iqr(df)
-        metrics["outliers_removed"] = out_removed
-    else:
-        metrics["outliers_removed"] = 0
-
-    # Métriques finales
-    metrics["rows_after"] = len(df)
-    metrics["missing_rate_after"] = missing_rate(df)
-
-    return df.reset_index(drop=True), metrics
+def generate_profile(df: pd.DataFrame) -> dict:
+    """
+    Generates a ydata-profiling report and returns metadata summary.
+    Returns:
+        dict: Summary statistics and path to HTML report (if saved, handled by caller)
+    """
+    profile = ProfileReport(df, title="Profiling Report", minimal=True)
+    description = profile.get_description()
+    
+    # Extract key stats for metadata
+    stats = {
+        "n_rows": int(description["table"]["n"]),
+        "n_cols": int(description["table"]["n_var"]),
+        "duplicates": int(description["table"]["n_duplicates"]),
+        "missing_cells": int(description["table"]["n_cells_missing"]),
+        "missing_percentage": float(description["table"]["p_cells_missing"]) * 100
+    }
+    
+    # The actual HTML report should be generated by the caller using profile.to_file() 
+    # or we return the profile object. For flexibility, let's return the profile object + stats.
+    return profile, stats

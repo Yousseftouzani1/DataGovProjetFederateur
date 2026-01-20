@@ -473,7 +473,7 @@ curl http://localhost:8006/learning/stats
 
 ## 📝 License
 
-Internal Data Governance & Privacy Project 2024-2025
+Internal Data Governance & Privacy Project 2025-2026
 
 ## 🆘 Support
 

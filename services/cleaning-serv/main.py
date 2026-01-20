@@ -4,15 +4,18 @@ import pandas as pd
 import io
 import uuid
 
-from backend.cleaning_engine import clean_dataframe
-from backend.profiling_engine import profile_dataset
+from backend.cleaning_engine import clean_dataframe, generate_profile
 from backend.storage import (
     save_raw_dataset,
     load_raw_dataset,
     save_clean_dataset,
     save_metadata,
     log_audit_event,
-    get_recent_audit_logs
+    get_recent_audit_logs,
+    audit_logs_col,
+    raw_datasets_col,
+    clean_datasets_col,
+    metadata_col
 )
 
 
@@ -41,7 +44,7 @@ except Exception as e:
     print(f"⚠️ Error initializing AtlasClient: {e}")
     atlas_client = None
 
-from backend.storage import raw_datasets_col, clean_datasets_col, metadata_col
+# from backend.storage import raw_datasets_col, clean_datasets_col, metadata_col # Imported above
 
 # =======================================================
 # RANGER INTEGRATION - Per Cahier des Charges Section 3.6
@@ -396,14 +399,18 @@ async def preview_dataset(dataset_id: str, rows: int = Query(default=10, le=1000
 @app.get("/profile/{dataset_id}")
 async def profile(dataset_id: str):
     df = await _get_dataframe(dataset_id)
-    profile_result = profile_dataset(df)
+    # Generate profile using the new engine
+    profile_report, metrics = generate_profile(df)
     
+    # Save metadata
     try:
-        await save_metadata(dataset_id, profile_result, metadata_type="profiling")
-    except:
-        pass
+        await save_metadata(dataset_id, metrics, metadata_type="profiling")
+    except Exception as e:
+        print(f"Metadata save failed: {e}")
     
-    return profile_result
+    # Return metrics (Report generation logic would go here if we were serving HTML directly)
+    # For now returning the metrics which is JSON serializable
+    return metrics
 
 
 # --------------------------------------------------
