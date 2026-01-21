@@ -7,7 +7,9 @@ import os
 
 # Add paths for imports
 current_dir = os.path.dirname(os.path.abspath(__file__))
-services_dir = os.path.dirname(os.path.dirname(current_dir))
+# current_dir is backend/db
+# services_dir should be ../../..
+services_dir = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
 sys.path.insert(0, os.path.join(services_dir, 'common'))
 
 from mongodb_client import get_collection

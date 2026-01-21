@@ -17,7 +17,7 @@ from backend.database.mongodb import sync_db, test_sync_connection, COLLECTIONS
 # CONFIGURATION
 # ============================================================
 
-DOMAINS_DIR = Path(__file__).parent.parent / "taxonomie" / "domains"
+DOMAINS_DIR = Path(__file__).parent.parent / "data" / "domains"
 
 # ============================================================
 # HELPER FUNCTIONS
