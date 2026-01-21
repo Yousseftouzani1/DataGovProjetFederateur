@@ -6,8 +6,8 @@ SECRET_KEY = "SUPER_SECRET_KEY_ABC123"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-# FIX: use sha256_crypt instead of bcrypt
-pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
+# Use bcrypt for password hashing, with sha256_crypt for compatibility
+pwd_context = CryptContext(schemes=["bcrypt", "sha256_crypt"], deprecated="auto")
 
 def hash_password(password):
     print("DEBUG → password received:", password, type(password))

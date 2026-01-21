@@ -5,14 +5,21 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install pytest for testing
+RUN pip install pytest pytest-asyncio
+
 # Copy backend and main files
 COPY backend ./backend
 COPY main.py .
 COPY create_steward.py .
 
-# Copy frontend (needed if FastAPI mounts it)
-COPY frontend ./frontend
+# Copy tests
+COPY tests ./tests
+COPY pytest.ini .
 
 EXPOSE 8001
 
+# Default: run the service
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+
+

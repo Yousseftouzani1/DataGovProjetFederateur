@@ -68,6 +68,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         "role": user["role"]
     })
 
+    # Algorithm 1: Update last_login timestamp
+    await db["users"].update_one(
+        {"username": user["username"]},
+        {"$set": {"last_login": datetime.utcnow()}}
+    )
+
     # Log successful login
     await db["audit_logs"].insert_one({
         "service": "AUTH",
@@ -88,32 +94,32 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 
-# EXTRACT TOKEN SAFELY --------------------------------
-async def get_token(authorization: str = Header(None)):
-    if authorization is None or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-    token = authorization.split(" ")[1]
-    return token
+security = HTTPBearer()
 
+async def get_token_payload(auth: HTTPAuthorizationCredentials = Depends(security)):
+    """
+    Standard token extractor and validator.
+    Works with Swagger's global 'Authorize' button.
+    """
+    token = auth.credentials
+    payload = decode_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    return payload
 
 
 # ROLE REQUIREMENT ------------------------------------
 def require_role(allowed_roles: list):
-    async def role_checker(token: str = Depends(get_token)):
-        payload = decode_token(token)
-
-        if payload is None:
-            raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-        role = payload.get("role", "").lower()  # Convert to lowercase for comparison
-
+    async def role_checker(payload: dict = Depends(get_token_payload)):
+        role = payload.get("role", "").lower()
         if role not in allowed_roles:
             raise HTTPException(status_code=403, detail="Access denied")
-
         return payload
 
     return role_checker
+
 
 
 # GET ALL USERS (Admin only) -----------------------------
@@ -177,3 +183,144 @@ async def update_user_status(username: str, status: str, payload: dict = Depends
         raise HTTPException(status_code=404, detail="User not found")
     
     return {"message": f"User {username} status updated to {status}"}
+
+
+# ====================================================================
+# US-AUTH-05: APACHE RANGER INTEGRATION
+# ====================================================================
+import requests as ranger_requests
+
+RANGER_URL = "http://100.91.176.196:6080"
+RANGER_AUTH = ("admin", "hortonworks1")
+
+@router.get("/ranger/check-access")
+async def check_ranger_access(
+    resource: str,
+    action: str = "read",
+    payload: dict = Depends(require_role(["admin", "steward"]))
+):
+    """
+    US-AUTH-05: Check Ranger policy for user access to sensitive data.
+    Per Cahier des Charges Section 3.6: FastAPI → Ranger REST API
+    """
+    username = payload.get("sub")
+    role = payload.get("role")
+    
+    try:
+        # Query Ranger for policy check
+        policy_check = {
+            "resource": {"path": resource},
+            "accessType": action,
+            "user": username,
+            "context": {"role": role}
+        }
+        
+        response = ranger_requests.post(
+            f"{RANGER_URL}/service/plugins/policies/evaluate",
+            json=policy_check,
+            auth=RANGER_AUTH,
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            return {
+                "allowed": result.get("allowed", False),
+                "resource": resource,
+                "action": action,
+                "user": username,
+                "role": role,
+                "policy_id": result.get("policyId")
+            }
+        else:
+            return {
+                "allowed": False,
+                "error": f"Ranger returned {response.status_code}",
+                "fallback": "Using role-based default"
+            }
+            
+    except Exception as e:
+        # Fallback: Use role-based logic if Ranger unavailable
+        role_permissions = {
+            "admin": True,
+            "steward": True,
+            "annotator": action == "read",
+            "labeler": False
+        }
+        return {
+            "allowed": role_permissions.get(role, False),
+            "resource": resource,
+            "fallback": True,
+            "reason": f"Ranger unavailable: {str(e)}"
+        }
+
+
+# ====================================================================
+# US-AUTH-06: ATLAS AUDIT LOGS FOR DATA STEWARDS
+# ====================================================================
+
+@router.get("/audit-logs")
+async def get_audit_logs(
+    limit: int = 50,
+    service: str = None,
+    payload: dict = Depends(require_role(["admin", "steward"]))
+):
+    """
+    US-AUTH-06: Data Steward consults audit logs.
+    Returns audit entries from MongoDB (synced with Atlas).
+    """
+    query = {}
+    if service:
+        query["service"] = service.upper()
+    
+    logs = await db["audit_logs"].find(query).sort("timestamp", -1).limit(limit).to_list(length=limit)
+    
+    # Serialize ObjectIds
+    for log in logs:
+        log["_id"] = str(log["_id"])
+    
+    return {
+        "total": len(logs),
+        "logs": logs,
+        "queried_by": payload.get("sub"),
+        "role": payload.get("role")
+    }
+
+
+@router.get("/audit-logs/stats")
+async def get_audit_stats(payload: dict = Depends(require_role(["admin", "steward"]))):
+    """
+    US-AUTH-06: Aggregate audit statistics for dashboard.
+    """
+    from datetime import datetime, timedelta
+    
+    # Last 24 hours
+    cutoff = datetime.utcnow() - timedelta(hours=24)
+    
+    pipeline = [
+        {"$match": {"timestamp": {"$gte": cutoff.isoformat()}}},
+        {"$group": {
+            "_id": {"service": "$service", "action": "$action"},
+            "count": {"$sum": 1}
+        }}
+    ]
+    
+    try:
+        results = await db["audit_logs"].aggregate(pipeline).to_list(length=100)
+        
+        stats = {}
+        for r in results:
+            service = r["_id"]["service"]
+            action = r["_id"]["action"]
+            if service not in stats:
+                stats[service] = {}
+            stats[service][action] = r["count"]
+        
+        return {
+            "period": "last_24h",
+            "stats_by_service": stats,
+            "total_events": sum(r["count"] for r in results)
+        }
+    except Exception as e:
+        return {"error": str(e)}
+

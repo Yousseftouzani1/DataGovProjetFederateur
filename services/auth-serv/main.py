@@ -1,18 +1,30 @@
 from fastapi import FastAPI, Request
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from backend.auth.routes import router as auth_router
 from backend.users.routes import router as user_router
-#username: steward1
-#password: Password123
 
-#labeler
-#youssef        password:123456
-#annotator
+app = FastAPI(
+    title="Auth Service",
+    description="Tâche 1 - Module d'Authentification et Gestion des Rôles",
+    version="2.0.0",
+    swagger_ui_parameters={"persistAuthorization": True},
+    # Standard security definitions for Swagger
+    swagger_ui_oauth2_redirect_url="/oauth2-redirect",
+    openapi_extra={
+        "components": {
+            "securitySchemes": {
+                "BearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT",
+                }
+            }
+        },
+        "security": [{"BearerAuth": []}],
+    },
+)
 
-#youness        123456789
-app = FastAPI()
 
 @app.middleware("http")
 async def set_root_path(request: Request, call_next):
@@ -22,12 +34,24 @@ async def set_root_path(request: Request, call_next):
     response = await call_next(request)
     return response
 
-# Serve frontend
-app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
+# CORS for frontend at localhost:3000
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
-def serve_login():
-    return FileResponse("frontend/login.html")
+def root():
+    return {
+        "service": "Auth Service",
+        "version": "2.0.0",
+        "status": "running",
+        "docs": "/docs"
+    }
+
 from backend.database.mongodb import db
 
 @app.get("/test-db")
@@ -41,3 +65,4 @@ async def test_db():
 # Routers
 app.include_router(auth_router)
 app.include_router(user_router)
+
