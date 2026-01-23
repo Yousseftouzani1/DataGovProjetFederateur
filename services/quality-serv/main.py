@@ -399,7 +399,7 @@ async def evaluate_quality(dataset_id: str, config: EvaluationConfig = None):
         if dataset_id not in datasets_store:
             try:
                 # Try to fetch dataset from cleaning-service (Corrected Endpoint)
-                resp = req.get(f"{CLEANING_URL}/api/v1/cleaning/dataset/{dataset_id}/json", timeout=10)
+                resp = req.get(f"{CLEANING_URL}/dataset/{dataset_id}/json", timeout=10)
                 if resp.status_code == 200:
                     data = resp.json()
                     df = pd.DataFrame(data.get("data", []))

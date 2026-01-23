@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 # Include the refactored router (Tâche 4 Core)
-app.include_router(data_cleaning.router, prefix="/api/v1")
+app.include_router(data_cleaning.router)
 
 @app.middleware("http")
 async def set_root_path(request: Request, call_next):

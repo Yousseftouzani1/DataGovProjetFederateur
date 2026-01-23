@@ -52,11 +52,42 @@ const DataPipelinePage = () => {
     const [uploadedFilename, setUploadedFilename] = useState('');
     const [activeModalTab, setActiveModalTab] = useState<'preview' | 'lineage'>('preview');
 
+    const [isDragging, setIsDragging] = useState(false);
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        const droppedFiles = e.dataTransfer.files;
+        if (droppedFiles && droppedFiles.length > 0) {
+            const droppedFile = droppedFiles[0];
+            const fileExt = droppedFile.name.split('.').pop()?.toLowerCase();
+            if (['csv', 'json', 'xlsx', 'xls'].includes(fileExt || '')) {
+                setFile(droppedFile);
+            } else {
+                addToast('❌ Invalid file type. Use CSV, JSON, or Excel.', 'error');
+            }
+        }
+    };
+
     const fetchDatasets = async () => {
         setIsLoading(true);
         try {
             const resp = await apiClient.get('/cleaning/datasets');
-            setDatasets(resp.data);
+            setDatasets(resp.data.datasets || resp.data); // Support both formats
         } catch (err) {
             console.error('Failed to fetch datasets', err);
         } finally {
@@ -118,11 +149,12 @@ const DataPipelinePage = () => {
                 // Show Atlas registration notification
                 addToast(`✅ Dataset registered in Apache Atlas (ID: ${response.data.dataset_id.substring(0, 8)}...)`, 'success');
                 addToast(`🚀 Airflow DAG Started: cleaning_pipeline_v1`, 'success');
-            }, 1500);
+            }, 1000);
 
         } catch (err) {
             console.error('Upload failed', err);
             setStatus('error');
+            addToast('❌ Upload failed. Please try again.', 'error');
         }
     };
 
@@ -130,8 +162,8 @@ const DataPipelinePage = () => {
         setSelectedDataset(dataset);
         setIsLoadingPreview(true);
         try {
-            const resp = await apiClient.get(`/cleaning/datasets/${dataset.id}/preview?rows=5`);
-            setDatasetPreview(resp.data);
+            const resp = await apiClient.get(`/cleaning/dataset/${dataset.id}/json?sample=true`);
+            setDatasetPreview({ preview: resp.data.data.slice(0, 5) });
         } catch (err) {
             console.error('Failed to load preview', err);
             setDatasetPreview(null);
@@ -142,6 +174,7 @@ const DataPipelinePage = () => {
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
+        addToast('ID Copied', 'info');
     };
 
     const filteredDatasets = datasets.filter(d =>
@@ -156,29 +189,42 @@ const DataPipelinePage = () => {
                 <p className="text-slate-400">Securely upload and register datasets into the DataGov ecosystem</p>
             </header>
 
-            {/* Upload Section - Hidden for Labelers (per request) */}
-            {userRole !== 'labeler' && (
-                <div className="glass p-10 rounded-[2.5rem] border border-white/5 hover:border-brand-primary/20 transition-all relative overflow-hidden group">
+            {/* Upload Section */}
+            {userRole === 'annotator' ? (
+                <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => !file && document.getElementById('fileInput')?.click()}
+                    className={`glass p-10 rounded-[2.5rem] border transition-all relative overflow-hidden group cursor-pointer ${isDragging
+                        ? 'border-brand-primary bg-brand-primary/10 shadow-[0_0_40px_rgba(99,102,241,0.2)]'
+                        : 'border-white/5 hover:border-brand-primary/20'
+                        }`}
+                >
                     {!file ? (
                         <div className="text-center py-12">
-                            <div className="w-20 h-20 bg-brand-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-brand-primary/20">
-                                <Upload size={32} className="text-brand-primary" />
+                            <div className="w-20 h-20 bg-brand-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-brand-primary/20 group-hover:scale-110 transition-transform">
+                                <Upload size={32} className={`${isDragging ? 'animate-bounce' : ''} text-brand-primary`} />
                             </div>
-                            <h3 className="text-xl font-bold text-white mb-2">Drag & Drop Dataset</h3>
-                            <p className="text-slate-500 mb-8">Supports CSV, JSON, and Excel (Max 500MB)</p>
-                            <Button onClick={() => document.getElementById('fileInput')?.click()}>
-                                Select File
-                            </Button>
+                            <h3 className="text-xl font-bold text-white mb-2">Drag & Drop or Click to Ingest</h3>
+                            <p className="text-slate-500 mb-8 font-medium">Supports CSV, JSON, and Excel (Max 500MB)</p>
+
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-slate-400 group-hover:text-brand-primary group-hover:border-brand-primary/30 transition-all">
+                                <span>Browse Secondary Storage</span>
+                                <ArrowRight size={14} />
+                            </div>
+
                             <input
                                 id="fileInput"
                                 type="file"
                                 className="hidden"
                                 accept=".csv,.json,.xlsx,.xls"
                                 onChange={(e) => setFile(e.target.files?.[0] || null)}
+                                onClick={(e) => e.stopPropagation()} // Prevent double trigger
                             />
                         </div>
                     ) : (
-                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/10 max-w-xl mx-auto">
                                 <div className="flex items-center gap-4">
                                     <div className="p-3 bg-brand-primary rounded-2xl text-white">
@@ -242,6 +288,14 @@ const DataPipelinePage = () => {
                             )}
                         </div>
                     )}
+                </div>
+            ) : (
+                <div className="p-12 glass rounded-[2.5rem] border border-red-500/10 bg-red-500/5 text-center">
+                    <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-red-500/50">
+                        <Lock size={32} />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">Restricted Access</h3>
+                    <p className="text-slate-500">Only the <span className="text-brand-primary font-bold">Data Annotator</span> role is authorized to ingest raw datasets.</p>
                 </div>
             )}
 
@@ -428,7 +482,7 @@ const DataPipelinePage = () => {
                                             <ExternalLink size={16} />
                                             Quality Audit
                                         </Button>
-                                        <Button variant="ghost" className="flex-1" onClick={() => window.open(`/api/v1/cleaning/datasets/${selectedDataset.id}/lineage`, '_blank')}>
+                                        <Button variant="ghost" className="flex-1" onClick={() => window.open(`/api/cleaning/datasets/${selectedDataset.id}/lineage`, '_blank')}>
                                             <Activity size={16} />
                                             Lineage Graph
                                         </Button>
