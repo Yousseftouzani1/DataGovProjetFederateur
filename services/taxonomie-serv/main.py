@@ -32,6 +32,20 @@ app.add_middleware(
 
 app.include_router(router)
 
+# ====================================================================
+# STARTUP EVENT (REMEDIATION STEP 3)
+# ====================================================================
+@app.on_event("startup")
+async def startup_event():
+    print("🚀 Taxonomy Service Starting... Initiating Atlas Sync...")
+    try:
+        from backend.services.atlas_service import sync_taxonomy_to_atlas
+        # Run in background to not block startup
+        import asyncio
+        asyncio.create_task(sync_taxonomy_to_atlas(engine))
+    except Exception as e:
+        print(f"⚠️ Startup Sync Failed: {e}")
+
 if __name__ == "__main__":
     print("\n" + "="*60)
     print("🇲🇦 TAXONOMY SERVICE - Tâche 2 (Refactored)")

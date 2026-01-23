@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Shield, UserCheck, Briefcase, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Lock, Shield, UserCheck, Briefcase, Eye, EyeOff, Home } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import apiClient from '../services/api';
@@ -61,7 +61,15 @@ const SignupPage = () => {
     ];
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-bg-deep to-bg-deep py-12">
+        <div className="min-h-screen flex items-center justify-center p-6 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-bg-deep to-bg-deep py-12 relative">
+            <Link
+                to="/"
+                className="absolute top-8 left-8 p-3 rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-all group flex items-center gap-2"
+                title="Return to Landing Page"
+            >
+                <Home size={20} />
+                <span className="text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity">Home</span>
+            </Link>
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}

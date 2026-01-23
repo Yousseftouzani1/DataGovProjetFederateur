@@ -9,3 +9,8 @@ pymongo==4.6.1
 
 python-multipart==0.0.9
 requests==2.31.0
+
+# Tâche 4 Mandatory Stack
+ydata-profiling==4.12.0
+scikit-learn==1.6.0
+matplotlib==3.9.2

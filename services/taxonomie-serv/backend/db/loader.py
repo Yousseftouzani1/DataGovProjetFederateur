@@ -51,6 +51,23 @@ def load_patterns_from_mongodb():
                 }
         
         print(f"✅ Loaded {len(patterns)} patterns from MongoDB")
+        
+        # Add custom patterns if they exist
+        try:
+            custom_coll = get_collection('custom_patterns')
+            for cp in custom_coll.find():
+                p_id = cp.get('category', 'CUSTOM')
+                patterns[p_id] = {
+                    'patterns': [cp.get('pattern')] if isinstance(cp.get('pattern'), str) else cp.get('patterns', []),
+                    'category': cp.get('class', 'CUSTOM'),
+                    'sensitivity': cp.get('sensitivity', 'medium'),
+                    'domain': cp.get('domain', 'GENERAL'),
+                    'description': cp.get('description', p_id)
+                }
+            print(f"✅ Merged custom patterns from MongoDB")
+        except:
+            pass
+            
         return patterns
         
     except Exception as e:

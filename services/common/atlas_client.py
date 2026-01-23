@@ -73,3 +73,101 @@ class AtlasClient:
             auth=(self.user, self.password)
         )
         return resp.json()
+
+    def create_glossary(self, name, description):
+        """Create a new Business Glossary"""
+        if self.mock_mode: return {"guid": "mock-glossary-guid"}
+        
+        # Check if already exists first by fetching all glossaries
+        glossaries = self._get("/glossary")
+        if glossaries:
+            for g in glossaries:
+                if g.get("name") == name:
+                    return g
+
+        payload = {
+            "name": name,
+            "shortDescription": description,
+            "longDescription": description,
+            "language": "en"
+        }
+        return self._post("/glossary", payload)
+
+    def create_glossary_term(self, glossary_guid, term_name, description):
+        """Create a Term within a Glossary"""
+        if self.mock_mode: return {"guid": "mock-term-guid"}
+        
+        payload = {
+            "anchor": {"glossaryGuid": glossary_guid},
+            "name": term_name,
+            "shortDescription": description
+        }
+        return self._post("/glossary/term", payload)
+
+    def _post(self, endpoint, data):
+        """Helper for POST requests used by legacy services"""
+        if self.mock_mode: return {"status": "mock_success"}
+        try:
+            resp = requests.post(
+                f"{self.base_api}{endpoint}",
+                json=data,
+                auth=(self.user, self.password),
+                timeout=self.timeout if hasattr(self, 'timeout') else 10
+            )
+            return resp.json() if resp.status_code in [200, 201, 204, 409] else None
+        except:
+            return None
+
+    def _put(self, endpoint, data):
+        """Helper for PUT requests"""
+        if self.mock_mode: return {"status": "mock_success"}
+        try:
+            resp = requests.put(
+                f"{self.base_api}{endpoint}",
+                json=data,
+                auth=(self.user, self.password),
+                timeout=self.timeout if hasattr(self, 'timeout') else 10
+            )
+            return resp.json() if resp.status_code in [200, 201, 204, 409] else None
+        except:
+            return None
+
+    def _get(self, endpoint):
+        """Helper for GET requests"""
+        if self.mock_mode: return {"status": "mock_success"}
+        try:
+            resp = requests.get(
+                f"{self.base_api}{endpoint}",
+                auth=(self.user, self.password),
+                timeout=5
+            )
+            return resp.json() if resp.status_code == 200 else None
+        except:
+            return None
+
+    def add_classification(self, guid, classification_name):
+        """
+        US-CLASS-05: Add a classification (tag) to an entity.
+        e.g. Add 'PII' tag to a Column entity.
+        """
+        if self.mock_mode: return {"status": "mock_success", "guid": guid, "tag": classification_name}
+        
+        payload = [
+            {
+                "typeName": classification_name,
+                "propagate": True,    # Tag propagates to lineage
+                "entityGuid": guid
+            }
+        ]
+        
+        try:
+            # Atlas API: POST /api/atlas/v2/entity/guid/{guid}/classifications
+            resp = requests.post(
+                f"{self.base_api}/entity/guid/{guid}/classifications",
+                json=payload,
+                auth=(self.user, self.password)
+            )
+            return resp.status_code in [200, 204]
+        except Exception as e:
+            print(f"Failed to add classification: {e}")
+            return False

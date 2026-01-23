@@ -145,22 +145,50 @@ class TaxonomyEngine:
                 confidence_threshold: float = 0.5,
                 detect_names: bool = True,
                 domains: Optional[List[str]] = None) -> List[Dict]:
-        """Analyze text using Moroccan taxonomy"""
+        """
+        Analyze text using Moroccan taxonomy and Algorithm 2.
+        
+        Algorithm 2 (Section 6):
+        - Regex Match (+0.5)
+        - Context Match (+0.2)
+        - Keyword Match (+0.3) - for certain entities
+        """
         
         if not text or not text.strip():
             return []
         
         detections = []
         
-        # Moroccan patterns
-        for entity_type, patterns in self.compiled_patterns.items():
+        # 1. Processing Moroccan & Arabic patterns
+        all_patterns = {**self.compiled_patterns, **self.compiled_arabic}
+        
+        for entity_type, patterns in all_patterns.items():
             for pattern, metadata in patterns:
                 for match in pattern.finditer(text):
+                    # --- Algorithm 2 Implementation ---
+                    base_confidence = 0.5  # Regex match (+0.5)
+                    
+                    # Context match (+0.2)
                     ctx_required = metadata.get("context_required", [])
-                    if ctx_required and not self._check_context(text, match.start(), match.end(), ctx_required):
+                    has_context = self._check_context(text, match.start(), match.end(), ctx_required)
+                    
+                    if has_context:
+                        base_confidence += 0.2
+                    elif ctx_required:
+                        # If context is strictly required but not found, skip
                         continue
                     
-                    # Calculate sensitivity using Cahier formula (Section 4.4)
+                    # Keyword match (+0.3)
+                    # We check if the value itself or nearby tokens match typical keywords
+                    keywords = [metadata["entity_type"].lower()] + [k.lower() for k in ctx_required]
+                    nearby_text = text[max(0, match.start()-20):min(len(text), match.end()+20)].lower()
+                    
+                    if any(kw in nearby_text for kw in keywords if len(kw) > 2):
+                        base_confidence += 0.3
+                    
+                    if base_confidence < confidence_threshold:
+                        continue
+                        
                     sensitivity = self.sensitivity_calc.calculate(metadata["entity_type"])
                     
                     detections.append({
@@ -173,35 +201,14 @@ class TaxonomyEngine:
                         "sensitivity_level": sensitivity["level"],
                         "sensitivity_score": sensitivity["score"],
                         "sensitivity_breakdown": sensitivity["breakdown"],
-                        "confidence_score": 0.9,
-                        "detection_method": "regex",
+                        "confidence_score": round(min(base_confidence, 1.0), 2),
+                        "detection_method": f"algorithm_2_regex_{metadata['entity_type']}",
                         "context": self._get_context(text, match.start(), match.end()),
-                        "analysis_explanation": f"Matches regex pattern for {metadata['entity_type']} in category {metadata['category']}"
+                        "analysis_explanation": f"Algorithm 2: Regex (+0.5), Context {('+0.2' if has_context else '+0.0')}, Keyword (+0.3 if matched)"
                     })
         
-        # Arabic patterns (if Arabic text detected)
-        if any('\u0600' <= char <= '\u06FF' for char in text):
-            for entity_type, patterns in self.compiled_arabic.items():
-                for pattern, metadata in patterns:
-                    for match in pattern.finditer(text):
-                        # Calculate sensitivity using Cahier formula
-                        sensitivity = self.sensitivity_calc.calculate(metadata["entity_type"])
-                        
-                        detections.append({
-                            "entity_type": metadata["entity_type"],
-                            "category": metadata["category"],
-                            "domain": metadata.get("domain", ""),
-                            "value": match.group(0),
-                            "start": match.start(),
-                            "end": match.end(),
-                            "sensitivity_level": sensitivity["level"],
-                            "sensitivity_score": sensitivity["score"],
-                            "sensitivity_breakdown": sensitivity["breakdown"],
-                            "confidence_score": 0.85,
-                            "detection_method": "regex_arabic",
-                            "context": self._get_context(text, match.start(), match.end()),
-                            "analysis_explanation": f"Matches Arabic pattern for {metadata['entity_type']} in category {metadata['category']}"
-                        })
+        # Also check custom taxonomy from files
+        # ... (keep existing) ...
         
         # Also check custom taxonomy from files
         for category in self.taxonomy.get("categories", []):
@@ -210,18 +217,27 @@ class TaxonomyEngine:
                     try:
                         pattern = re.compile(pattern_str, re.IGNORECASE | re.UNICODE)
                         for match in pattern.finditer(text):
+                            # Apply Algorithm 2 logic for custom too if possible
+                            base_confidence = 0.85
+                            
+                            # Calculate sensitivity using formula if possible
+                            entity_name = subclass.get("name", "Unknown")
+                            sensitivity = self.sensitivity_calc.calculate(entity_name)
+                            
                             detections.append({
-                                "entity_type": subclass.get("name", "Unknown"),
+                                "entity_type": entity_name,
                                 "category": category.get("class", ""),
                                 "domain": category.get("domain_name", ""),
                                 "value": match.group(0),
                                 "start": match.start(),
                                 "end": match.end(),
-                                "sensitivity_level": subclass.get("sensitivity_level", "unknown"),
-                                "confidence_score": 0.85,
-                                "detection_method": "regex",
+                                "sensitivity_level": sensitivity["level"] if sensitivity["score"] > 0 else subclass.get("sensitivity_level", "unknown"),
+                                "sensitivity_score": sensitivity["score"] if sensitivity["score"] > 0 else None,
+                                "sensitivity_breakdown": sensitivity["breakdown"] if sensitivity["score"] > 0 else None,
+                                "confidence_score": base_confidence,
+                                "detection_method": f"custom_taxonomy_regex_{entity_name}",
                                 "context": self._get_context(text, match.start(), match.end()),
-                                "analysis_explanation": f"Matches custom taxonomy pattern for {subclass.get('name', 'Unknown')}"
+                                "analysis_explanation": f"Matches custom taxonomy pattern for {entity_name}"
                             })
                     except re.error:
                         pass
@@ -233,12 +249,23 @@ class TaxonomyEngine:
                          if any(dom.lower() in d.get("domain", "").lower() for dom in domains)]
         
         # Remove duplicates based on position
-        seen = set()
+        # Logic: Prioritize LONGEST matches and HIGHEST confidence
+        detections.sort(key=lambda x: (len(x["value"]), x["confidence_score"]), reverse=True)
+        
         unique = []
         for d in detections:
-            key = (d["start"], d["end"])
-            if key not in seen:
-                seen.add(key)
+            is_duplicate = False
+            # Check if this detection is fully OR partially contained within a better one
+            d_range = set(range(d["start"], d["end"]))
+            
+            for kept in unique:
+                kept_range = set(range(kept["start"], kept["end"]))
+                # If they overlap at all, the longer one (first in sorted list) wins
+                if not d_range.isdisjoint(kept_range):
+                    is_duplicate = True
+                    break
+            
+            if not is_duplicate:
                 unique.append(d)
         
         return sorted(unique, key=lambda x: x["start"])

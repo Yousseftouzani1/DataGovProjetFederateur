@@ -323,7 +323,10 @@ MOROCCAN_PATTERNS = {
 # Arabic patterns
 ARABIC_PATTERNS = {
     "الرقم_الوطني": {
-        "patterns": [r"رقم البطاقة[:\s]*[A-Za-z]{1,2}\d{5,8}"],
+        "patterns": [
+            r"رقم البطاقة(?:.*?)[:\s]*[A-Za-z]{1,2}\d{5,8}",  # Context aware
+            r"\b[A-Za-z]{1,2}\d{5,8}\b"  # Direct match attempt for Arabic context
+        ],
         "category": "IDENTITE_PERSONNELLE",
         "sensitivity": "critical",
         "domain": "IDENTITE"

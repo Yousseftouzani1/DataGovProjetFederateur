@@ -16,9 +16,12 @@ import TaskQueuePage from './pages/TaskQueuePage';
 import UsersPage from './pages/UsersPage';
 import AuditLogsPage from './pages/AuditLogsPage';
 import SettingsPage from './pages/SettingsPage';
+import DiscoveryPage from './pages/DiscoveryPage';
+import LandingPage from './pages/LandingPage';
 import { RoleThemeProvider } from './context/RoleThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { RangerProvider } from './context/RangerContext';
+import RoleGuard from './components/auth/RoleGuard';
 
 import { useEffect } from 'react';
 import { updateFavicon } from './utils/dynamicFavicon';
@@ -34,8 +37,9 @@ function App() {
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
-        <Route path="/signup" element={!user ? <SignupPage /> : <Navigate to="/" />} />
+        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <LandingPage />} />
+        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" />} />
+        <Route path="/signup" element={!user ? <SignupPage /> : <Navigate to="/dashboard" />} />
 
         {/* Protected Group */}
         <Route
@@ -47,16 +51,66 @@ function App() {
                   <ToastProvider>
                     <Shell>
                       <Routes>
-                        <Route path="/" element={<DashboardPage />} />
-                        <Route path="/pii" element={<PIIDetectionPage />} />
-                        <Route path="/quality" element={<QualityPage />} />
-                        <Route path="/datasets" element={<DataPipelinePage />} />
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route
+                          path="/pii"
+                          element={
+                            <RoleGuard allowedRoles={['admin', 'steward', 'annotator']}>
+                              <PIIDetectionPage />
+                            </RoleGuard>
+                          }
+                        />
+                        <Route
+                          path="/quality"
+                          element={
+                            <RoleGuard allowedRoles={['admin', 'steward']}>
+                              <QualityPage />
+                            </RoleGuard>
+                          }
+                        />
+                        <Route
+                          path="/datasets"
+                          element={
+                            <RoleGuard allowedRoles={['admin', 'steward', 'annotator']}>
+                              <DataPipelinePage />
+                            </RoleGuard>
+                          }
+                        />
                         <Route path="/tasks" element={<TaskQueuePage />} />
-                        <Route path="/users" element={<UsersPage />} />
-                        <Route path="/audit" element={<AuditLogsPage />} />
-                        <Route path="/settings" element={<SettingsPage />} />
+                        <Route
+                          path="/users"
+                          element={
+                            <RoleGuard allowedRoles={['admin']}>
+                              <UsersPage />
+                            </RoleGuard>
+                          }
+                        />
+                        <Route
+                          path="/audit"
+                          element={
+                            <RoleGuard allowedRoles={['admin', 'steward']}>
+                              <AuditLogsPage />
+                            </RoleGuard>
+                          }
+                        />
+                        <Route
+                          path="/discovery"
+                          element={
+                            <RoleGuard allowedRoles={['admin', 'steward', 'annotator']}>
+                              <DiscoveryPage />
+                            </RoleGuard>
+                          }
+                        />
+                        <Route
+                          path="/settings"
+                          element={
+                            <RoleGuard allowedRoles={['admin']}>
+                              <SettingsPage />
+                            </RoleGuard>
+                          }
+                        />
                         {/* Fallback */}
-                        <Route path="*" element={<Navigate to="/" />} />
+                        <Route path="*" element={<Navigate to="/dashboard" />} />
                       </Routes>
                     </Shell>
                   </ToastProvider>

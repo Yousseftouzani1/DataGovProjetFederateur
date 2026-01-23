@@ -70,6 +70,7 @@ services:
     networks:
       - datagov-network
     volumes:
+      - ./services/taxonomie-serv/backend:/app/backend
       - ./services/common:/common
     restart: unless-stopped
 
@@ -169,6 +170,8 @@ services:
     container_name: quality-service
     env_file:
       - .env
+    environment:
+      - CLEANING_SERVICE_URL=http://cleaning-service:8004
     ports:
       - "8008:8008"
     depends_on:

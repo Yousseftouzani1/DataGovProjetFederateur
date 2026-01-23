@@ -14,6 +14,7 @@ import {
     FileText,
     Download,
     History,
+    ArrowRight,
     Database
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
@@ -30,8 +31,9 @@ const TaskQueuePage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'rejected'>('pending');
     const [priorityFilter, setPriorityFilter] = useState<'all' | 'critical' | 'high' | 'medium' | 'low'>('all');
-    const [activeTab, setActiveTab] = useState<'tasks' | 'exports'>('tasks');
+    const [activeTab, setActiveTab] = useState<'tasks' | 'corrections' | 'exports'>('tasks');
     const [exports, setExports] = useState<any[]>([]);
+    const [corrections, setCorrections] = useState<any[]>([]);
 
     // Modal State
     const [selectedTask, setSelectedTask] = useState<any>(null);
@@ -42,13 +44,13 @@ const TaskQueuePage = () => {
         try {
             const username = user?.username || localStorage.getItem('username');
 
-            // Parallel fetch for efficiency
+            // US-VALID-04: Utilize user-specific queue
             const [tasksResp, statsResp] = await Promise.all([
-                apiClient.get('/annotation/tasks'),
+                apiClient.get(`/annotation/tasks/my-queue?user_id=${username}`),
                 username ? apiClient.get(`/annotation/users/${username}/stats`) : Promise.resolve({ data: null })
             ]);
 
-            setTasks(tasksResp.data.tasks || []);
+            setTasks(tasksResp.data.queue || []);
             setStats(statsResp.data);
         } catch (err) {
             console.error('Failed to fetch tasks/stats', err);
@@ -56,6 +58,7 @@ const TaskQueuePage = () => {
             setIsLoading(false);
         }
     };
+
 
     const fetchExports = async () => {
         setIsLoading(true);
@@ -69,9 +72,23 @@ const TaskQueuePage = () => {
         }
     };
 
+    const fetchCorrections = async () => {
+        setIsLoading(true);
+        try {
+            const resp = await apiClient.get('/corrections/pending');
+            setCorrections(resp.data.pending_validations || []);
+        } catch (err) {
+            console.error('Failed to fetch corrections', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (activeTab === 'tasks') {
             fetchData();
+        } else if (activeTab === 'corrections') {
+            fetchCorrections();
         } else {
             fetchExports();
         }
@@ -129,6 +146,27 @@ const TaskQueuePage = () => {
         } catch (err) {
             console.error('Failed to submit task action', err);
             addToast('Failed to submit action. Please try again.', 'error');
+        }
+    };
+
+    const handleCorrectionAction = async (correctionId: string, isValid: boolean) => {
+        try {
+            await apiClient.post(`/corrections/validate/${correctionId}`, {
+                decision: isValid ? 'ACCEPT' : 'REJECT',
+                final_value: null, // Simple MVP: Accept suggestion or Reject
+                validator_id: user?.username || 'annotator',
+                validator_role: 'data_annotator'
+            });
+
+            // Optimistic update
+            setCorrections(prev => prev.filter(c => c.id !== correctionId));
+            addToast(isValid ? 'Correction Applied' : 'Correction Rejected', isValid ? 'success' : 'info');
+
+            // Refresh
+            fetchCorrections();
+        } catch (err) {
+            console.error('Failed to validate correction', err);
+            addToast('Failed to process correction', 'error');
         }
     };
 
@@ -208,6 +246,16 @@ const TaskQueuePage = () => {
                     >
                         <History size={18} />
                         Export History
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('corrections')}
+                        className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 font-bold text-sm ${activeTab === 'corrections'
+                            ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
+                            : 'text-slate-500 hover:text-slate-300'
+                            }`}
+                    >
+                        <ShieldCheck size={18} />
+                        Corrections (T5)
                     </button>
                 </div>
 
@@ -342,6 +390,80 @@ const TaskQueuePage = () => {
                                                 className="h-12 w-12 !p-0 rounded-2xl bg-green-500/20 text-green-500 hover:bg-green-500/30 border-green-500/30 transition-transform"
                                                 onClick={() => handleTaskAction(task.id, true)}
                                                 title="Validate Detection"
+                                            >
+                                                <CheckCircle2 size={20} />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))
+                        )}
+                    </AnimatePresence>
+                </div>
+            ) : activeTab === 'corrections' ? (
+                /* Corrections View */
+                <div className="space-y-4">
+                    <AnimatePresence mode="popLayout">
+                        {corrections.length === 0 ? (
+                            <motion.div
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                className="p-20 glass rounded-[2.5rem] text-center border-dashed border-2 border-white/5"
+                            >
+                                <div className="p-4 bg-white/5 rounded-full w-fit mx-auto mb-6">
+                                    <CheckCircle2 size={32} className="text-slate-700" />
+                                </div>
+                                <p className="text-slate-500 font-black uppercase text-[10px] tracking-widest">No Pending Corrections</p>
+                                <p className="text-slate-600 text-xs">T5 model suggestions will appear here</p>
+                            </motion.div>
+                        ) : (
+                            corrections.map((corr, i) => (
+                                <motion.div
+                                    key={corr.id}
+                                    layout
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.05 }}
+                                    className="glass p-6 rounded-3xl flex items-center justify-between glass-hover group border-l-[6px] border-l-purple-500"
+                                >
+                                    <div className="flex items-center gap-8">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h4 className="text-lg font-bold text-white tracking-tight">Consistency Issue</h4>
+                                                <span className="text-[10px] font-black px-2 py-0.5 rounded-lg uppercase bg-purple-500/10 text-purple-400">
+                                                    {corr.type || 'SPELLING'}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-6 text-sm">
+                                                <div className="p-3 rounded-xl bg-red-500/5 border border-red-500/10 text-red-400">
+                                                    <span className="text-[10px] uppercase font-black text-red-500/60 block mb-1">Original</span>
+                                                    {String(corr.old_value)}
+                                                </div>
+                                                <ArrowRight size={16} className="text-slate-600" />
+                                                <div className="p-3 rounded-xl bg-green-500/5 border border-green-500/10 text-green-400">
+                                                    <span className="text-[10px] uppercase font-black text-green-500/60 block mb-1">T5 Suggestion</span>
+                                                    {String(corr.new_value)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-4">
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black text-slate-600 uppercase mb-1">Confidence</p>
+                                            <span className="text-lg font-bold text-white">{(corr.confidence * 100).toFixed(1)}%</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                className="h-12 w-12 !p-0 rounded-2xl bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                                                onClick={() => handleCorrectionAction(corr.id, false)}
+                                            >
+                                                <X size={20} />
+                                            </Button>
+                                            <Button
+                                                variant="primary"
+                                                className="h-12 w-12 !p-0 rounded-2xl bg-green-500/20 text-green-500 hover:bg-green-500/30 border-green-500/30"
+                                                onClick={() => handleCorrectionAction(corr.id, true)}
                                             >
                                                 <CheckCircle2 size={20} />
                                             </Button>

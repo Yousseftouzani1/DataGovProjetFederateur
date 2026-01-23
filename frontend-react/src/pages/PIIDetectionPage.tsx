@@ -74,6 +74,22 @@ const PIIDetectionPage = () => {
     const [selectedDetection, setSelectedDetection] = useState<Detection | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Entity Filtering (US-PII-02)
+    const [selectedEntity, setSelectedEntity] = useState<string>('ALL');
+    const [supportedEntities, setSupportedEntities] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchEntities = async () => {
+            try {
+                const resp = await apiClient.get('/presidio/entities');
+                setSupportedEntities(resp.data.entities || []);
+            } catch (err) {
+                setSupportedEntities(["CIN", "PHONE_NUMBER", "SENSITIVE_DATA", "EMAIL", "IBAN"]);
+            }
+        };
+        fetchEntities();
+    }, []);
+
     useEffect(() => {
         const fetchDatasets = async () => {
             setIsLoadingDatasets(true);
@@ -116,7 +132,8 @@ const PIIDetectionPage = () => {
             const resp = await apiClient.post('/presidio/analyze', {
                 text: scanText,
                 language: 'fr',
-                score_threshold: 0.3
+                score_threshold: 0.3,
+                entities: selectedEntity === 'ALL' ? undefined : [selectedEntity]
             });
 
             setResults(resp.data.detections);
@@ -253,6 +270,27 @@ const PIIDetectionPage = () => {
                     </div>
                 </div>
             )}
+
+            {/* Entity Filter */}
+            <div className="flex flex-wrap gap-2">
+                <button
+                    onClick={() => setSelectedEntity('ALL')}
+                    className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${selectedEntity === 'ALL' ? 'bg-brand-primary text-white' : 'bg-white/5 text-slate-500 hover:text-white'
+                        }`}
+                >
+                    ALL
+                </button>
+                {supportedEntities.map(entity => (
+                    <button
+                        key={entity}
+                        onClick={() => setSelectedEntity(entity)}
+                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${selectedEntity === entity ? 'bg-brand-primary text-white' : 'bg-white/5 text-slate-500 hover:text-white'
+                            }`}
+                    >
+                        {entity}
+                    </button>
+                ))}
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Input area */}

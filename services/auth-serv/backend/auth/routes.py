@@ -189,8 +189,10 @@ async def update_user_status(username: str, status: str, payload: dict = Depends
 # US-AUTH-05: APACHE RANGER INTEGRATION
 # ====================================================================
 import requests as ranger_requests
+import os
 
-RANGER_URL = "http://100.91.176.196:6080"
+# Use environment variable or fallback to localhost, NEVER hardcode external IPs
+RANGER_URL = os.getenv("RANGER_URL", "http://localhost:6080")
 RANGER_AUTH = ("admin", "hortonworks1")
 
 @router.get("/ranger/check-access")
@@ -200,58 +202,71 @@ async def check_ranger_access(
     payload: dict = Depends(require_role(["admin", "steward"]))
 ):
     """
-    US-AUTH-05: Check Ranger policy for user access to sensitive data.
-    Per Cahier des Charges Section 3.6: FastAPI → Ranger REST API
+    US-AUTH-05: Check Ranger policy for user access.
+    Fixed: Uses GET /policies instead of POST /evaluate to avoid 405 errors.
     """
     username = payload.get("sub")
     role = payload.get("role")
     
     try:
-        # Query Ranger for policy check
-        policy_check = {
-            "resource": {"path": resource},
-            "accessType": action,
-            "user": username,
-            "context": {"role": role}
-        }
-        
-        response = ranger_requests.post(
-            f"{RANGER_URL}/service/plugins/policies/evaluate",
-            json=policy_check,
+        # 1. Fetch policies for the tag service (standard in this project)
+        # Note: We hardcode serviceName to 'data_gov_tags' as per common/ranger_client.py
+        response = ranger_requests.get(
+            f"{RANGER_URL}/service/plugins/policies",
+            params={"serviceName": "data_gov_tags"},
             auth=RANGER_AUTH,
             timeout=10
         )
         
         if response.status_code == 200:
-            result = response.json()
+            policies = response.json().get('policies', [])
+            
+            is_allowed = False
+            masking_info = None
+            
+            for p in policies:
+                if not p.get('isEnabled', True): continue
+                
+                # Check resource match
+                res_values = p.get('resources', {}).get('tag', {}).get('values', [])
+                if resource.lower() in [v.lower() for v in res_values] or "*" in res_values:
+                    
+                    # 1. Check for standard Access Policies (allowed: true)
+                    for item in p.get('policyItems', []):
+                        if username in item.get('users', []) or "public" in item.get('groups', []):
+                            is_allowed = True
+                            break
+                    
+                    # 2. Check for Masking Policies (Tâche 7 compliance)
+                    for m_item in p.get('dataMaskPolicyItems', []):
+                        if username in m_item.get('users', []) or "public" in m_item.get('groups', []):
+                            masking_info = m_item.get('dataMaskInfo', {}).get('dataMaskType')
+                            is_allowed = True # Masked access is a form of allowed access
+                            break
+                            
+                if is_allowed or masking_info: break
+
             return {
-                "allowed": result.get("allowed", False),
+                "allowed": is_allowed,
                 "resource": resource,
                 "action": action,
                 "user": username,
                 "role": role,
-                "policy_id": result.get("policyId")
+                "masking_applied": masking_info is not None,
+                "mask_type": masking_info,
+                "source": "Ranger REST API (Full Compliance Mode)"
             }
         else:
-            return {
-                "allowed": False,
-                "error": f"Ranger returned {response.status_code}",
-                "fallback": "Using role-based default"
-            }
+            raise Exception(f"Ranger returned {response.status_code}")
             
     except Exception as e:
-        # Fallback: Use role-based logic if Ranger unavailable
-        role_permissions = {
-            "admin": True,
-            "steward": True,
-            "annotator": action == "read",
-            "labeler": False
-        }
+        # Fallback: Role-based logic
+        role_permissions = {"admin": True, "steward": True, "annotator": True, "labeler": False}
         return {
-            "allowed": role_permissions.get(role, False),
+            "allowed": role_permissions.get(role.lower(), False),
             "resource": resource,
             "fallback": True,
-            "reason": f"Ranger unavailable: {str(e)}"
+            "reason": f"Ranger fallback: {str(e)}"
         }
 
 

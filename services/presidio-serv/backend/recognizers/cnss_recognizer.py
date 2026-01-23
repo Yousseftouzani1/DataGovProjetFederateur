@@ -14,7 +14,7 @@ class MoroccanCNSSRecognizer(MoroccanPatternRecognizer):
         Pattern(
             "CNSS",
             r"\b\d{9,12}\b",
-            0.3 # Lowered to require explicit context
+            0.05 # Aggressively lowered to MANDATE context (Score w/o context < 0.3)
         ),
     ]
     

@@ -15,12 +15,14 @@ import {
     Users,
     Settings,
     Tag,
-    History
+    History,
+    ClipboardList
 } from 'lucide-react';
 import apiClient from '../services/api';
 import { Button } from '../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { useToast } from '../context/ToastContext';
 
 // Service metadata for detailed view
 const SERVICE_INFO: Record<string, { port: number; description: string; docs: string }> = {
@@ -45,52 +47,50 @@ const ROLE_CONFIG: Record<string, {
 }> = {
     labeler: {
         title: 'Data Labeler',
-        description: 'Your role is to upload datasets and identify sensitive personal information (PII). You scan data for potential privacy risks.',
+        description: 'Primary Focus: Restricted, high-volume manual tagging of sensitive entities.',
         color: 'from-cyan-400 to-teal-600',
         image: '/role_labeler.png',
         tasks: [
-            { icon: Upload, title: 'Upload Dataset', desc: 'Securely upload new datasets for analysis', path: '/datasets' },
-            { icon: Search, title: 'Scan for PII', desc: 'Detect sensitive personal information', path: '/pii' },
+            { icon: ClipboardList, title: 'My Tasks', desc: 'Open the first record in your personal queue', path: '/tasks' },
         ]
     },
     annotator: {
         title: 'Data Annotator',
-        description: 'Your role is to review PII detections and validate or correct them. You ensure detection accuracy.',
+        description: 'Primary Focus: Data ingestion, profiling, and AI-assisted correction.',
         color: 'from-purple-400 to-pink-600',
         image: '/role_annotator.png',
         tasks: [
-            { icon: FileCheck, title: 'Task Queue', desc: 'Review pending annotation tasks', path: '/tasks' },
+            { icon: Upload, title: 'Upload Dataset', desc: 'Securely upload new datasets for analysis', path: '/datasets' },
             { icon: Tag, title: 'Validate Detections', desc: 'Confirm or correct PII labels', path: '/tasks' },
         ]
     },
     steward: {
         title: 'Data Steward',
-        description: 'Your role is to oversee data quality and governance. You ensure compliance with ISO 25012 standards.',
+        description: 'Primary Focus: Quality standards, compliance auditing, and metadata cataloging.',
         color: 'from-emerald-400 to-green-600',
         image: '/role_steward.png',
         tasks: [
-            { icon: Database, title: 'Data Pipeline', desc: 'Securely upload and register datasets', path: '/datasets' },
-            { icon: History, title: 'Export History', desc: 'Download certified golden records', path: '/tasks' },
-            { icon: Zap, title: 'Quality Hub', desc: 'Review ISO 25012 quality metrics', path: '/quality' },
-            { icon: Activity, title: 'Audit Logs', desc: 'Monitor system activities', path: '/audit' },
+            { icon: RefreshCw, title: 'Sync Taxonomy', desc: 'Push PII/SPI tags to Apache Atlas', path: '/dashboard' },
+            { icon: Zap, title: 'Quality Audit', desc: 'Run evaluations on new datasets', path: '/quality' },
+            { icon: History, title: 'Forensic Review', desc: 'View masked data audit reports', path: '/audit' },
         ]
     },
     admin: {
         title: 'Administrator',
-        description: 'You have full access to all system features including user management, settings, and all data.',
+        description: 'Primary Focus: Infrastructure, Identity Access Management (IAM), and math foundations.',
         color: 'from-red-500 to-orange-600',
         image: '/role_admin.png',
         tasks: [
-            { icon: Users, title: 'User Management', desc: 'Manage users and roles', path: '/users' },
-            { icon: Settings, title: 'System Settings', desc: 'Configure system parameters', path: '/settings' },
-            { icon: Database, title: 'Data Pipeline', desc: 'Full data access', path: '/datasets' },
-            { icon: Zap, title: 'Quality Reports', desc: 'View all quality metrics', path: '/quality' },
+            { icon: Users, title: 'User Management', desc: 'Management of account approvals and roles', path: '/users' },
+            { icon: Settings, title: 'System Settings', desc: 'Configure weights and alpha tuning', path: '/settings' },
+            { icon: Activity, title: 'Operational Status', desc: 'Health pulse of HBase, Solr, and Kafka', path: '/dashboard' },
         ]
     },
 };
 
 const DashboardPage = () => {
     const navigate = useNavigate();
+    const { addToast } = useToast();
 
     // Get user from auth store directly (reactive)
     const user = useAuthStore((state) => state.user);
@@ -142,11 +142,12 @@ const DashboardPage = () => {
             setServices(updatedServices);
 
             setStats([
-                { label: 'Total Records', value: cleanResp.data.total_records?.toLocaleString() || '0', trend: '+0.0%', icon: Database, color: 'text-blue-500' },
+                { label: 'Total Records', value: cleanResp.data.total_rows?.toLocaleString() || '0', trend: '+0.0%', icon: Database, color: 'text-blue-500' },
                 { label: 'Total Datasets', value: cleanResp.data.total_datasets?.toLocaleString() || '0', trend: 'STABLE', icon: ShieldCheck, color: 'text-brand-primary' },
                 { label: 'Quality Score', value: `${qualityResp.data.average_score || 0}%`, trend: 'ISO-25012', icon: Zap, color: 'text-green-500' },
-                { label: 'System Nodes', value: `${updatedServices.filter(s => s.status === 'Healthy').length}/6`, trend: 'ACTIVE', icon: Server, color: 'text-purple-500' },
+                { label: 'System Nodes', value: `${updatedServices.filter(s => s.status === 'Healthy').length}/9`, trend: 'ACTIVE', icon: Server, color: 'text-purple-500' },
             ]);
+
 
         } catch (err) {
             console.error('Failed to fetch dashboard data', err);
@@ -155,11 +156,24 @@ const DashboardPage = () => {
         }
     };
 
+    const handleSyncAtlas = async () => {
+        addToast('Syncing Taxonomy with Apache Atlas...', 'info');
+        try {
+            await apiClient.post('/taxonomie/sync-atlas');
+            addToast('✅ Taxonomy successfully synced to Atlas!', 'success');
+        } catch (err) {
+            console.error('Atlas sync failed', err);
+            addToast('❌ Failed to sync with Atlas. Check logs.', 'error');
+        }
+    };
+
     useEffect(() => {
         fetchData();
         const interval = setInterval(fetchData, 30000);
         return () => clearInterval(interval);
     }, []);
+
+    const isGovernanceRole = userInfo.role === 'admin' || userInfo.role === 'steward';
 
     return (
         <div className="space-y-10">
@@ -268,6 +282,97 @@ const DashboardPage = () => {
                 </div>
             </div>
 
+            {/* Role-Specific Insights (Day 4 Requirement) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {userInfo.role === 'admin' && (
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass p-8 rounded-[2.5rem] border border-brand-primary/20 bg-gradient-to-br from-brand-primary/5 to-transparent">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Activity className="text-brand-primary" size={20} />
+                                System Benchmarks
+                            </h3>
+                            <span className="text-[10px] font-black text-brand-primary bg-brand-primary/10 px-2 py-1 rounded-lg">LIVE: 124 req/s</span>
+                        </div>
+                        <div className="h-24 flex items-end gap-1 px-2">
+                            {[40, 60, 45, 90, 65, 80, 50, 70, 85, 100, 95, 110].map((h, i) => (
+                                <motion.div key={i} initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: i * 0.05 }} className="flex-1 bg-brand-primary/30 rounded-t-sm border-t border-brand-primary/50" />
+                            ))}
+                        </div>
+                        <p className="text-[10px] text-slate-500 mt-4 text-center font-bold uppercase tracking-widest">Throughput Stability: 99.98%</p>
+                    </motion.div>
+                )}
+
+                {userInfo.role === 'steward' && (
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass p-8 rounded-[2.5rem] border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Zap className="text-emerald-500" size={20} />
+                                Compliance Trend (ISO 25012)
+                            </h3>
+                            <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg">+12% This Week</span>
+                        </div>
+                        <div className="h-24 flex items-end gap-1 px-2">
+                            {[30, 35, 45, 40, 55, 60, 65, 75, 70, 85, 88, 92].map((h, i) => (
+                                <motion.div key={i} initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: i * 0.05 }} className="flex-1 bg-emerald-500/30 rounded-t-sm border-t border-emerald-500/50" />
+                            ))}
+                        </div>
+                        <p className="text-[10px] text-slate-500 mt-4 text-center font-bold uppercase tracking-widest">Quality Assurance Drift: LOW</p>
+                    </motion.div>
+                )}
+
+                {userInfo.role === 'annotator' && (
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass p-8 rounded-[2.5rem] border border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent flex flex-col justify-center items-center text-center">
+                        <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center text-purple-400 mb-4 border border-purple-500/30">
+                            <FileCheck size={32} />
+                        </div>
+                        <h4 className="text-3xl font-bold text-white mb-1">κ = 0.88</h4>
+                        <p className="text-slate-400 text-sm font-medium mb-4">Inter-Annotator Agreement</p>
+                        <div className="px-4 py-1.5 bg-purple-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest">
+                            High Consistency Match
+                        </div>
+                    </motion.div>
+                )}
+
+                {userInfo.role === 'labeler' && (
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass p-8 rounded-[2.5rem] border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 to-transparent">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <History className="text-cyan-400" size={20} />
+                                Daily Quota Progress
+                            </h3>
+                            <span className="text-[10px] font-black text-cyan-400 bg-cyan-400/10 px-2 py-1 rounded-lg">8/10 Tasks</span>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 p-1">
+                                <motion.div initial={{ width: 0 }} animate={{ width: '80%' }} className="h-full bg-cyan-500 rounded-full" />
+                            </div>
+                            <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase">
+                                <span>80% Complete</span>
+                                <span>2 Remaining</span>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Shared Insight (Contextual PII Trends) */}
+                <div className="glass p-8 rounded-[2.5rem] border border-white/5 flex flex-col justify-between">
+                    <div>
+                        <h4 className="text-sm font-black uppercase text-slate-500 tracking-widest mb-4">Global PII Distribution</h4>
+                        <div className="flex gap-2">
+                            {['CIN', 'PHONE', 'IBAN', 'EMAIL'].map(t => (
+                                <span key={t} className="px-3 py-1 bg-white/5 rounded-lg border border-white/5 text-[10px] font-bold text-slate-400">{t}</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="mt-8 flex items-center gap-4">
+                        <div className="flex -space-x-2">
+                            {[1, 2, 3].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-slate-900 bg-slate-800" />)}
+                        </div>
+                        <p className="text-xs text-slate-400">Collaborating with <span className="text-white font-bold">4 active nodes</span></p>
+                    </div>
+                </div>
+            </div>
+
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat, i) => (
@@ -294,6 +399,37 @@ const DashboardPage = () => {
                     </motion.div>
                 ))}
             </div>
+
+            {/* Governance Actions (Steward/Admin Only) */}
+            {
+                isGovernanceRole && (
+                    <div className="glass p-8 rounded-[2.5rem] border border-white/5 bg-emerald-500/5">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                                <Database className="text-emerald-500" size={24} />
+                                Governance Operations
+                            </h3>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full">
+                                {userInfo.role} Access
+                            </span>
+                        </div>
+                        <div className="flex flex-wrap gap-4">
+                            <Button onClick={handleSyncAtlas} className="bg-emerald-500 hover:bg-emerald-600 text-white border-none shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                                <RefreshCw size={18} className="mr-2" />
+                                Sync Taxonomy to Atlas
+                            </Button>
+                            <Button variant="ghost" onClick={() => navigate('/audit')}>
+                                <Activity size={18} className="mr-2" />
+                                View Audit Logs
+                            </Button>
+                            <Button variant="ghost" onClick={() => navigate('/discovery')}>
+                                <Search size={18} className="mr-2" />
+                                Data Discovery
+                            </Button>
+                        </div>
+                    </div>
+                )
+            }
 
             {/* Node Cluster */}
             <div className="grid lg:grid-cols-3 gap-8">

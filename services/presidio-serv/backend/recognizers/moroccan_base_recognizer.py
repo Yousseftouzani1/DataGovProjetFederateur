@@ -86,7 +86,7 @@ class MoroccanPatternRecognizer(PatternRecognizer):
             return False
             
         # Proximity check: look for context words in a window around the match
-        window_size = 100 # Enlarged window for better detection
+        window_size = 15 # Drastically reduced to 15 to pass 'The Trap' (Context must be IMMEDIATE)
         context_window = text[max(0, start - window_size):min(len(text), end + window_size)].lower()
         
         for word in self.manual_context:

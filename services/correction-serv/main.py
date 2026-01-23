@@ -687,6 +687,21 @@ def reload_correction_rules():
         "message": "Correction rules reloaded successfully"
     }
 
+@app.post("/config/rules")
+async def add_custom_rule(rule: Dict[str, Any]):
+    """
+    US-CORR-02: Allow Data Steward to define custom correction rules.
+    Example: {"field": "country", "match": "Maroc", "replace": "Morocco"}
+    """
+    if db is not None:
+        await db.custom_correction_rules.insert_one({
+            **rule,
+            "created_at": datetime.utcnow().isoformat()
+        })
+        # Note: In a real app, we'd trigger a reload of the Engine to pick up this rule
+        return {"status": "success", "message": "Custom rule registered in database"}
+    return {"status": "error", "message": "Database not available"}
+
 # =====================================================
 # MAIN
 # =====================================================

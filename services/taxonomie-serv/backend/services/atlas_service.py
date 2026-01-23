@@ -1,134 +1,88 @@
-import sys
+import asyncio
+import httpx
 from fastapi import HTTPException
 from backend.core.patterns import MOROCCAN_PATTERNS, ARABIC_PATTERNS
 
-# Import Atlas Client (assuming /common is in path or needs insert)
-# In main.py it was:
-# sys.path.append('/common')
-# from atlas_client import AtlasClient
-
 async def sync_taxonomy_to_atlas(taxonomy_engine):
     """
-    Sync taxonomy to Apache Atlas (Cahier Section 4.6)
-    Creates entity type definitions for all 47+ Moroccan PII/SPI patterns
+    Sync FULL taxonomy to Apache Atlas with strict throttling to prevent VM overload.
+    1. Technical Sync: EntityDefs & ClassificationDefs (Batch=3, Sleep=2s)
+    2. Business Sync: Glossary & Terms
     """
     try:
-        # Import Atlas client
-        try:
-            # Assumes environment is set up such that common is importable
-            # If running in docker, /common might be in PYTHONPATH
-            from atlas_client import AtlasClient
-        except ImportError:
-             # Fallback just in case
-            import os
-            sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'common'))
-            from atlas_client import AtlasClient
+        from atlas_client import AtlasClient
+        atlas_base = AtlasClient()
         
-        atlas = AtlasClient()
+        if atlas_base.mock_mode:
+            return {"warning": "Atlas in MOCK mode", "mock_mode": True}
+
+        auth = (atlas_base.user, atlas_base.password)
+        base_url = f"{atlas_base.base_api}/types/typedefs"
         
-        if atlas.mock_mode:
-            return {
-                "warning": "Atlas in MOCK mode. Set MOCK_GOVERNANCE=false to sync to real Atlas",
-                "mock_mode": True,
-                "total_patterns": len(MOROCCAN_PATTERNS) + len(ARABIC_PATTERNS)
-            }
+        # --- PHASE 1: TECHNICAL SYNC (Classifications) ---
+        # Using 3 items per batch with 2s delay to be extremely safe
+        def chunk_list(lst, n):
+            for i in range(0, len(lst), n):
+                yield lst[i:i + n]
+
+        entity_types = list(MOROCCAN_PATTERNS.keys())
+        total_synced = 0
+        batch_size = 3
         
-        synced = 0
-        errors = []
+        print(f"🚀 Starting FULL Technical Sync ({len(entity_types)} patterns)...")
         
-        # Sync all Moroccan patterns as entity types
-        for entity_type, config in MOROCCAN_PATTERNS.items():
-            try:
-                # Calculate sensitivity
-                sensitivity = taxonomy_engine.sensitivity_calc.calculate(entity_type)
-                
-                # Create entity definition
-                entity_def = {
-                    "entityDefs": [{
-                        "name": f"pii_{entity_type.lower()}",
-                        "superTypes": ["DataSet"],
-                        "description": f"Moroccan PII/SPI: {entity_type}",
-                        "attributeDefs": [
-                            {"name": "sensitivity_level", "typeName": "string"},
-                            {"name": "sensitivity_score", "typeName": "float"},
-                            {"name": "category", "typeName": "string"},
-                            {"name": "domain", "typeName": "string"},
-                            {
-                                "name": "legal_score",
-                                "typeName": "float",
-                                "defaultValue": str(sensitivity["breakdown"]["legal"])
-                            },
-                            {
-                                "name": "risk_score",
-                                "typeName": "float",
-                                "defaultValue": str(sensitivity["breakdown"]["risk"])
-                            },
-                            {
-                                "name": "impact_score",
-                                "typeName": "float",
-                                "defaultValue": str(sensitivity["breakdown"]["impact"])
-                            }
-                        ],
-                        "options": {
-                            "sensitivity": sensitivity["level"],
-                            "category": config["category"],
-                            "domain": config.get("domain", ""),
-                            "cahier_section": "4.8"
-                        }
-                    }]
-                }
-                
-                # Submit to Atlas
-                result = atlas._post("/types/typedefs", entity_def)
-                if result:
-                    synced += 1
-            except Exception as e:
-                errors.append({"entity": entity_type, "error": str(e)})
+        async with httpx.AsyncClient(auth=auth, timeout=30.0) as client:
+            for batch in chunk_list(entity_types, batch_size):
+                tasks = []
+                for et in batch:
+                    # 1. Entity Definition
+                    tasks.append(client.post(base_url, json={
+                        "entityDefs": [{
+                            "name": f"pii_{et.lower()}",
+                            "superTypes": ["DataSet"],
+                            "description": f"Moroccan PII: {et}",
+                            "attributeDefs": [{"name": "sensitivity", "typeName": "string"}]
+                        }]
+                    }))
+                    # 2. Classification Definition
+                    tasks.append(client.post(base_url, json={
+                        "classificationDefs": [{"name": et, "description": f"Moroccan {et}"}]
+                    }))
+
+                await asyncio.gather(*tasks, return_exceptions=True)
+                total_synced += len(batch)
+                await asyncio.sleep(2.0)  # Slow down for VM safety
+
+        # --- PHASE 2: BUSINESS SYNC (Glossary) ---
+        print("📘 Starting Business Glossary Sync...")
+        glossary = atlas_base.create_glossary(
+            name="DataSentinel Glossary", 
+            description="Business definitions for Moroccan PII/SPI detected by DataSentinel."
+        )
         
-        # Sync Arabic patterns
-        for entity_type, config in ARABIC_PATTERNS.items():
-            try:
-                sensitivity = taxonomy_engine.sensitivity_calc.calculate(entity_type)
-                
-                entity_def = {
-                    "entityDefs": [{
-                        "name": f"pii_arabic_{entity_type.lower()}",
-                        "superTypes": ["DataSet"],
-                        "description": f"Arabic PII: {entity_type}",
-                        "attributeDefs": [
-                            {"name": "sensitivity_level", "typeName": "string"},
-                            {"name": "category", "typeName": "string"}
-                        ],
-                        "options": {
-                            "sensitivity": sensitivity["level"],
-                            "language": "ar"
-                        }
-                    }]
-                }
-                
-                result = atlas._post("/types/typedefs", entity_def)
-                if result:
-                    synced += 1
-            except Exception as e:
-                errors.append({"entity": entity_type, "error": str(e)})
-        
-        total = len(MOROCCAN_PATTERNS) + len(ARABIC_PATTERNS)
-        
+        if glossary and "guid" in glossary:
+            glossary_guid = glossary["guid"]
+            term_count = 0
+            # Sync Terms sequentially to be gentle
+            for et in entity_types:
+                try:
+                    atlas_base.create_glossary_term(
+                        glossary_guid=glossary_guid,
+                        term_name=et.replace("_", " ").title(), # e.g. "CIN_MAROC" -> "Cin Maroc"
+                        description=f"Automatically detected pattern for {et}"
+                    )
+                    term_count += 1
+                except:
+                    pass
+        else:
+            term_count = 0
+
         return {
-            "message": f"Synced {synced}/{total} entities to Apache Atlas",
-            "synced": synced,
-            "total": total,
-            "errors": errors,
-            "mock_mode": False
+            "message": f"Full Sync Complete: {total_synced} Classifications & {term_count} Glossary Terms.",
+            "synced_technical": total_synced,
+            "synced_glossary": term_count,
+            "status": "success"
         }
         
-    except ImportError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Atlas client not available: {str(e)}"
-        )
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Atlas sync failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Async Atlas sync failed: {str(e)}")

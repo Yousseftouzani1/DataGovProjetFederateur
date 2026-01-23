@@ -2,6 +2,15 @@ pipeline:
   name: "data_processing_pipeline"
   schedule_interval: "0 2 * * *"  # Daily at 2AM
   
+configuration:
+  enable_profiling: true
+  enable_cleaning: true
+  enable_pii_detection: true
+  enable_classification: true
+  enable_quality: true
+  enable_masking: true
+  remove_duplicates: true  # Specific test case requested
+  
 services:
   base_url: "http://localhost:8000/api/v1"
   timeout: 300

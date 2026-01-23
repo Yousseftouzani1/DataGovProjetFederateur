@@ -147,7 +147,8 @@ class CorrectionEngine:
         # TEXT / FORMAT / SEMANTIC → T5
         if inc.type in {"FORMAT", "SEMANTIC"} and isinstance(inc.value, str):
             suggestion, score = self.text_corrector.correct(
-                value=inc.value
+                value=inc.value,
+                context=inc.field
             )
             return {
                 "value": suggestion,

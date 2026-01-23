@@ -17,6 +17,23 @@ import json
 # CONFIGURATION
 # ====================================================================
 
+import yaml
+import os
+
+def load_config():
+    config_path = os.path.join(os.path.dirname(__file__), '../config/pipeline_config.yaml')
+    try:
+        with open(config_path, 'r') as f:
+            return yaml.safe_load(f)
+    except Exception as e:
+        print(f"⚠️ Could not load config, using defaults: {e}")
+        return {"configuration": {}}
+
+PIPELINE_CONFIG = load_config()
+
+def is_feature_enabled(feature_name: str) -> bool:
+    return PIPELINE_CONFIG.get("configuration", {}).get(feature_name, True)
+
 SERVICE_URLS = {
     "cleaning": "http://cleaning-service:8004",
     "taxonomie": "http://taxonomie-service:8002",
@@ -95,8 +112,15 @@ def profile_data(**context):
 
 def clean_data(**context):
     """Apply automatic cleaning"""
+    if not is_feature_enabled("enable_cleaning"):
+        print("⏭️ Cleaning disabled in config, skipping.")
+        return {"status": "skipped"}
+
     dataset_id = context['ti'].xcom_pull(key='dataset_id')
-    url = f"{SERVICE_URLS['cleaning']}/clean/{dataset_id}/auto"
+    
+    # Check specific flag
+    remove_dups = is_feature_enabled("remove_duplicates")
+    url = f"{SERVICE_URLS['cleaning']}/clean/{dataset_id}/auto?remove_duplicates={str(remove_dups).lower()}"
     
     response = requests.post(url)
     if response.status_code == 200:

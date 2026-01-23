@@ -1,5 +1,6 @@
 import time
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 from backend.schemas.taxonomy import AnalyzeRequest, AnalyzeResponse, DetectionResult
 from backend.services.engine import TaxonomyEngine
 from backend.services.atlas_service import sync_taxonomy_to_atlas
@@ -11,6 +12,11 @@ router = APIRouter()
 # Initialize engine
 # Assuming backend/data/domains is the correct path relative to engine.py
 taxonomy_engine = TaxonomyEngine()
+
+import os
+from pymongo import MongoClient
+client = MongoClient(os.getenv("MONGODB_URI", "mongodb://datagov-mongo:27017"))
+db = client["DataGovDB"]
 
 @router.get("/")
 def root():
@@ -167,3 +173,22 @@ def reload_patterns_from_db():
             "error": str(e),
             "message": "Pattern reload failed"
         }
+
+class PatternRequest(BaseModel):
+    category: str
+    pattern: str
+    language: str = "fr"
+
+@router.post("/patterns")
+async def add_pattern(pat_request: PatternRequest):
+    """
+    US-TAX-02: Add new PII Categories and Patterns dynamically.
+    """
+    if db is not None:
+        db.custom_patterns.update_one(
+            {"category": pat_request.category, "language": pat_request.language},
+            {"$set": {"pattern": pat_request.pattern}},
+            upsert=True
+        )
+        return {"status": "success", "message": f"Pattern for {pat_request.category} ({pat_request.language}) registered"}
+    return {"status": "error", "message": "Database not connected"}

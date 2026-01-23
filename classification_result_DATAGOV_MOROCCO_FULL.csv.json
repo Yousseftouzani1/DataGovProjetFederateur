@@ -1,0 +1,95 @@
+{
+    "dataset_id": "DATAGOV_MOROCCO_FULL.csv",
+    "classifications": {
+        "id": {
+            "level": 1,
+            "code": "INTERNAL",
+            "confidence": 0.19,
+            "review": true
+        },
+        "full_name": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.28,
+            "review": true
+        },
+        "name_arabic": {
+            "level": 1,
+            "code": "INTERNAL",
+            "confidence": 0.36,
+            "review": true
+        },
+        "cin_ma": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.5,
+            "review": true
+        },
+        "phone_ma": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.5,
+            "review": true
+        },
+        "rib_ma": {
+            "level": 5,
+            "code": "CRITICAL",
+            "confidence": 0.44,
+            "review": true
+        },
+        "credit_card": {
+            "level": 5,
+            "code": "CRITICAL",
+            "confidence": 0.3,
+            "review": true
+        },
+        "salary_mad": {
+            "level": 5,
+            "code": "CRITICAL",
+            "confidence": 0.25,
+            "review": true
+        },
+        "birth_date": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.45,
+            "review": true
+        },
+        "city": {
+            "level": 4,
+            "code": "SPI",
+            "confidence": 0.33,
+            "review": true
+        },
+        "city_arabic": {
+            "level": 0,
+            "code": "PUBLIC",
+            "confidence": 0.33,
+            "review": true
+        },
+        "email": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.65,
+            "review": true
+        },
+        "status": {
+            "level": 0,
+            "code": "PUBLIC",
+            "confidence": 0.33,
+            "review": true
+        },
+        "company": {
+            "level": 4,
+            "code": "SPI",
+            "confidence": 0.19,
+            "review": true
+        },
+        "notes": {
+            "level": 1,
+            "code": "INTERNAL",
+            "confidence": 0.2,
+            "review": true
+        }
+    }
+}

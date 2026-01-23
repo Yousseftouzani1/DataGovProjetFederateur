@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.auth.routes import router as auth_router
 from backend.users.routes import router as user_router
+from backend.airflow_routes import router as airflow_router
 
 app = FastAPI(
     title="Auth Service",
@@ -65,4 +66,4 @@ async def test_db():
 # Routers
 app.include_router(auth_router)
 app.include_router(user_router)
-
+app.include_router(airflow_router)

@@ -48,6 +48,11 @@ class MaskingConfig(BaseModel):
     role: UserRole = UserRole.DATA_LABELER
     context: str = "default"  # Context: analysis, export, display, api
     purpose: str = "general"  # Purpose: research, compliance, marketing
+    history_stats: Optional[Dict[str, float]] = {
+        "conformity": 0.8, # Hc
+        "frequency": 0.5,  # Hf
+        "violations": 0.0  # Hv
+    }
 
 class Detection(BaseModel):
     field: str
@@ -83,18 +88,20 @@ class ConfigUpdate(BaseModel):
     wc: float = Field(..., ge=-1.0, le=1.0)
     wp: float = Field(..., ge=-1.0, le=1.0)
     bias: float = Field(0.4, ge=-1.0, le=1.0)
+    alpha: float = Field(0.5, ge=0.0, le=1.0, description="Loss function balance: alpha * Privacy + (1-alpha) * Utility")
 
 class ConfigManager:
     DEFAULT_CONFIG = {
         "weights": [0.35, -0.30, 0.20, 0.15],
-        "bias": 0.4
+        "bias": 0.4,
+        "alpha": 0.5
     }
 
     async def get_config(self) -> Dict:
         if db is not None:
             doc = await db.ethimask_config.find_one({"_id": "global_config"})
             if doc:
-                return {"weights": doc["weights"], "bias": doc["bias"]}
+                return {"weights": doc["weights"], "bias": doc["bias"], "alpha": doc.get("alpha", 0.5)}
         return self.DEFAULT_CONFIG
 
     async def update_config(self, config: ConfigUpdate):
@@ -103,7 +110,7 @@ class ConfigManager:
         if db is not None:
             await db.ethimask_config.update_one(
                 {"_id": "global_config"},
-                {"$set": {"weights": new_weights, "bias": config.bias}},
+                {"$set": {"weights": new_weights, "bias": config.bias, "alpha": config.alpha}},
                 upsert=True
             )
         # Update in-memory perceptron
@@ -117,8 +124,10 @@ class PolicyManager:
     DEFAULT_POLICIES = [
         {"entity_type": "*", "role": "admin", "level": "none", "technique": "pseudonymization"},
         {"entity_type": "cin", "role": "steward", "level": "partial", "technique": "pseudonymization"},
-        {"entity_type": "*", "role": "labeler", "level": "full", "technique": "suppression"},
-        {"entity_type": "*", "role": "external", "level": "encrypted", "technique": "hashing"},
+        # Changed Labeler to Encrypted to demonstrate HE in Demo
+        {"entity_type": "*", "role": "labeler", "level": "encrypted", "technique": "encryption"},
+        # Annotator default
+        {"entity_type": "*", "role": "annotator", "level": "partial", "technique": "generalization"},
     ]
     
     async def get_policy(self, entity_type: str, role: str) -> Optional[MaskingPolicy]:
@@ -137,7 +146,9 @@ class PolicyManager:
             if (p["entity_type"] == entity_type or p["entity_type"] == "*") and p["role"] == role:
                 return MaskingPolicy(**p)
 
-        return MaskingPolicy(entity_type=entity_type, role=role, level=MaskingLevel.FULL, technique=MaskingTechnique.SUPPRESSION)
+        # Default fallback if no policy matches
+        # return MaskingPolicy(entity_type=entity_type, role=role, level=MaskingLevel.FULL, technique=MaskingTechnique.SUPPRESSION)
+        return None
 
     async def add_policy(self, policy: MaskingPolicy):
         if db is not None:
@@ -219,7 +230,11 @@ async def mask_data(request: MaskRequest):
         
         # Perceptron Decision
         level, confidence = perceptron.decide_masking(
-            detection.sensitivity_level, request.config.role, request.config.context, request.config.purpose
+            detection.sensitivity_level, 
+            request.config.role, 
+            request.config.context, 
+            request.config.purpose,
+            history=request.config.history_stats
         )
         
         # Policy Override
@@ -283,7 +298,9 @@ async def get_config():
         "role_weight": config["weights"][1],
         "context_weight": config["weights"][2],
         "purpose_weight": config["weights"][3],
-        "bias": config["bias"]
+        "purpose_weight": config["weights"][3],
+        "bias": config["bias"],
+        "alpha": config["alpha"]
     }
 
 @app.post("/config")
@@ -303,6 +320,118 @@ async def get_audit_logs(limit: int = 100):
             logs.append(doc)
         return {"logs": logs}
     return {"logs": []}
+
+@app.get("/audit")
+async def get_masking_audit_report(
+    limit: int = 100, 
+    role: Optional[str] = None, 
+    entity_type: Optional[str] = None
+):
+    """
+    US-MASK-04: Specialized Masking Audit Report
+    Filterable by Role and Entity Type to analyze masking decisions.
+    """
+    if db is None:
+        return {"logs": []}
+    
+    query = {}
+    if role:
+        query["role"] = role
+    if entity_type:
+        query["entity_type"] = entity_type
+        
+    cursor = db.audit_logs.find(query).sort("timestamp", -1).limit(limit)
+    logs = []
+    async for doc in cursor:
+        doc["_id"] = str(doc["_id"])
+        logs.append(doc)
+    
+    return {"count": len(logs), "filters": {"role": role, "entity_type": entity_type}, "logs": logs}
+
+@app.post("/retrain")
+async def retrain_on_audit_logs():
+    """
+    US-MASK-06: Automatic Pattern Learning
+    Analyzes historical audit logs to refine weights.
+    High violation counts -> Increase Sensitivity weight.
+    High success rates -> Increase Role Trust.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+
+    # 1. Fetch recent audit logs (last 500)
+    cursor = db.audit_logs.find().sort("timestamp", -1).limit(500)
+    logs = [doc async for doc in cursor]
+
+    if not logs:
+        return {"status": "skipped", "message": "No logs available for training"}
+
+    # 2. Simple Heuristic Learning (Simulation of Perceptron update)
+    # Feature influences
+    sensitivity_shift = 0.0
+    role_shift = 0.0
+    
+    for log in logs:
+        level = log.get("masking_level")
+        sens = log.get("sensitivity")
+        
+        # If we are masking a lot of HIGH sensitivity data, we might want to be more cautious
+        if sens in ["high", "critical"] and level == "none":
+            # Potential false negative (access allowed where it should be masked)
+            sensitivity_shift += 0.01
+        
+        # If we are masking LOW sensitivity for ADMIN, we might be too restrictive
+        if sens == "low" and log.get("role") == "admin" and level != "none":
+            role_shift += 0.01
+
+    # 3. Apply updates to current config
+    config = await config_manager.get_config()
+    weights = config["weights"]
+    weights[0] = min(1.0, max(-1.0, weights[0] + sensitivity_shift)) # ws
+    weights[1] = min(1.0, max(-1.0, weights[1] + role_shift))        # wr
+    
+    new_config = ConfigUpdate(ws=weights[0], wr=weights[1], wc=weights[2], wp=weights[3], bias=config["bias"])
+    await config_manager.update_config(new_config)
+
+    return {
+        "status": "success", 
+        "message": f"Retrained on {len(logs)} samples",
+        "updates": {
+            "sensitivity_weight": weights[0],
+            "role_trust_weight": weights[1]
+        }
+    }
+
+@app.post("/he/context")
+async def initialize_he_context():
+    """
+    Initialize Homomorphic Encryption Context (TenSEAL)
+    Mandatory Task for Admin to enable HE capabilities.
+    """
+    if not TENSEAL_AVAILABLE:
+        # Mock success if TenSEAL is missing to prevent UI errors in dev
+        return {"status": "mock_initialized", "scheme": "CKKS", "poly_modulus_degree": 8192}
+
+    try:
+        # Create a real TenSEAL context
+        context = ts.context(
+            ts.SCHEME_TYPE.CKKS,
+            poly_modulus_degree=8192,
+            coeff_mod_bit_sizes=[60, 40, 40, 60]
+        )
+        context.global_scale = 2**40
+        context.generate_galois_keys()
+        
+        # In a real app, we would persist this context (public keys) to DB or filesystem
+        # For now, we simulate the setup success
+        return {
+            "status": "initialized",
+            "scheme": "CKKS",
+            "poly_modulus_degree": 8192,
+            "security_level": "128-bit"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to init TenSEAL: {str(e)}")
 
 if __name__ == "__main__":
     print(f"\\n" + "="*60)

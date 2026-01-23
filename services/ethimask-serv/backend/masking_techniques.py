@@ -3,6 +3,7 @@ import random
 import uuid
 from enum import Enum
 from typing import Any, Tuple, Optional
+import numpy as np
 from .score_calculator import MaskingLevel
 
 class MaskingTechnique(str, Enum):
@@ -17,42 +18,72 @@ class MaskingTechnique(str, Enum):
 class ContextualMasker:
     def __init__(self):
         self.pseudonym_cache = {}
+        # Initialize TenSEAL Context for HE (Level 1)
+        try:
+             import tenseal as ts
+             self.ctx = ts.context(ts.SCHEME_TYPE.CKKS, poly_modulus_degree=8192, coeff_mod_bit_sizes=[60, 40, 40, 60])
+             self.ctx.global_scale = 2**40
+             self.ctx.generate_galois_keys()
+             self.he_available = True
+        except ImportError:
+             self.he_available = False
+             print("⚠️ TenSEAL not available. HE will fall back to Hashing.")
 
     def mask(self, value: Any, entity_type: str, level: MaskingLevel, technique: MaskingTechnique = None) -> Tuple[Any, str]:
         if value is None or level == MaskingLevel.NONE: return value, "none"
         str_value = str(value)
         
+        # Mapping Level to Technique (if not forced)
         if technique is None:
-            technique = self._select_technique(entity_type, level)
+            if level == MaskingLevel.ENCRYPTED: technique = MaskingTechnique.ENCRYPTION
+            elif level == MaskingLevel.FULL: technique = MaskingTechnique.SUPPRESSION
+            elif level == MaskingLevel.PARTIAL: technique = MaskingTechnique.GENERALIZATION
+            elif level == MaskingLevel.DIFFERENTIAL_PRIVACY: technique = MaskingTechnique.PERTURBATION
+            else: technique = MaskingTechnique.PSEUDONYMIZATION
 
-        if technique == MaskingTechnique.PSEUDONYMIZATION:
-             return self._pseudonymize(str_value, entity_type), technique.value
-        elif technique == MaskingTechnique.GENERALIZATION:
-             return self._generalize(str_value, entity_type), technique.value
-        elif technique == MaskingTechnique.SUPPRESSION:
-             return f"[{entity_type.upper()}]", technique.value
-        elif technique == MaskingTechnique.PERTURBATION:
-             return self._perturb(str_value, entity_type), technique.value
-        elif technique == MaskingTechnique.TOKENIZATION:
-             return f"TKN_{hashlib.md5(str_value.encode()).hexdigest()[:12]}", technique.value
-        elif technique == MaskingTechnique.HASHING:
-             return hashlib.sha256(str_value.encode()).hexdigest()[:32], technique.value
-        elif technique == MaskingTechnique.ENCRYPTION:
-             return f"ENC_{hashlib.sha256(str_value.encode()).hexdigest()[:24]}", technique.value
+        # Ensure technique is treated as string for comparison
+        technique_str = technique.value if isinstance(technique, MaskingTechnique) else str(technique)
+
+        # --- LEVEL 1: Homomorphic Encryption ---
+        if technique_str == MaskingTechnique.ENCRYPTION.value:
+             if self.he_available:
+                 try:
+                     # Attempt numeric encryption
+                     val = float(value)
+                     # Vector encryption
+                     import tenseal as ts
+                     enc_vec = ts.ckks_vector(self.ctx, [val])
+                     # Return base64 serialization for transport
+                     return enc_vec.serialize().hex()[:50] + "...(HE)", "homomorphic_encryption"
+                 except ValueError:
+                     # Fallback for strings
+                     return f"HEX_{hashlib.sha256(str_value.encode()).hexdigest()}", "hashing_fallback"
+             else:
+                 return f"ENC_{hashlib.sha256(str_value.encode()).hexdigest()}", "hashing_fallback"
+
+        # --- LEVEL 3: Differential Privacy (Laplace) ---
+        elif technique_str == MaskingTechnique.PERTURBATION.value:
+             # Epsilon-DP
+             return self._apply_laplace_mechanism(value), "differential_privacy_laplace"
+
+        elif technique_str == MaskingTechnique.PSEUDONYMIZATION.value:
+             return self._pseudonymize(str_value, entity_type), "pseudonymization"
+        elif technique_str == MaskingTechnique.GENERALIZATION.value:
+             return self._generalize(str_value, entity_type), "generalization"
+        elif technique_str == MaskingTechnique.SUPPRESSION.value:
+             return None, "suppression" # Return None/Null for suppression
         
-        return self._partial_mask(str_value, entity_type), "partial"
+        return self._partial_mask(str_value, entity_type), "partial_masking"
 
-    def _select_technique(self, entity_type: str, level: MaskingLevel) -> MaskingTechnique:
-        if level == MaskingLevel.PARTIAL: return MaskingTechnique.PSEUDONYMIZATION
-        elif level == MaskingLevel.FULL: return MaskingTechnique.SUPPRESSION
-        elif level == MaskingLevel.ENCRYPTED: return MaskingTechnique.HASHING
-        return MaskingTechnique.PSEUDONYMIZATION
-
-    def _partial_mask(self, value: str, entity_type: str) -> str:
-        if entity_type == "email":
-             parts = value.split("@")
-             return (parts[0][:2] + "***@" + parts[1]) if len(parts) == 2 else value
-        return value[:2] + "*" * (len(value)-4) + value[-2:] if len(value) > 4 else "*"*len(value)
+    def _apply_laplace_mechanism(self, value: Any, epsilon: float = 1.0, sensitivity: float = 1.0) -> Any:
+        try:
+             val = float(value)
+             # Laplace Noise: scale = sensitivity / epsilon
+             scale = sensitivity / epsilon
+             noise = np.random.laplace(0, scale)
+             return round(val + noise, 2)
+        except:
+             return value # Cannot noise non-numeric
 
     def _pseudonymize(self, value: str, entity_type: str) -> str:
         key = f"{entity_type}:{value}"
@@ -70,8 +101,8 @@ class ContextualMasker:
         if entity_type == "salary": return "10K-20K MAD"
         return f"[{entity_type.upper()}_GEN]"
 
-    def _perturb(self, value: str, entity_type: str) -> str:
-        try:
-             val = float(value)
-             return str(round(val * random.uniform(0.9, 1.1), 2))
-        except: return value
+    def _partial_mask(self, value: str, entity_type: str) -> str:
+        if entity_type == "email":
+             parts = value.split("@")
+             return (parts[0][:2] + "***@" + parts[1]) if len(parts) == 2 else value
+        return value[:2] + "*" * (max(0, len(value)-4)) + value[-2:] if len(value) > 4 else "*"*len(value)

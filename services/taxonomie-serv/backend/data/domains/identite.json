@@ -37,7 +37,7 @@
                     ],
                     "regex_patterns": [
                         "\\b[A-Z][a-zàâçéèêëïîôùûü-]+\\s+[A-Z][a-zàâçéèêëïîôùûü-]+\\b",
-                        "\\b[A-Z][A-Z\\s]+\\b"
+                        "\\b[A-Z]{2,}\\s+[A-Z]{2,}(?:\\s+[A-Z]{2,})?\\b"
                     ],
                     "sensitivity_level": "high",
                     "risk_level": "Medium",

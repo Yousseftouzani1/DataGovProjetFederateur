@@ -1,0 +1,101 @@
+{
+    "dataset_id": "DATAGOV_INTERNATIONAL.csv",
+    "classifications": {
+        "id": {
+            "level": 1,
+            "code": "INTERNAL",
+            "confidence": 0.19,
+            "review": true
+        },
+        "full_name": {
+            "level": 5,
+            "code": "CRITICAL",
+            "confidence": 0.25,
+            "review": true
+        },
+        "name_local": {
+            "level": 1,
+            "code": "INTERNAL",
+            "confidence": 0.37,
+            "review": true
+        },
+        "id_number": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.32,
+            "review": true
+        },
+        "phone": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.28,
+            "review": true
+        },
+        "bank_account": {
+            "level": 5,
+            "code": "CRITICAL",
+            "confidence": 0.4,
+            "review": true
+        },
+        "credit_card": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.27,
+            "review": true
+        },
+        "salary": {
+            "level": 5,
+            "code": "CRITICAL",
+            "confidence": 0.28,
+            "review": true
+        },
+        "birth_date": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.43,
+            "review": true
+        },
+        "city": {
+            "level": 0,
+            "code": "PUBLIC",
+            "confidence": 0.6,
+            "review": true
+        },
+        "city_local": {
+            "level": 1,
+            "code": "INTERNAL",
+            "confidence": 0.22,
+            "review": true
+        },
+        "email": {
+            "level": 3,
+            "code": "PII",
+            "confidence": 0.64,
+            "review": true
+        },
+        "status": {
+            "level": 1,
+            "code": "INTERNAL",
+            "confidence": 0.29,
+            "review": true
+        },
+        "company": {
+            "level": 4,
+            "code": "SPI",
+            "confidence": 0.24,
+            "review": true
+        },
+        "country": {
+            "level": 5,
+            "code": "CRITICAL",
+            "confidence": 0.22,
+            "review": true
+        },
+        "notes": {
+            "level": 1,
+            "code": "INTERNAL",
+            "confidence": 0.26,
+            "review": true
+        }
+    }
+}

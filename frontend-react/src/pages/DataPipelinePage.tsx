@@ -15,7 +15,8 @@ import {
     Copy,
     Columns,
     Lock,
-    Trash2
+    Trash2,
+    Activity
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
@@ -23,6 +24,7 @@ import apiClient from '../services/api';
 import { useAuthStore } from '../store/authStore';
 import { useToast } from '../context/ToastContext';
 import ExportsList from '../components/ExportsList';
+import LineageVisualizer from '../components/ui/LineageVisualizer';
 
 // Roles that can see actual data preview
 const ROLES_CAN_VIEW_DATA = ['admin', 'steward'];
@@ -48,6 +50,7 @@ const DataPipelinePage = () => {
     const [datasetPreview, setDatasetPreview] = useState<any>(null);
     const [isLoadingPreview, setIsLoadingPreview] = useState(false);
     const [uploadedFilename, setUploadedFilename] = useState('');
+    const [activeModalTab, setActiveModalTab] = useState<'preview' | 'lineage'>('preview');
 
     const fetchDatasets = async () => {
         setIsLoading(true);
@@ -99,11 +102,22 @@ const DataPipelinePage = () => {
             });
 
             setStatus('processing');
+
+            // Mandatory Task: Trigger Airflow Pipeline
+            try {
+                await apiClient.post(`/cleaning/trigger-pipeline?dataset_id=${response.data.dataset_id}`);
+                console.log("Airflow Pipeline Triggered");
+            } catch (triggerErr) {
+                console.error("Failed to trigger pipeline", triggerErr);
+                addToast('Warning: Uploaded but Pipeline start failed', 'error');
+            }
+
             setTimeout(() => {
                 setStatus('success');
                 fetchDatasets();
                 // Show Atlas registration notification
                 addToast(`✅ Dataset registered in Apache Atlas (ID: ${response.data.dataset_id.substring(0, 8)}...)`, 'success');
+                addToast(`🚀 Airflow DAG Started: cleaning_pipeline_v1`, 'success');
             }, 1500);
 
         } catch (err) {
@@ -142,91 +156,94 @@ const DataPipelinePage = () => {
                 <p className="text-slate-400">Securely upload and register datasets into the DataGov ecosystem</p>
             </header>
 
-            <div className="glass p-10 rounded-[2.5rem] border border-white/5 hover:border-brand-primary/20 transition-all relative overflow-hidden group">
-                {!file ? (
-                    <div className="text-center py-12">
-                        <div className="w-20 h-20 bg-brand-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-brand-primary/20">
-                            <Upload size={32} className="text-brand-primary" />
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-2">Drag & Drop Dataset</h3>
-                        <p className="text-slate-500 mb-8">Supports CSV, JSON, and Excel (Max 500MB)</p>
-                        <Button onClick={() => document.getElementById('fileInput')?.click()}>
-                            Select File
-                        </Button>
-                        <input
-                            id="fileInput"
-                            type="file"
-                            className="hidden"
-                            accept=".csv,.json,.xlsx,.xls"
-                            onChange={(e) => setFile(e.target.files?.[0] || null)}
-                        />
-                    </div>
-                ) : (
-                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-                        <div className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/10 max-w-xl mx-auto">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-brand-primary rounded-2xl text-white">
-                                    <File size={24} />
-                                </div>
-                                <div className="text-left">
-                                    <p className="font-bold text-white truncate max-w-[200px]">{file.name}</p>
-                                    <p className="text-xs text-slate-500 uppercase font-black">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                </div>
+            {/* Upload Section - Hidden for Labelers (per request) */}
+            {userRole !== 'labeler' && (
+                <div className="glass p-10 rounded-[2.5rem] border border-white/5 hover:border-brand-primary/20 transition-all relative overflow-hidden group">
+                    {!file ? (
+                        <div className="text-center py-12">
+                            <div className="w-20 h-20 bg-brand-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-brand-primary/20">
+                                <Upload size={32} className="text-brand-primary" />
                             </div>
+                            <h3 className="text-xl font-bold text-white mb-2">Drag & Drop Dataset</h3>
+                            <p className="text-slate-500 mb-8">Supports CSV, JSON, and Excel (Max 500MB)</p>
+                            <Button onClick={() => document.getElementById('fileInput')?.click()}>
+                                Select File
+                            </Button>
+                            <input
+                                id="fileInput"
+                                type="file"
+                                className="hidden"
+                                accept=".csv,.json,.xlsx,.xls"
+                                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                            />
+                        </div>
+                    ) : (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+                            <div className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/10 max-w-xl mx-auto">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-brand-primary rounded-2xl text-white">
+                                        <File size={24} />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-bold text-white truncate max-w-[200px]">{file.name}</p>
+                                        <p className="text-xs text-slate-500 uppercase font-black">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    </div>
+                                </div>
+                                {status === 'idle' && (
+                                    <button onClick={() => setFile(null)} className="p-2 hover:bg-white/10 rounded-full text-slate-400 transition-colors">
+                                        <X size={20} />
+                                    </button>
+                                )}
+                            </div>
+
                             {status === 'idle' && (
-                                <button onClick={() => setFile(null)} className="p-2 hover:bg-white/10 rounded-full text-slate-400 transition-colors">
-                                    <X size={20} />
-                                </button>
+                                <div className="flex justify-center">
+                                    <Button className="w-full max-w-sm" onClick={handleUpload}>
+                                        Begin High-Speed Ingestion
+                                        <ArrowRight size={18} />
+                                    </Button>
+                                </div>
+                            )}
+
+                            {(status === 'uploading' || status === 'processing') && (
+                                <div className="max-w-md mx-auto space-y-4">
+                                    <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                                        <span className="text-brand-primary">{status === 'uploading' ? 'Streaming to Cluster' : 'Indexing Taxonomy'}</span>
+                                        <span className="text-white">{progress}%</span>
+                                    </div>
+                                    <div className="h-2.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                        <motion.div initial={{ width: 0 }} animate={{ width: `${progress}%` }} className="h-full bg-brand-primary shadow-[0_0_15px_rgba(99,102,241,0.5)]" />
+                                    </div>
+                                </div>
+                            )}
+
+                            {status === 'success' && (
+                                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-6 text-center">
+                                    <div className="w-16 h-16 bg-green-500/20 border border-green-500/30 rounded-full flex items-center justify-center mx-auto text-green-500">
+                                        <CheckCircle2 size={32} />
+                                    </div>
+                                    <h4 className="text-2xl font-bold text-white tracking-tight">Ingestion Complete</h4>
+                                    <p className="text-slate-400">File: <span className="text-brand-primary font-mono">{uploadedFilename}</span></p>
+                                    <div className="flex justify-center gap-4">
+                                        <Button variant="ghost" onClick={() => { setFile(null); setStatus('idle'); }}>Upload Another</Button>
+                                        <Button variant="primary" onClick={() => navigate('/pii')}>Scan for PII</Button>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {status === 'error' && (
+                                <div className="text-center space-y-6">
+                                    <div className="w-16 h-16 bg-red-500/20 border border-red-500/30 rounded-full flex items-center justify-center mx-auto text-red-500">
+                                        <X size={32} />
+                                    </div>
+                                    <h4 className="text-2xl font-bold text-white">Ingestion Failed</h4>
+                                    <Button variant="ghost" onClick={() => setStatus('idle')}>Try Again</Button>
+                                </div>
                             )}
                         </div>
-
-                        {status === 'idle' && (
-                            <div className="flex justify-center">
-                                <Button className="w-full max-w-sm" onClick={handleUpload}>
-                                    Begin High-Speed Ingestion
-                                    <ArrowRight size={18} />
-                                </Button>
-                            </div>
-                        )}
-
-                        {(status === 'uploading' || status === 'processing') && (
-                            <div className="max-w-md mx-auto space-y-4">
-                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                                    <span className="text-brand-primary">{status === 'uploading' ? 'Streaming to Cluster' : 'Indexing Taxonomy'}</span>
-                                    <span className="text-white">{progress}%</span>
-                                </div>
-                                <div className="h-2.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                                    <motion.div initial={{ width: 0 }} animate={{ width: `${progress}%` }} className="h-full bg-brand-primary shadow-[0_0_15px_rgba(99,102,241,0.5)]" />
-                                </div>
-                            </div>
-                        )}
-
-                        {status === 'success' && (
-                            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-6 text-center">
-                                <div className="w-16 h-16 bg-green-500/20 border border-green-500/30 rounded-full flex items-center justify-center mx-auto text-green-500">
-                                    <CheckCircle2 size={32} />
-                                </div>
-                                <h4 className="text-2xl font-bold text-white tracking-tight">Ingestion Complete</h4>
-                                <p className="text-slate-400">File: <span className="text-brand-primary font-mono">{uploadedFilename}</span></p>
-                                <div className="flex justify-center gap-4">
-                                    <Button variant="ghost" onClick={() => { setFile(null); setStatus('idle'); }}>Upload Another</Button>
-                                    <Button variant="primary" onClick={() => navigate('/pii')}>Scan for PII</Button>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {status === 'error' && (
-                            <div className="text-center space-y-6">
-                                <div className="w-16 h-16 bg-red-500/20 border border-red-500/30 rounded-full flex items-center justify-center mx-auto text-red-500">
-                                    <X size={32} />
-                                </div>
-                                <h4 className="text-2xl font-bold text-white">Ingestion Failed</h4>
-                                <Button variant="ghost" onClick={() => setStatus('idle')}>Try Again</Button>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
 
             {/* Recent Uploads Table */}
             <div className="space-y-6">
@@ -296,7 +313,6 @@ const DataPipelinePage = () => {
                                                 </button>
                                             )}
                                         </td>
-
                                     </motion.tr>
                                 ))
                             )}
@@ -339,45 +355,66 @@ const DataPipelinePage = () => {
                                 </div>
                             </div>
 
-                            {/* Preview Section */}
-                            <div className="mb-6">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <Columns size={16} className="text-brand-primary" />
-                                    <p className="text-[10px] text-slate-500 uppercase font-bold">Data Preview (First 5 Rows)</p>
-                                </div>
-                                {!canViewData ? (
-                                    <div className="p-8 text-center bg-red-500/5 rounded-xl border border-red-500/20">
-                                        <Lock size={24} className="mx-auto text-red-400 mb-2" />
-                                        <p className="text-red-400 font-bold text-sm">Access Restricted</p>
-                                        <p className="text-slate-500 text-xs">Only Admin and Steward can view raw data</p>
+                            {/* Tab Switcher */}
+                            <div className="flex bg-white/5 p-1 rounded-xl mb-6">
+                                <button
+                                    onClick={() => setActiveModalTab('preview')}
+                                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeModalTab === 'preview' ? 'bg-brand-primary text-white' : 'text-slate-500'}`}
+                                >
+                                    Data Preview
+                                </button>
+                                <button
+                                    onClick={() => setActiveModalTab('lineage')}
+                                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeModalTab === 'lineage' ? 'bg-brand-primary text-white' : 'text-slate-500'}`}
+                                >
+                                    Lineage Trace
+                                </button>
+                            </div>
+
+                            {activeModalTab === 'preview' ? (
+                                <div className="mb-6">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <Columns size={16} className="text-brand-primary" />
+                                        <p className="text-[10px] text-slate-500 uppercase font-bold">Data Preview (First 5 Rows)</p>
                                     </div>
-                                ) : isLoadingPreview ? (
-                                    <div className="p-8 text-center text-slate-500">Loading preview...</div>
-                                ) : datasetPreview?.preview && datasetPreview.preview.length > 0 ? (
-                                    <div className="overflow-x-auto rounded-xl border border-white/10">
-                                        <table className="w-full text-xs">
-                                            <thead>
-                                                <tr className="bg-white/5">
-                                                    {Object.keys(datasetPreview.preview[0]).map((col: string) => (
-                                                        <th key={col} className="px-3 py-2 text-left text-slate-400 font-mono">{col}</th>
-                                                    ))}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {datasetPreview.preview.map((row: any, i: number) => (
-                                                    <tr key={i} className="border-t border-white/5">
-                                                        {Object.values(row).map((val: any, j: number) => (
-                                                            <td key={j} className="px-3 py-2 text-white font-mono truncate max-w-[150px]">{String(val)}</td>
+                                    {!canViewData ? (
+                                        <div className="p-8 text-center bg-red-500/5 rounded-xl border border-red-500/20">
+                                            <Lock size={24} className="mx-auto text-red-400 mb-2" />
+                                            <p className="text-red-400 font-bold text-sm">Access Restricted</p>
+                                            <p className="text-slate-500 text-xs">Only Admin and Steward can view raw data</p>
+                                        </div>
+                                    ) : isLoadingPreview ? (
+                                        <div className="p-8 text-center text-slate-500">Loading preview...</div>
+                                    ) : datasetPreview?.preview && datasetPreview.preview.length > 0 ? (
+                                        <div className="overflow-x-auto rounded-xl border border-white/10">
+                                            <table className="w-full text-xs">
+                                                <thead>
+                                                    <tr className="bg-white/5">
+                                                        {Object.keys(datasetPreview.preview[0]).map((col: string) => (
+                                                            <th key={col} className="px-3 py-2 text-left text-slate-400 font-mono">{col}</th>
                                                         ))}
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ) : (
-                                    <div className="p-8 text-center text-slate-500 bg-slate-900/50 rounded-xl">No preview available</div>
-                                )}
-                            </div>
+                                                </thead>
+                                                <tbody>
+                                                    {datasetPreview.preview.map((row: any, i: number) => (
+                                                        <tr key={i} className="border-t border-white/5">
+                                                            {Object.values(row).map((val: any, j: number) => (
+                                                                <td key={j} className="px-3 py-2 text-white font-mono truncate max-w-[150px]">{String(val)}</td>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <div className="p-8 text-center text-slate-500 bg-slate-900/50 rounded-xl">No preview available</div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="mb-6 animate-in fade-in slide-in-from-right-4">
+                                    <LineageVisualizer />
+                                </div>
+                            )}
 
                             {/* Quick Actions */}
                             <div className="flex gap-3">
@@ -386,10 +423,16 @@ const DataPipelinePage = () => {
                                     Scan for PII
                                 </Button>
                                 {canViewData && (
-                                    <Button variant="ghost" className="flex-1" onClick={() => { setSelectedDataset(null); navigate('/quality'); }}>
-                                        <ExternalLink size={16} />
-                                        Quality Audit
-                                    </Button>
+                                    <>
+                                        <Button variant="ghost" className="flex-1" onClick={() => { setSelectedDataset(null); navigate('/quality'); }}>
+                                            <ExternalLink size={16} />
+                                            Quality Audit
+                                        </Button>
+                                        <Button variant="ghost" className="flex-1" onClick={() => window.open(`/api/v1/cleaning/datasets/${selectedDataset.id}/lineage`, '_blank')}>
+                                            <Activity size={16} />
+                                            Lineage Graph
+                                        </Button>
+                                    </>
                                 )}
                             </div>
                         </motion.div>

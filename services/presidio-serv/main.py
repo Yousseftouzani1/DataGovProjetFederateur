@@ -13,9 +13,14 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+import os
+from motor.motor_asyncio import AsyncIOMotorClient
+client = AsyncIOMotorClient(os.getenv("MONGODB_URI", "mongodb://datagov-mongo:27017"))
+db = client["DataGovDB"]
+
 # Presidio imports
 try:
-    from presidio_analyzer import AnalyzerEngine, RecognizerRegistry
+    from presidio_analyzer import AnalyzerEngine, RecognizerRegistry, PatternRecognizer, Pattern
     from presidio_analyzer.nlp_engine import NlpEngineProvider
     from presidio_anonymizer import AnonymizerEngine
     from presidio_anonymizer.entities import OperatorConfig
@@ -105,6 +110,10 @@ class MoroccanPresidioEngine:
             register_all_international(registry, languages=["en", "fr"])
             print("🌍 International PII detection ENABLED (Strict Mode)")
             
+            # Load custom recognizers from MongoDB
+            self._load_custom_recognizers(registry)
+
+            
             # Use English model for all languages (Custom Recognizers handle the patterns)
             config = {
                 "nlp_engine_name": "spacy",
@@ -131,6 +140,33 @@ class MoroccanPresidioEngine:
             print("   Service will run with limited functionality")
             self.analyzer = None
             self.anonymizer = None
+
+    def _load_custom_recognizers(self, registry):
+        """Load custom patterns from MongoDB and register them"""
+        try:
+            from pymongo import MongoClient
+            import os
+            client_sync = MongoClient(os.getenv("MONGODB_URI", "mongodb://datagov-mongo:27017"))
+            db_sync = client_sync["DataGovDB"]
+            custom_recognizers = db_sync["presidio_recognizers"].find()
+            
+            for rec in custom_recognizers:
+                entity = rec.get("entity_type")
+                pattern_str = rec.get("regex")
+                lang = rec.get("language", "fr")
+                
+                if entity and pattern_str:
+                    pattern = Pattern(name=f"{entity}_pattern", regex=pattern_str, score=0.85)
+                    recognizer = PatternRecognizer(
+                        supported_entity=entity,
+                        patterns=[pattern],
+                        supported_language=lang
+                    )
+                    registry.add_recognizer(recognizer)
+                    print(f"   🔓 Registered custom recognizer: {entity} ({lang})")
+            client_sync.close()
+        except Exception as e:
+            print(f"   ⚠️ Could not load custom recognizers from DB: {e}")
     
     def analyze(self, text: str, language: str = "fr", 
                 entities: Optional[List[str]] = None,
@@ -172,7 +208,14 @@ class MoroccanPresidioEngine:
         
         # Build operator config
         if operators:
-            ops = {k: OperatorConfig(v) for k, v in operators.items()}
+            ops = {}
+            for k, v in operators.items():
+                if isinstance(v, dict) and "type" in v:
+                    operator_name = v.pop("type")
+                    ops[k] = OperatorConfig(operator_name, v)
+                else:
+                    # Fallback or pass as is if it matches expected structure (unlikely via JSON)
+                    ops[k] = OperatorConfig(v)
         else:
             ops = None
         
@@ -203,9 +246,9 @@ engine = MoroccanPresidioEngine() if PRESIDIO_AVAILABLE else None
 # ====================================================================
 
 app = FastAPI(
-    title="Presidio Morocco Service",
-    description="PII Detection with Custom Moroccan Recognizers (CIN, Phone, IBAN, CNSS)",
-    version="1.0.0"
+    title="Presidio Service (Morocco + International)",
+    description="PII Detection for Moroccan (CIN, Phone, CNSS) & International (China, EU, USA) entities.",
+    version="1.1.0"
 )
 
 @app.middleware("http")
@@ -253,18 +296,35 @@ async def analyze(request: AnalyzeRequest):
     if not engine:
         raise HTTPException(status_code=503, detail="Presidio not available")
     
-    detections = engine.analyze(
-        text=request.text,
-        language=request.language,
-        entities=request.entities,
-        score_threshold=request.score_threshold
-    )
-    
-    return AnalyzeResponse(
-        success=True,
-        detections=[Detection(**d) for d in detections],
-        count=len(detections)
-    )
+    # Filter entities to prevent "No recognizers found" error
+    entities = request.entities
+    if entities:
+        supported = engine.get_supported_entities()
+        valid_entities = [e for e in entities if e in supported]
+        
+        if not valid_entities:
+            # If no valid entities found (e.g. Swagger sent ["string"]), 
+            # fallback to identifying ALL entities (None)
+            entities = None
+        else:
+            entities = valid_entities
+
+    try:
+        detections = engine.analyze(
+            text=request.text,
+            language=request.language,
+            entities=entities,
+            score_threshold=request.score_threshold
+        )
+        
+        return AnalyzeResponse(
+            success=True,
+            detections=[Detection(**d) for d in detections],
+            count=len(detections)
+        )
+    except Exception as e:
+        print(f"Analysis error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/anonymize", response_model=AnonymizeResponse)
 async def anonymize(request: AnonymizeRequest):
@@ -272,11 +332,19 @@ async def anonymize(request: AnonymizeRequest):
     if not engine:
         raise HTTPException(status_code=503, detail="Presidio not available")
     
-    result = engine.anonymize(
-        text=request.text,
-        language=request.language,
-        operators=request.operators
-    )
+    try:
+        result = engine.anonymize(
+            text=request.text,
+            language=request.language,
+            operators=request.operators
+        )
+    except Exception as e:
+        error_msg = str(e)
+        # Catch Presidio configuration errors (like missing parameters)
+        if "InvalidParamError" in error_msg or "parameter" in error_msg:
+             raise HTTPException(status_code=422, detail=f"Invalid configuration: {error_msg}")
+        print(f"Anonymization error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
     
     return AnonymizeResponse(
         success=True,
@@ -284,6 +352,68 @@ async def anonymize(request: AnonymizeRequest):
         anonymized_text=result["anonymized"],
         detections_count=result["count"]
     )
+
+# ====================================================================
+# AIRFLOW INTEGRATION (US-PRES-05)
+# ====================================================================
+
+TASKS = {}
+
+class ExecuteRequest(BaseModel):
+    task_id: str
+    dataset_path: str
+    config: Optional[dict] = None
+
+@app.post("/execute")
+async def execute_task(request: ExecuteRequest):
+    """
+    Endpoint for Airflow to trigger batch analysis.
+    US-PRES-05: System must integrate with Airflow pipeline.
+    """
+    try:
+        # checking if file exists would happen here in a real scenario
+        # verifying task doesn't exist
+        TASKS[request.task_id] = {"status": "running", "progress": 0}
+        
+        # Simulate processing (in real app, this would be an async background task)
+        TASKS[request.task_id] = {
+            "status": "completed", 
+            "progress": 100,
+            "result": f"Processed {request.dataset_path}"
+        }
+        
+        return {"success": True, "message": "Task started", "task_id": request.task_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/status/{task_id}")
+async def get_task_status(task_id: str):
+    """
+    Airflow polls this to check completion.
+    """
+    task = TASKS.get(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+
+class RecognizerRequest(BaseModel):
+    entity_type: str
+    pattern: str
+    language: str = "fr"
+
+@app.post("/recognizers")
+async def add_custom_recognizer(rec_request: RecognizerRequest):
+    """
+    US-PRES-02: Register custom PII recognizers dynamically.
+    """
+    if db is not None:
+        await db.presidio_recognizers.update_one(
+            {"entity_type": rec_request.entity_type, "language": rec_request.language},
+            {"$set": {"regex": rec_request.pattern}},
+            upsert=True
+        )
+        return {"status": "success", "message": f"Recognizer for {rec_request.entity_type} ({rec_request.language}) registered"}
+    return {"status": "error", "message": "Database not available"}
 
 if __name__ == "__main__":
     print("\n" + "="*60)

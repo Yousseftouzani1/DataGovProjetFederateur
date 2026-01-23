@@ -127,6 +127,7 @@ class QualityDimensions:
         """Consistency: Check cross-field logic (Start Date < End Date)"""
         issues = 0
         total_checks = 0
+        sample_rows = []
         
         # Heuristic: Find Start/End date columns
         cols = [c.lower() for c in self.df.columns]
@@ -142,21 +143,32 @@ class QualityDimensions:
                 # Check where Start > End (Consistency Error)
                 mask = (s_dates.notna()) & (e_dates.notna())
                 total_checks = mask.sum()
-                invalid = (s_dates[mask] > e_dates[mask]).sum()
+                invalid_mask = (s_dates[mask] > e_dates[mask])
+                invalid = invalid_mask.sum()
                 issues = int(invalid)
+                
+                # Capture samples
+                if issues > 0:
+                    sample_indices = self.df[mask][invalid_mask].head(5).index.tolist()
+                    sample_rows = self.df.loc[sample_indices].to_dict(orient='records')
+                else:
+                    sample_rows = []
             except:
+                sample_rows = []
                 pass
         
         score = 100.0
         if total_checks > 0:
             score = ((total_checks - issues) / total_checks) * 100
             
-        return {"score": round(score, 2), "details": {"checks_performed": int(total_checks), "inconsistencies": issues}}
+        return {"score": round(score, 2), "details": {"checks_performed": int(total_checks), "inconsistencies": issues, "samples": sample_rows}}
     
     def timeliness(self, date_columns: List[str] = None, max_age_days: int = 365*5) -> Dict:
         """Timeliness: Data shouldn't be too old (> 5 years)"""
         total_dates = 0
         fresh_dates = 0
+        outdated_samples = [] # Initialize list
+
         cutoff = datetime.now() - timedelta(days=max_age_days)
         
         for col in self.df.columns:
@@ -165,12 +177,24 @@ class QualityDimensions:
                     dates = pd.to_datetime(self.df[col], errors='coerce').dropna()
                     if len(dates) > 0:
                         total_dates += len(dates)
-                        fresh_dates += (dates >= cutoff).sum()
+                        fresh_mask = (dates >= cutoff)
+                        fresh_dates += fresh_mask.sum()
+                        
+                        # Capture samples of old data
+                        old_mask = ~fresh_mask
+                        if old_mask.any():
+                            outdated_indices = dates[old_mask].head(5).index.tolist()
+                            # Get original rows for these indices
+                            rows = self.df.loc[outdated_indices].to_dict(orient='records')
+                            outdated_samples.extend(rows)
                 except:
                     continue
+        
+        # Limit samples to 5 overall
+        outdated_samples = outdated_samples[:5]
                     
         score = (fresh_dates / total_dates * 100) if total_dates > 0 else 100.0
-        return {"score": round(score, 2), "details": {"total_dates": int(total_dates), "outdated_count": int(total_dates - fresh_dates)}}
+        return {"score": round(score, 2), "details": {"total_dates": int(total_dates), "outdated_count": int(total_dates - fresh_dates), "samples": outdated_samples}}
     
     def uniqueness(self, key_columns: List[str] = None) -> Dict:
         """Uniqueness check"""
@@ -189,6 +213,8 @@ class QualityDimensions:
         import re
         total_checks = 0
         valid_count = 0
+        invalid_samples = [] # Initialize list
+
         
         # Simple Regex Patterns
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
@@ -208,9 +234,21 @@ class QualityDimensions:
                  matches = vals.str.match(pattern)
                  total_checks += len(vals)
                  valid_count += matches.sum()
+                 
+                 # Capture invalid samples
+                 invalid_mask = ~matches
+                 if invalid_mask.any():
+                     bad_indices = vals[invalid_mask].head(5).index.tolist()
+                     rows = self.df.loc[bad_indices].to_dict(orient='records')
+                     # Add metadata about which column failed
+                     for r in rows:
+                         r["_error_column"] = col
+                     invalid_samples.extend(rows)
+                     
+        invalid_samples = invalid_samples[:5]
         
         score = (valid_count / total_checks * 100) if total_checks > 0 else 100.0
-        return {"score": round(score, 2), "details": {"checks": int(total_checks), "invalid_formats": int(total_checks - valid_count)}}
+        return {"score": round(score, 2), "details": {"checks": int(total_checks), "invalid_formats": int(total_checks - valid_count), "samples": invalid_samples}}
 
 # ====================================================================
 # QUALITY SCORER
@@ -348,93 +386,102 @@ async def get_stats():
 async def evaluate_quality(dataset_id: str, config: EvaluationConfig = None):
     """Evaluate dataset quality against ISO 25012 dimensions"""
     import requests as req
+    import traceback
+    import os
     
-    # Auto-fetch from cleaning-service if not in cache
-    if dataset_id not in datasets_store:
-        try:
-            # Try to fetch dataset from cleaning-service
-            resp = req.get(f"http://cleaning-service:8004/dataset/{dataset_id}", timeout=10)
-            if resp.status_code == 200:
-                data = resp.json()
-                df = pd.DataFrame(data.get("data", []))
-                datasets_store[dataset_id] = {
-                    "df": df,
-                    "filename": data.get("filename", "auto_loaded"),
-                    "upload_time": datetime.now().isoformat()
-                }
-                print(f"✅ Auto-loaded dataset {dataset_id} from cleaning-service")
-            else:
-                raise HTTPException(404, f"Dataset not found in cache or cleaning-service (status: {resp.status_code})")
-        except Exception as e:
-            print(f"⚠️ Could not auto-fetch dataset: {e}")
-            raise HTTPException(404, f"Dataset not found in cache. Error: {str(e)}")
+    # Use Environment Variable for URL (Docker vs Localhost)
+    CLEANING_URL = os.getenv("CLEANING_SERVICE_URL", "http://localhost:8004")
     
-    if config is None: config = EvaluationConfig()
+    print(f"🔍 Evaluating dataset {dataset_id}")
     
-    df = datasets_store[dataset_id]["df"]
-    dims = QualityDimensions(df)
-    scorer = QualityScorer(weights=config.weights)
-    
-    # Evaluate dimensions
-    # Note: Full implementation of dimensions kept simple for brevity in rewrite, 
-    # ensuring persistence logic is main focus.
-    dimension_results = {
-        "completeness": dims.completeness(),
-        "accuracy": dims.accuracy(),
-        "consistency": dims.consistency(),
-        "timeliness": dims.timeliness(),
-        "uniqueness": dims.uniqueness(),
-        "validity": dims.validity()
-    }
-    
-    # Calculate scores
-    dimension_scores = {dim: result["score"] for dim, result in dimension_results.items()}
-    global_score = scorer.calculate_global_score(dimension_scores)
-    grade = scorer.get_grade(global_score)
-    recommendations = scorer.generate_recommendations(dimension_results)
-    
-    dimensions = []
-    for dim, result in dimension_results.items():
-        weight = scorer.weights.get(dim, 0)
-        dimensions.append(DimensionScore(
-            dimension=dim,
-            score=result["score"],
-            weight=weight,
-            weighted_score=round(weight * result["score"], 2),
-            details=result.get("details")
-        ))
-    
-    report = QualityReport(
-        dataset_id=dataset_id,
-        evaluation_time=datetime.now().isoformat(),
-        dimensions=dimensions,
-        global_score=global_score,
-        grade=grade,
-        recommendations=recommendations
-    )
-    
-    # Persist report to MongoDB
-    if db is not None:
-        # Repalce existing report for this dataset? usually we might want history
-        # For simplicity, we upsert based on dataset_id or insert new
-        await db.quality_reports.insert_one(report.dict())
+    try:
+        # Auto-fetch from cleaning-service if not in cache
+        if dataset_id not in datasets_store:
+            try:
+                # Try to fetch dataset from cleaning-service (Corrected Endpoint)
+                resp = req.get(f"{CLEANING_URL}/api/v1/cleaning/dataset/{dataset_id}/json", timeout=10)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    df = pd.DataFrame(data.get("data", []))
+                    datasets_store[dataset_id] = {
+                        "df": df,
+                        "filename": data.get("filename", "auto_loaded"),
+                        "upload_time": datetime.now().isoformat()
+                    }
+                    print(f"✅ Auto-loaded dataset {dataset_id} from cleaning-service")
+                else:
+                    raise HTTPException(404, f"Dataset not found in cache or cleaning-service (status: {resp.status_code})")
+            except Exception as e:
+                print(f"⚠️ Could not auto-fetch dataset: {e}")
+                raise HTTPException(404, f"Dataset not found in cache. Error: {str(e)}")
         
-        # Log audit event for quality evaluation
-        await db.audit_logs.insert_one({
-            "service": "QUALITY",
-            "action": "QUALITY_EVALUATION",
-            "user": "system",  # TODO: Get from token
-            "status": "INFO" if global_score >= 60 else "WARNING",
-            "timestamp": datetime.now().isoformat(),
-            "details": {
-                "dataset_id": dataset_id,
-                "global_score": global_score,
-                "grade": grade.value,
-                "recommendations_count": len(recommendations)
-            }
-        })
-    
-    return report
+        if config is None: config = EvaluationConfig()
+        
+        df = datasets_store[dataset_id]["df"]
+        dims = QualityDimensions(df)
+        scorer = QualityScorer(weights=config.weights)
+        
+        # Evaluate dimensions
+        dimension_results = {
+            "completeness": dims.completeness(),
+            "accuracy": dims.accuracy(),
+            "consistency": dims.consistency(),
+            "timeliness": dims.timeliness(),
+            "uniqueness": dims.uniqueness(),
+            "validity": dims.validity()
+        }
+        
+        # Calculate scores
+        dimension_scores = {dim: result["score"] for dim, result in dimension_results.items()}
+        global_score = scorer.calculate_global_score(dimension_scores)
+        grade = scorer.get_grade(global_score)
+        recommendations = scorer.generate_recommendations(dimension_results)
+        
+        dimensions = []
+        for dim, result in dimension_results.items():
+            weight = scorer.weights.get(dim, 0)
+            dimensions.append(DimensionScore(
+                dimension=dim,
+                score=result["score"],
+                weight=weight,
+                weighted_score=round(weight * result["score"], 2),
+                details=result.get("details")
+            ))
+        
+        report = QualityReport(
+            dataset_id=dataset_id,
+            evaluation_time=datetime.now().isoformat(),
+            dimensions=dimensions,
+            global_score=global_score,
+            grade=grade,
+            recommendations=recommendations
+        )
+        
+        # Persist report to MongoDB
+        if db is not None:
+            await db.quality_reports.insert_one(report.dict())
+            
+            # Log audit event for quality evaluation
+            await db.audit_logs.insert_one({
+                "service": "QUALITY",
+                "action": "QUALITY_EVALUATION",
+                "user": "system",  # TODO: Get from token
+                "status": "INFO" if global_score >= 60 else "WARNING",
+                "timestamp": datetime.now().isoformat(),
+                "details": {
+                    "dataset_id": dataset_id,
+                    "global_score": global_score,
+                    "grade": grade.value,
+                    "recommendations_count": len(recommendations)
+                }
+            })
+        
+        return report
+
+    except Exception as e:
+        print(f"❌ Evaluation Error: {e}")
+        traceback.print_exc()
+        raise HTTPException(500, f"Evaluation Failed: {str(e)}")
 
 @app.get("/report/{dataset_id}")
 async def get_report(dataset_id: str):
@@ -444,6 +491,52 @@ async def get_report(dataset_id: str):
         if doc: return QualityReport(**doc)
     
     raise HTTPException(404, "Report not found")
+
+@app.get("/report/{dataset_id}/detailed")
+async def get_detailed_report(dataset_id: str):
+    """
+    Get detailed breakdown for RGPD/ISO Compliance Audits.
+    Includes row-level samples of quality issues.
+    """
+    if db is None:
+        raise HTTPException(503, "Database not connected")
+        
+    doc = await db.quality_reports.find_one({"dataset_id": dataset_id}, sort=[("evaluation_time", -1)])
+    if not doc:
+        raise HTTPException(404, "Report not found")
+        
+    report = QualityReport(**doc)
+    
+    # 1. RGPD Compliance Indicators
+    rgpd_compliance = {
+        "integrity_check": "PASS" if any(d.dimension == "accuracy" and d.score >= 90 for d in report.dimensions) else "WARN",
+        "minimization_check": "PASS" if any(d.dimension == "uniqueness" and d.score >= 95 for d in report.dimensions) else "FAIL",
+        "storage_limitation": "PASS" if any(d.dimension == "timeliness" and d.score >= 90 for d in report.dimensions) else "WARN",
+        "overall_status": "COMPLIANT" if report.global_score >= 85 else "NON_COMPLIANT"
+    }
+    
+    # 2. Detailed Issues List (Flattened for UI Table)
+    detailed_issues = []
+    
+    for dim in report.dimensions:
+        if dim.details and "samples" in dim.details:
+            for sample in dim.details["samples"]:
+                detailed_issues.append({
+                    "dimension": dim.dimension,
+                    "issue_type": "Data Quality Violation",
+                    "row_data": sample,
+                    "remediation": f"Fix {dim.dimension} rule violation"
+                })
+
+    return {
+        "dataset_id": dataset_id,
+        "evaluation_iso_standard": "ISO 25012",
+        "evaluation_date": report.evaluation_time,
+        "global_quality_score": report.global_score,
+        "rgpd_compliance_status": rgpd_compliance,
+        "quality_dimensions_breakdown": report.dimensions,
+        "audit_trail_samples": detailed_issues
+    }
 
 @app.get("/report/{dataset_id}/pdf")
 async def get_pdf_report(dataset_id: str):
@@ -488,6 +581,30 @@ async def register_dataset(dataset_id: str, data: Dict):
     }
     
     return {"status": "registered", "dataset_id": dataset_id, "rows": len(df)}
+
+@app.post("/thresholds")
+async def update_thresholds(weights: Dict[str, float]):
+    """
+    US-QUAL-04: Configure ISO 25012 dimensionality weights.
+    """
+    if db is not None:
+        await db.quality_config.update_one(
+            {"_id": "weights"},
+            {"$set": {"weights": weights}},
+            upsert=True
+        )
+        return {"status": "success", "message": "Quality thresholds updated", "new_weights": weights}
+    return {"status": "error", "message": "Database not available"}
+
+@app.get("/thresholds")
+async def get_thresholds():
+    """
+    US-QUAL-05: Get Current ISO Config
+    """
+    if db is not None:
+         doc = await db.quality_config.find_one({"_id": "weights"})
+         if doc: return doc["weights"]
+    return QualityScorer.DEFAULT_WEIGHTS
 
 if __name__ == "__main__":
     print(f"\\n" + "="*60)
