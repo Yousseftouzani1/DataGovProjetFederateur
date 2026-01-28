@@ -9,6 +9,8 @@ import sys
 import json
 import requests
 from datetime import datetime
+import asyncio
+import traceback
 # Add common folder to path for AtlasClient
 sys.path.append('/common')
 try:
@@ -26,22 +28,82 @@ except ImportError:
 from ..data_cleaning.pipeline import CleaningPipeline
 from ..data_cleaning.profiler import DataProfiler
 
+from pydantic import BaseModel
+from typing import List, Optional, Any, Dict
+
+class DetectionPayload(BaseModel):
+    entity_type: str
+    value: str
+    score: float
+    start: int
+    end: int
+    column: Optional[str] = "unknown"
+    context: Optional[Dict[str, Any]] = None
+
+class TriggerPayload(BaseModel):
+    dataset_id: Optional[str] = None
+    dataset_name: Optional[str] = None
+    detections: Optional[List[DetectionPayload]] = None
+    dag_id: Optional[str] = "cleaning_pipeline_v1"
+
 router = APIRouter(tags=["Data Cleaning (Tâche 4)"])
 
 # Persistence configuration
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/app/storage/uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+PRESIDIO_URL = os.getenv("PRESIDIO_URL", "http://presidio-service:8003")
+CLASSIFICATION_URL = os.getenv("CLASSIFICATION_URL", "http://classification-service:8005")
+ANNOTATION_SERVICE_URL = os.getenv("ANNOTATION_SERVICE_URL", "http://annotation-service:8007")
+
+# Ensure /app is in path for backend imports
+if '/app' not in sys.path:
+    sys.path.append('/app')
+
 try:
     from backend.storage import save_raw_dataset, raw_datasets_col, log_audit_event
-except ImportError:
-    # Fallback/Mock for local testing if backend package not found
+    print("✅ Successfully imported backend.storage")
+except ImportError as e:
+    print(f"⚠️ Fallback: Could not import backend.storage: {e}")
     save_raw_dataset = None
     raw_datasets_col = None
     log_audit_event = None
 
 # In-memory cache for high-speed DataFrames (Syncs with DB)
 DATASETS = {}
+
+@router.get("/permissions")
+async def get_ranger_permissions(username: str, role: str):
+    """
+    US-RANGER-01: Fetch dynamic permissions from Ranger/Mock for UI
+    """
+    # In a real environment, we'd query the RangerClient here
+    # For now, we align with the frontend's expectation
+    return {
+        "username": username,
+        "role": role,
+        "access_level": "full" if role in ["admin", "steward"] else "masked" if role == "annotator" else "denied",
+        "can_view_pii": role in ["admin", "steward"],
+        "can_view_spi": role == "admin",
+        "mask_type": "MASK_SHOW_LAST_4" if role == "annotator" else None,
+        "ranger_connected": True if ranger_client else False,
+        "loading": False,
+        "error": None
+    }
+
+@router.delete("/datasets/{dataset_id}")
+async def delete_dataset(dataset_id: str):
+    """
+    Clean up dataset from cache and DB
+    """
+    if dataset_id in DATASETS:
+        del DATASETS[dataset_id]
+        
+    if raw_datasets_col is not None:
+        await raw_datasets_col.delete_one({"dataset_id": dataset_id})
+        await log_audit_event("INGESTION", f"DATASET_DELETED: {dataset_id}", "admin", "SUCCESS")
+        
+    return {"status": "deleted", "id": dataset_id}
 
 @router.post("/upload")
 async def upload_dataset(file: UploadFile = File(...)):
@@ -50,24 +112,36 @@ async def upload_dataset(file: UploadFile = File(...)):
     """
     try:
         content = await file.read()
-        if file.filename.endswith(".csv"):
-            df = pd.read_csv(io.BytesIO(content))
-        elif file.filename.endswith((".xls", ".xlsx")):
-            df = pd.read_excel(io.BytesIO(content))
-        else:
-            raise HTTPException(400, "Only CSV/Excel supported")
-            
         dataset_id = str(uuid.uuid4())
-        
+        print(f"🚀 Processing Upload: {file.filename} (ID: {dataset_id})")
+
         # --- PHASE A: SECURE PERSISTENCE (File System + MongoDB) ---
         file_path = os.path.join(UPLOAD_DIR, f"{dataset_id}_{file.filename}")
-        with open(file_path, "wb") as f:
-            f.write(content)
-        print(f"📁 File persisted to shared volume: {file_path}")
+        
+        try:
+            print(f"📊 Parsing Dataset: {file.filename}")
+            if file.filename.endswith(".csv"):
+                df = pd.read_csv(io.BytesIO(content))
+            elif file.filename.endswith((".xls", ".xlsx")):
+                df = pd.read_excel(io.BytesIO(content))
+            else:
+                raise HTTPException(400, "Only CSV/Excel supported")
+        except Exception as pe:
+            print(f"❌ Parsing Error: {pe}")
+            raise HTTPException(400, f"Failed to parse file: {str(pe)}")
+
+        try:
+            with open(file_path, "wb") as f:
+                f.write(content)
+            print(f"📁 File persisted to shared volume: {file_path}")
+        except Exception as fe:
+            print(f"❌ File Persistence Error: {fe}")
+            raise HTTPException(500, f"Storage failure: {str(fe)}")
 
         # --- REMEDIATION STEP 1: PII SCAN (Presidio) ---
         pii_tags = []
         try:
+            print("🕵️ Starting PII Scan...")
             # INCREASED SAMPLING: Take 5 random rows + first 15 rows for better coverage
             sample_df = df.head(15)
             if len(df) > 20:
@@ -91,25 +165,31 @@ async def upload_dataset(file: UploadFile = File(...)):
         atlas_guid = "mock-guid-fallback"
         try:
             if AtlasClient:
+                print("🌍 Registering with Apache Atlas...")
                 client = AtlasClient()
+                # Added 5s internal timeout for safety
                 guid = client.register_dataset_and_get_guid(
                     name=file.filename,
                     description=f"Uploaded via DataGov Pipeline. PII Detected: {pii_tags}",
                     owner="cleaning-service",
-                    file_path=file_path # Use real path
+                    file_path=file_path
                 )
                 if guid:
                     atlas_guid = guid
                     # Add PII tags to Atlas
                     for tag in pii_tags:
-                        client.add_classification(guid, tag)
+                        try:
+                            client.add_classification(guid, tag)
+                        except Exception as tag_err:
+                            print(f"⚠️ Could not tag {tag}: {tag_err}")
                     print(f"🌍 Registered in Atlas: {atlas_guid}")
         except Exception as e:
-             print(f"⚠️ Atlas Registration Failed: {e}")
+             print(f"⚠️ Atlas Registration Bypass: {e}")
              
         # --- REMEDIATION STEP 3: RANGER AUTOMATION ---
         try:
             if ranger_client:
+                print("🛡️ Automated Ranger Policy Creation...")
                 for tag in pii_tags:
                     success = ranger_client.create_tag_policy(tag_name=tag)
                     if success:
@@ -133,9 +213,12 @@ async def upload_dataset(file: UploadFile = File(...)):
             "created_at": datetime.now().isoformat()
         }
         
-        if raw_datasets_col:
+        if raw_datasets_col is not None:
+            print(f"💾 Saving metadata to MongoDB for {dataset_id}...")
             await raw_datasets_col.insert_one(dataset_meta)
             await log_audit_event("INGESTION", f"DATASET_UPLOAD: {file.filename}", "annotator", "SUCCESS", {"dataset_id": dataset_id})
+        else:
+            print("⚠️ Skipping MongoDB save: raw_datasets_col is None")
 
         # Cache for performance
         DATASETS[dataset_id] = {
@@ -145,10 +228,13 @@ async def upload_dataset(file: UploadFile = File(...)):
             "pii_tags": pii_tags,
             "atlas_guid": atlas_guid
         }
-        
+        print(f"✅ Ingestion Chain Completed for {dataset_id}")
+        # Remove MongoDB _id for JSON serialization
+        dataset_meta.pop("_id", None)
         return dataset_meta
     except Exception as e:
-        raise HTTPException(500, str(e))
+        traceback.print_exc()
+        raise HTTPException(500, f"Critical Ingestion Error: {str(e)}")
 
 @router.get("/dataset/{dataset_id}/json")
 async def get_dataset_json(dataset_id: str, sample: bool = False):
@@ -157,7 +243,32 @@ async def get_dataset_json(dataset_id: str, sample: bool = False):
     Enhanced with Sampling for preview performance.
     """
     if dataset_id not in DATASETS:
-        raise HTTPException(404, "Dataset not found")
+        print(f"🔄 Cache miss for {dataset_id}. Attempting to reload from MongoDB...")
+        if raw_datasets_col is not None:
+            doc = await raw_datasets_col.find_one({"dataset_id": dataset_id})
+            if doc and os.path.exists(doc.get("file_path", "")):
+                try:
+                    fpath = doc["file_path"]
+                    if fpath.endswith(".csv"):
+                        df = pd.read_csv(fpath)
+                    else:
+                        df = pd.read_excel(fpath)
+                    
+                    DATASETS[dataset_id] = {
+                        "df": df,
+                        "name": doc["name"],
+                        "status": doc["status"],
+                        "pii_tags": doc.get("pii_tags", []),
+                        "atlas_guid": doc.get("atlas_guid")
+                    }
+                    print(f"✅ Reloaded {dataset_id} into cache")
+                except Exception as re:
+                    print(f"❌ Reload Failed: {re}")
+                    raise HTTPException(500, f"Error reloading dataset: {str(re)}")
+            else:
+                raise HTTPException(404, "Dataset not found in persistent storage")
+        else:
+            raise HTTPException(404, "Dataset not found (and DB disconnected)")
     
     df = DATASETS[dataset_id]["df"]
     
@@ -166,7 +277,7 @@ async def get_dataset_json(dataset_id: str, sample: bool = False):
         df = df.head(5)
         
     # Convert dates to ISO string to handle non-serializable objects
-    json_data = df.to_dict(orient="records")
+    json_data = json.loads(df.to_json(orient="records", date_format="iso"))
     
     return {
         "dataset_id": dataset_id,
@@ -174,13 +285,21 @@ async def get_dataset_json(dataset_id: str, sample: bool = False):
         "data": json_data
     }
 
+@router.get("/datasets/{dataset_id}/preview")
+async def get_dataset_preview(dataset_id: str, rows: int = 5):
+    """
+    Compatibility alias for previewing datasets.
+    """
+    res = await get_dataset_json(dataset_id, sample=True)
+    return {"preview": res["data"][:rows]}
+
 @router.get("/profile/{dataset_id}", response_class=HTMLResponse)
 async def get_profile(dataset_id: str):
     """
     US-CLEAN-02: HTML Profiling Report (ydata-profiling)
     """
-    if dataset_id not in DATASETS:
-        raise HTTPException(404, "Dataset not found")
+    # Auto-reload if needed
+    await get_dataset_json(dataset_id)
         
     df = DATASETS[dataset_id]["df"]
     
@@ -197,8 +316,8 @@ async def clean_dataset(dataset_id: str,
     """
     US-CLEAN-03: Trigger Cleaning Pipeline
     """
-    if dataset_id not in DATASETS:
-        raise HTTPException(404, "Dataset not found")
+    # Auto-reload if needed
+    await get_dataset_json(dataset_id)
     
     df = DATASETS[dataset_id]["df"]
     config = {
@@ -226,8 +345,8 @@ async def download_dataset(dataset_id: str):
     """
     US-CLEAN-04: Download Cleaned CSV
     """
-    if dataset_id not in DATASETS:
-        raise HTTPException(404, "Dataset not found")
+    # Auto-reload if needed
+    await get_dataset_json(dataset_id)
         
     df = DATASETS[dataset_id]["df"]
     stream = io.StringIO()
@@ -238,13 +357,16 @@ async def download_dataset(dataset_id: str):
     response.headers["Content-Disposition"] = f"attachment; filename=cleaned_{DATASETS[dataset_id]['name']}"
     return response
 
+
+@router.get("/metrics/{dataset_id}")
+
 @router.get("/metrics/{dataset_id}")
 async def get_metrics(dataset_id: str):
     """
     US-CLEAN-05: Metadata View
     """
-    if dataset_id not in DATASETS:
-        raise HTTPException(404, "Dataset not found")
+    # Reuse the JSON lookup logic for auto-cache loading
+    await get_dataset_json(dataset_id)
     
     df = DATASETS[dataset_id]["df"]
     return DataProfiler.get_basic_stats(df)
@@ -253,43 +375,68 @@ async def get_metrics(dataset_id: str):
 async def list_datasets():
     """
     US-CLEAN-05: List all active datasets for discovery.
-    Enhanced to return metadata for de-mocking.
+    Enhanced to return metadata for de-mocking and Atlas sync.
     """
+    datasets_list = []
+    
     # Fetch from MongoDB if available
-    if raw_datasets_col:
+    if raw_datasets_col is not None:
         cursor = raw_datasets_col.find({}, {"_id": 0}).sort("created_at", -1)
         results = await cursor.to_list(length=100)
-        # Adapt format for table
-        return [
-            {
-                "id": d["dataset_id"],
-                "name": d["name"],
-                "status": d["status"],
+        
+        # Initialize Atlas Client if needed for sync
+        atlas = AtlasClient() if AtlasClient else None
+        
+        for d in results:
+            # Live Sync with Atlas for Tags
+            tags = d.get("pii_tags", [])
+            guid = d.get("atlas_guid")
+            
+            if atlas and guid and guid != "mock-guid-fallback":
+                atlas_tags = atlas.get_classifications(guid)
+                if atlas_tags:
+                    # Merge and unique
+                    tags = list(set(tags + atlas_tags))
+            
+            datasets_list.append({
+                "id": d.get("dataset_id", "unknown"),
+                "name": d.get("name", "Unnamed Dataset"),
+                "status": d.get("status", "raw"),
                 "rows": d.get("rows", 0),
                 "columns": d.get("columns", 0),
-                "pii_tags": d.get("pii_tags", []),
-                "classification": "CONFIDENTIAL" if d.get("pii_tags") else "PUBLIC",
-                "domain": "Finance" if any(t in ["IBAN", "CREDIT_CARD"] for t in d.get("pii_tags", [])) else "General",
+                "pii_tags": tags,
+                "classification": "CONFIDENTIAL" if tags else "PUBLIC",
+                "domain": "Finance" if any(t in ["IBAN", "CREDIT_CARD"] for t in tags) else "General",
                 "date": d.get("created_at"),
-                "owner": "annotator"
-            } for d in results
-        ]
+                "owner": d.get("owner", "annotator"),
+                "atlas_guid": guid
+            })
+        return datasets_list
 
     # Fallback to cache
-    return [
-        {
+    atlas = AtlasClient() if AtlasClient else None
+    for k, v in DATASETS.items():
+        tags = v.get("pii_tags", [])
+        guid = v.get("atlas_guid")
+        if atlas and guid and guid != "mock-guid-fallback":
+            atlas_tags = atlas.get_classifications(guid)
+            if atlas_tags:
+                tags = list(set(tags + atlas_tags))
+                
+        datasets_list.append({
             "id": k,
-            "name": v["name"],
-            "status": v["status"],
-            "rows": len(v["df"]),
-            "columns": len(v["df"].columns),
-            "pii_tags": v.get("pii_tags", []),
-            "classification": "CONFIDENTIAL" if v.get("pii_tags") else "PUBLIC",
-            "domain": "Finance" if any(t in ["IBAN", "CREDIT_CARD"] for t in v.get("pii_tags", [])) else "General",
+            "name": v.get("name", "Unnamed"),
+            "status": v.get("status", "unknown"),
+            "rows": len(v["df"]) if "df" in v else 0,
+            "columns": len(v["df"].columns) if "df" in v else 0,
+            "pii_tags": tags,
+            "classification": "CONFIDENTIAL" if tags else "PUBLIC",
+            "domain": "Finance" if any(t in ["IBAN", "CREDIT_CARD"] for t in tags) else "General",
             "date": datetime.now().isoformat(),
-            "owner": "annotator"
-        } for k, v in DATASETS.items()
-    ]
+            "owner": "annotator",
+            "atlas_guid": guid
+        })
+    return datasets_list
 
 @router.get("/stats")
 async def get_cleaning_stats():
@@ -332,56 +479,161 @@ async def get_cleaning_audit():
 @router.get("/datasets/{dataset_id}/lineage")
 async def get_lineage(dataset_id: str):
     """
-    US-CLEAN-06: Atlas Lineage Graph
+    US-CLEAN-06: Atlas Lineage Graph (Real Integration)
     """
-    if dataset_id not in DATASETS:
-        raise HTTPException(404, "Dataset not found")
+    # Auto-reload if needed
+    await get_dataset_json(dataset_id)
+    
+    guid = DATASETS[dataset_id].get("atlas_guid")
+    
+    if AtlasClient and guid and guid != "mock-guid-fallback":
+        atlas = AtlasClient()
+        lineage_data = await atlas.get_lineage(guid)
         
-    # Mock Atlas Graph Response
+        if lineage_data:
+            # Transform Atlas Lineage format to our UI format (nodes/edges)
+            nodes = []
+            edges = []
+            
+            entities = lineage_data.get("guidEntityMap", {})
+            for g, entity in entities.items():
+                nodes.append({
+                    "id": g,
+                    "label": entity.get("attributes", {}).get("name", entity.get("typeName")),
+                    "type": entity.get("typeName")
+                })
+            
+            relations = lineage_data.get("relations", [])
+            for rel in relations:
+                edges.append({
+                    "source": rel.get("fromEntityGuid"),
+                    "target": rel.get("toEntityGuid")
+                })
+                
+            return {
+                "dataset_id": dataset_id,
+                "nodes": nodes,
+                "edges": edges,
+                "provider": "Apache Atlas"
+            }
+
+    # Mock Fallback if Atlas is missing or GUID is mock
     return {
         "dataset_id": dataset_id,
         "nodes": [
-            {"id": "source", "label": "Raw CSV", "type": "s3"},
-            {"id": "process", "label": "Cleaning Pipeline", "type": "airflow"},
-            {"id": "target", "label": "Cleaned Table", "type": "hive"}
+            {"id": "source", "label": DATASETS[dataset_id]["name"], "type": "DataSet"},
+            {"id": "process", "label": "Cleaning Pipeline", "type": "Process"},
+            {"id": "target", "label": f"Cleaned_{DATASETS[dataset_id]['name']}", "type": "DataSet"}
         ],
         "edges": [
             {"source": "source", "target": "process"},
             {"source": "process", "target": "target"}
-        ]
+        ],
+        "provider": "Mock (Atlas Disconnected)"
     }
 
+from fastapi import Body
+
 @router.post("/trigger-pipeline")
-async def trigger_airflow_pipeline(dataset_id: str, dag_id: str = "cleaning_pipeline_v1"):
+async def trigger_airflow_pipeline(dataset_id: Optional[str] = None, payload: Optional[TriggerPayload] = Body(None)):
     """
-    US-ANNOTATOR-01: Trigger Airflow Pipeline (Mandatory Gap Closure)
+    US-ANNOTATOR-01: Trigger Airflow Pipeline (Real Implementation)
     """
+    effective_id = dataset_id or (payload.dataset_id if payload else None)
+    
+    if not effective_id:
+        raise HTTPException(400, "dataset_id is required")
+        
+    dag_id = payload.dag_id if payload and payload.dag_id != "cleaning_pipeline_v1" else "datagov_pipeline"
+    
     exists = False
-    if dataset_id in DATASETS:
+    dataset_name = payload.dataset_name if payload else "Dataset"
+    
+    if effective_id in DATASETS:
         exists = True
-    elif raw_datasets_col:
-        doc = await raw_datasets_col.find_one({"dataset_id": dataset_id})
-        exists = doc is not None
+        dataset_name = DATASETS[effective_id].get("name", dataset_name)
+    elif raw_datasets_col is not None:
+        doc = await raw_datasets_col.find_one({"dataset_id": effective_id})
+        if doc:
+            exists = True
+            dataset_name = doc.get("name", dataset_name)
 
     if not exists:
-        raise HTTPException(404, "Dataset not found")
+        raise HTTPException(404, f"Dataset {effective_id} not found")
     
-    # Step B: The Airflow Trigger (The Hook)
-    # In a real app, we would make a request to Airflow API here
-    # airflow_url = "http://airflow:8080/api/v1/dags/{dag_id}/dagRuns"
+    detections_count = len(payload.detections) if payload and payload.detections else 0
     
-    print(f"🚀 Triggering Airflow DAG: {dag_id} for Dataset: {dataset_id}")
+    # --- ACTIVATE AIRFLOW REST API TRIGGER ---
+    AIRFLOW_API_URL = os.getenv("AIRFLOW_URL", "http://airflow:8080/api/v1")
+    AIRFLOW_AUTH = ("admin", "admin")
     
-    if raw_datasets_col:
-        await raw_datasets_col.update_one({"dataset_id": dataset_id}, {"$set": {"status": "processing_pipeline"}})
-        await log_audit_event("AIRFLOW", f"PIPELINE_TRIGGERED: {dag_id}", "system", "SUCCESS", {"dataset_id": dataset_id})
+    airflow_success = False
+    airflow_msg = ""
+    
+    try:
+        print(f"🚀 Triggering Airflow DAG: {dag_id} for Dataset: {effective_id}")
+        trigger_url = f"{AIRFLOW_API_URL}/dags/{dag_id}/dagRuns"
+        
+        run_payload = {
+            "conf": {
+                "dataset_id": effective_id,
+                "dataset_name": dataset_name,
+                "detections": [d.dict() for d in payload.detections] if payload and payload.detections else []
+            }
+        }
+        
+        resp = requests.post(trigger_url, json=run_payload, auth=AIRFLOW_AUTH, timeout=10)
+        
+        if resp.status_code in [200, 201]:
+            airflow_success = True
+            airflow_msg = "Pipeline successfully triggered on Apache Airflow."
+            print(f"✅ Airflow respond: {resp.status_code}")
+        else:
+            airflow_msg = f"Airflow API error ({resp.status_code}): {resp.text}"
+            print(f"⚠️ Airflow Trigger Error: {airflow_msg}")
+            
+    except Exception as ae:
+        airflow_msg = f"Failed to connect to Airflow: {str(ae)}"
+        print(f"❌ Airflow Connection Failed: {airflow_msg}")
 
-    if dataset_id in DATASETS:
-        DATASETS[dataset_id]["status"] = "processing_pipeline"
+    # Metadata update and Audit
+    if raw_datasets_col is not None:
+        update_data = {"status": "processing_pipeline"}
+        if payload and payload.detections:
+            pii_tags = list(set([d.entity_type for d in payload.detections]))
+            update_data["pii_tags"] = pii_tags
+            
+        await raw_datasets_col.update_one({"dataset_id": effective_id}, {"$set": update_data})
+        await log_audit_event("AIRFLOW", f"PIPELINE_TRIGGERED: {dag_id}", "system", "SUCCESS" if airflow_success else "FAILURE", {
+            "dataset_id": effective_id,
+            "airflow_response": airflow_msg
+        })
+        
+        # Forward to Annotation Service (Tâche 7)
+        if payload and payload.detections:
+            try:
+                sample_data = {"filename": dataset_name}
+                if payload.detections:
+                    sample_data["preview"] = payload.detections[0].value
+                
+                requests.post(f"{ANNOTATION_SERVICE_URL}/tasks", json={
+                    "dataset_id": effective_id,
+                    "annotation_type": "pii_validation",
+                    "priority": "high",
+                    "detections": [d.dict() for d in payload.detections],
+                    "row_indices": [0],
+                    "data_samples": [sample_data]
+                }, timeout=5)
+            except: pass
+
+    if effective_id in DATASETS:
+        DATASETS[effective_id]["status"] = "processing_pipeline"
     
     return {
-        "status": "triggered",
+        "success": airflow_success,
+        "status": "triggered" if airflow_success else "failed",
         "dag_id": dag_id,
         "execution_date": datetime.utcnow().isoformat(),
-        "message": "Pipeline started successfully on Apache Airflow"
+        "message": airflow_msg,
+        "detections_count": detections_count
     }

@@ -190,7 +190,7 @@ const PIIDetectionPage = () => {
             });
 
             const response = await apiClient.post('/cleaning/trigger-pipeline', {
-                dataset_id: selectedDatasetId || 'unknown',
+                dataset_id: selectedDatasetId,
                 detections: enrichedDetections,
                 dataset_name: selectedDataset?.name || 'Dataset'
             });

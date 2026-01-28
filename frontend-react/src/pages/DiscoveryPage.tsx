@@ -12,16 +12,21 @@ const DiscoveryPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isSearching, setIsSearching] = useState(false);
 
-    // Facets (Static defaults, can be enriched by data)
+    // Facets (Enriched by data)
     const classifications = ["CONFIDENTIAL", "INTERNAL", "PUBLIC"];
     const domains = ["Health", "Finance", "HR", "Legal", "Gov", "General"];
-    const piiTypes = ["CIN", "PHONE", "EMAIL", "IBAN", "PASSPORT"];
+
+    // Dynamically compute PII types from available data to ensure Atlas tags show up
+    const piiTypes = Array.from(new Set([
+        "CIN", "PHONE", "EMAIL", "IBAN", "PASSPORT",
+        ...allDatasets.flatMap(d => d.tags)
+    ])).sort();
 
     const fetchDatasets = async () => {
         setIsLoading(true);
         try {
             const resp = await apiClient.get('/cleaning/datasets');
-            const data = resp.data.datasets || [];
+            const data = resp.data || []; // The backend now returns the list directly
 
             // Map backend fields to frontend format if necessary
             const formatted = data.map((item: any) => ({
@@ -30,8 +35,9 @@ const DiscoveryPage = () => {
                 classification: item.classification || "PUBLIC",
                 tags: item.pii_tags || [],
                 owner: item.owner || "system",
-                date: new Date().toISOString().split('T')[0], // Mock date if not in backend
-                domain: item.domain || "General"
+                date: item.date ? new Date(item.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                domain: item.domain || "General",
+                atlas_guid: item.atlas_guid
             }));
 
             setAllDatasets(formatted);
@@ -228,9 +234,15 @@ const DiscoveryPage = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-right text-xs text-slate-500">
+                                        <div className="text-right text-xs text-slate-500 flex flex-col items-end gap-1">
                                             <p>Owner: <span className="text-slate-300">{item.owner}</span></p>
                                             <p>Updated: {item.date}</p>
+                                            {item.atlas_guid && item.atlas_guid !== 'mock-guid-fallback' && (
+                                                <span className="text-[10px] text-brand-primary/60 font-mono mt-1 bg-brand-primary/5 px-2 py-0.5 rounded-full border border-brand-primary/10 flex items-center gap-1 group-hover:bg-brand-primary/10 transition-colors">
+                                                    <ExternalLink size={10} />
+                                                    {item.atlas_guid.substring(0, 8)}...
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                 </motion.div>

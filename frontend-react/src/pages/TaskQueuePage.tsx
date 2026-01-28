@@ -119,6 +119,18 @@ const TaskQueuePage = () => {
         return sMatch && pMatch;
     });
 
+    const handleClaimTask = async (taskId: string) => {
+        try {
+            const username = user?.username || localStorage.getItem('username') || 'annotator';
+            await apiClient.post(`/annotation/assign/${taskId}?user_id=${username}`);
+            addToast('Task Claimed Successfully', 'success');
+            fetchData();
+        } catch (err) {
+            console.error('Failed to claim task', err);
+            addToast('Failed to claim task', 'error');
+        }
+    };
+
     const handleTaskAction = async (taskId: string, isValid: boolean, editedData?: any) => {
         try {
             await apiClient.post(`/annotation/tasks/${taskId}/submit`, {
@@ -369,6 +381,17 @@ const TaskQueuePage = () => {
                                             </code>
                                         </div>
                                         <div className="flex items-center gap-2">
+                                            {task.status === 'pending' && (
+                                                <Button
+                                                    variant="primary"
+                                                    className="h-12 px-4 rounded-2xl bg-brand-primary text-white hover:bg-brand-primary/90 transition-transform"
+                                                    onClick={() => handleClaimTask(task.id)}
+                                                    title="Claim Task"
+                                                >
+                                                    <ArrowRight size={20} className="mr-2" />
+                                                    Claim
+                                                </Button>
+                                            )}
                                             <Button
                                                 variant="ghost"
                                                 className="h-12 w-12 !p-0 rounded-2xl bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-transform"
@@ -377,22 +400,26 @@ const TaskQueuePage = () => {
                                             >
                                                 <Eye size={20} />
                                             </Button>
-                                            <Button
-                                                variant="ghost"
-                                                className="h-12 w-12 !p-0 rounded-2xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-transform"
-                                                onClick={() => handleTaskAction(task.id, false)}
-                                                title="Reject Detection"
-                                            >
-                                                <X size={20} />
-                                            </Button>
-                                            <Button
-                                                variant="primary"
-                                                className="h-12 w-12 !p-0 rounded-2xl bg-green-500/20 text-green-500 hover:bg-green-500/30 border-green-500/30 transition-transform"
-                                                onClick={() => handleTaskAction(task.id, true)}
-                                                title="Validate Detection"
-                                            >
-                                                <CheckCircle2 size={20} />
-                                            </Button>
+                                            {task.status !== 'pending' && (
+                                                <>
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="h-12 w-12 !p-0 rounded-2xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-transform"
+                                                        onClick={() => handleTaskAction(task.id, false)}
+                                                        title="Reject Detection"
+                                                    >
+                                                        <X size={20} />
+                                                    </Button>
+                                                    <Button
+                                                        variant="primary"
+                                                        className="h-12 w-12 !p-0 rounded-2xl bg-green-500/20 text-green-500 hover:bg-green-500/30 border-green-500/30 transition-transform"
+                                                        onClick={() => handleTaskAction(task.id, true)}
+                                                        title="Validate Detection"
+                                                    >
+                                                        <CheckCircle2 size={20} />
+                                                    </Button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </motion.div>

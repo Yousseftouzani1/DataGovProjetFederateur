@@ -7,12 +7,12 @@ import json
 from datetime import timedelta
 
 # Service URLs (Docker Network)
-CLEANING_SERVICE_URL = "http://cleaning-serv:8002"
-TAXONOMY_SERVICE_URL = "http://taxonomie-serv:8004"
-CLASSIFICATION_SERVICE_URL = "http://classification-serv:8005"
-QUALITY_SERVICE_URL = "http://quality-serv:8008"
-ETHIMASK_SERVICE_URL = "http://ethimask-serv:8009"
-CORRECTION_SERVICE_URL = "http://correction-serv:8006"
+CLEANING_SERVICE_URL = "http://cleaning-service:8004"
+TAXONOMY_SERVICE_URL = "http://taxonomie-service:8002"
+CLASSIFICATION_SERVICE_URL = "http://classification-service:8005"
+QUALITY_SERVICE_URL = "http://quality-service:8008"
+ETHIMASK_SERVICE_URL = "http://ethimask-service:8009"
+CORRECTION_SERVICE_URL = "http://correction-service:8006"
 
 default_args = {
     'owner': 'datagov',

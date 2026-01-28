@@ -22,17 +22,60 @@ class AtlasClient:
         except:
             return False
 
-    def get_entity(self, guid):
+    async def get_entity(self, guid):
         if self.mock_mode: return {"mock": True}
-        resp = requests.get(f"{self.base_api}/entity/guid/{guid}", auth=(self.user, self.password))
-        return resp.json() if resp.status_code == 200 else None
+        try:
+            resp = requests.get(f"{self.base_api}/entity/guid/{guid}", auth=(self.user, self.password), timeout=5)
+            return resp.json() if resp.status_code == 200 else None
+        except:
+            return None
+
+    def get_entity_guid(self, name: str):
+        if self.mock_mode: return "mock-guid-123"
+        try:
+            # Try searching for the entity by name
+            resp = requests.get(
+                f"{self.base_api}/search/basic?query={name}&typeName=DataSet",
+                auth=(self.user, self.password),
+                timeout=5
+            )
+            if resp.status_code == 200:
+                results = resp.json().get("entities", [])
+                if results:
+                    return results[0].get("guid")
+            return None
+        except:
+            return None
+
+    def get_classifications(self, guid):
+        """Fetch live classifications for an entity from Atlas"""
+        if self.mock_mode: return []
+        try:
+            resp = requests.get(
+                f"{self.base_api}/entity/guid/{guid}/classifications",
+                auth=(self.user, self.password),
+                timeout=5
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                # Atlas response format for classifications varies, handle both
+                if isinstance(data, list):
+                    return [c['typeName'] for c in data]
+                elif isinstance(data, dict) and 'list' in data:
+                    return [c['typeName'] for c in data['list']]
+            return []
+        except Exception as e:
+            print(f"⚠️ Error fetching Atlas classifications: {e}")
+            return []
+
 
     def create_entity(self, entity_data):
         if self.mock_mode: return {"guid": "mock-guid"}
         resp = requests.post(
             f"{self.base_api}/entity",
             json=entity_data,
-            auth=(self.user, self.password)
+            auth=(self.user, self.password),
+            timeout=10
         )
         return resp.json()
 
@@ -51,14 +94,22 @@ class AtlasClient:
             }
         }
         res = self.create_entity(entity)
+        if not res:
+            return None
+            
         try:
             # Atlas returns varied structures, trying to extract GUID safely
-            if 'mutatedEntities' in res and 'CREATE' in res['mutatedEntities']:
-                return res['mutatedEntities']['CREATE'][0]['guid']
-            if 'guidAssignments' in res:
-                return list(res['guidAssignments'].values())[0]
+            mutated = res.get('mutatedEntities', {})
+            if 'CREATE' in mutated and mutated['CREATE']:
+                return mutated['CREATE'][0].get('guid')
+                
+            guid_assignments = res.get('guidAssignments', {})
+            if guid_assignments:
+                return list(guid_assignments.values())[0]
+                
             return None
-        except:
+        except Exception as e:
+            print(f"Error extracting GUID from Atlas response: {e}")
             return None
             
     def create_type_definitions(self, type_defs):
@@ -70,7 +121,8 @@ class AtlasClient:
         resp = requests.put(
             f"{self.base_api}/types/typedefs",
             json=type_defs,
-            auth=(self.user, self.password)
+            auth=(self.user, self.password),
+            timeout=10
         )
         return resp.json()
 
@@ -165,9 +217,34 @@ class AtlasClient:
             resp = requests.post(
                 f"{self.base_api}/entity/guid/{guid}/classifications",
                 json=payload,
-                auth=(self.user, self.password)
+                auth=(self.user, self.password),
+                timeout=5
             )
             return resp.status_code in [200, 204]
         except Exception as e:
             print(f"Failed to add classification: {e}")
             return False
+    async def get_lineage(self, guid: str, direction: str = "BOTH", depth: int = 3):
+        """
+        US-CLEAN-06: Fetch real lineage from Atlas
+        """
+        if self.mock_mode:
+            return {
+                "guid": guid,
+                "relations": [],
+                "entities": {}
+            }
+        try:
+            # Atlas API: GET /api/atlas/v2/lineage/{guid}
+            resp = requests.get(
+                f"{self.base_api}/lineage/{guid}",
+                params={"direction": direction, "depth": depth},
+                auth=(self.user, self.password),
+                timeout=10
+            )
+            if resp.status_code == 200:
+                return resp.json()
+            return None
+        except Exception as e:
+            print(f"Failed to fetch lineage from Atlas: {e}")
+            return None

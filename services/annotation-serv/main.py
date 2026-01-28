@@ -243,8 +243,15 @@ async def get_my_queue(user_id: str):
     US-VALID-04: Allow annotators to consult their pending queue directly.
     """
     tasks = await task_queue.get_user_tasks(user_id)
-    # Return those that are assigned or in progress
+    # Include tasks assigned to user OR unassigned/pending tasks
+    all_tasks = await task_queue.get_pending_tasks() # Get all unassigned
     pending = [t for t in tasks if t.status in [TaskStatus.ASSIGNED, TaskStatus.IN_PROGRESS]]
+    
+    # Merge unassigned into the view
+    for t in all_tasks:
+        if t.id not in [p.id for p in pending]:
+            pending.append(t)
+            
     return {"user_id": user_id, "queue": [t.dict() for t in pending], "count": len(pending)}
 
 @app.post("/assign/{task_id}")

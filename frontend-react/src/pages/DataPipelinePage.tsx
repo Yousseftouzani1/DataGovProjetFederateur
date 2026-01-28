@@ -136,8 +136,13 @@ const DataPipelinePage = () => {
 
             // Mandatory Task: Trigger Airflow Pipeline
             try {
-                await apiClient.post(`/cleaning/trigger-pipeline?dataset_id=${response.data.dataset_id}`);
-                console.log("Airflow Pipeline Triggered");
+                const trigResp = await apiClient.post('/cleaning/trigger-pipeline', {
+                    dataset_id: response.data.dataset_id
+                });
+                if (trigResp.data.success) {
+                    addToast('Pipeline triggered successfully! Redirecting...', 'success');
+                    setTimeout(() => navigate('/dashboard'), 1500);
+                }
             } catch (triggerErr) {
                 console.error("Failed to trigger pipeline", triggerErr);
                 addToast('Warning: Uploaded but Pipeline start failed', 'error');

@@ -1,0 +1,21 @@
+id,full_name,name_local,id_number,phone,bank_account,credit_card,salary,birth_date,city,city_local,email,status,company,country,notes
+1,Wei Zhang,张伟,110101199001011234,+8613812345678,6222021234567890123,6225001234567890,15000,1990-01-01,Beijing,北京,wei.zhang@email.cn,Active,Alibaba Group,China,tech sector
+2,Liu Fang,刘芳,310101198505202345,+8613987654321,6222029876543210987,6225009876543210,22000,1985-05-20,Shanghai,上海,liu.fang@company.cn,Active,Tencent,China,management
+3,Chen Ming,陈明,440301199203153456,+86 139 1234 5678,6222021111222233334,6225001111222233,18500,1992-03-15,Shenzhen,深圳,chen.ming@tech.cn,Pending,Huawei,China,phone with spaces
+4,王晓华,Wang Xiaohua,320102199108084567,13811112222,6222022222333344445,6225002222333344,12000,1991-08-08,Nanjing,南京,xiaohua.w@email.cn,Active,JD.com,China,name Chinese first
+5,李雪梅,Li Xuemei,510103198712125678,+86-138-3333-4444,6222023333444455556,6225003333444455,28000,1987-12-12,Chengdu,成都,xuemei@work.cn,激活,Baidu,China,Chinese status
+6,张明远,Zhang Mingyuan,210102199404046789,一三八四四四四五五五五,6222024444555566667,6225004444555566,35000,1994-04-04,Dalian,大连,mingyuan@email.cn,Active,Xiaomi,China,Chinese phone number
+7,赵小龙,Zhao Xiaolong,120101199606067890,13855556666,INVALID_BANK_NUMBER,6225005555666677,19000,1996-06-06,Tianjin,天津,xiaolong@tech.cn,Active,ByteDance,China,invalid bank format
+8,Sun Wei,孙伟,330102199207078901,13866667777,6222025555666677778,6225-0066-6677-7788,16500,1992-07-07,Hangzhou,杭州,sun.wei@alibaba.cn,Active,Ant Group,China,card with dashes
+9,黄丽娜,Huang Lina,350102198809089012,+86 13877778888,622202666677788889,6225007777888899,0,1988-09-09,Fuzhou,福州,lina.h@email.cn,待审核,NetEase,China,zero salary + Chinese status
+10,周建国,Zhou Jianguo,610102197510100123,13888889999,6222027777888899990,6225008888999900,45000,1975-10-10,Xi'an,西安,,Active,BYD,China,missing email
+11,田中太郎,Tanaka Taro,123456789012,+81-3-1234-5678,JP1234567890123456789012345,3530111333300000,8500000,1990-04-01,Tokyo,東京,tanaka@email.jp,アクティブ,Toyota,Japan,Japanese Yen salary
+12,佐藤花子,Sato Hanako,987654321098,+81 90 1234 5678,JP9876543210987654321098765,3530222444400000,6200000,1988-07-15,Osaka,大阪,hanako.s@company.jp,有効,Sony,Japan,Japanese status
+13,박지훈,Park Jihoon,881201-1234567,+82-10-1234-5678,KR1234567890123456789012345,9410123456789012,45000000,1988-12-01,Seoul,서울,jihoon.park@email.kr,활성,Samsung,Korea,Korean Won salary
+14,김민서,Kim Minseo,950315-2345678,010-9876-5432,KR9876543210987654321098765,9410987654321098,38000000,1995-03-15,Busan,부산,minseo.k@work.kr,활성화,LG Electronics,Korea,Korean RRN format
+15,Александр Иванов,Alexander Ivanov,45 12 345678,+7-495-123-4567,RU1234567890123456789012345,2200123456789012,150000,1982-09-15,Moscow,Москва,a.ivanov@email.ru,Активный,Gazprom,Russia,Russian Ruble passport
+16,Мария Петрова,Maria Petrova,46 13 654321,+7 926 987 6543,RU9876543210987654321098765,2200987654321098,180000,1990-03-22,Saint Petersburg,Санкт-Петербург,m.petrova@company.ru,Активен,Sberbank,Russia,Russian entry
+17,राहुल शर्मा,Rahul Sharma,2345 6789 0123,+91-98-1234-5678,IN1234567890123456789012345,5200001234567890,1500000,1993-01-26,Mumbai,मुंबई,rahul.s@email.in,सक्रिय,Infosys,India,Hindi Aadhaar
+18,प्रिया गुप्ता,Priya Gupta,3456 7890 1234,+91 99 8765 4321,IN9876543210987654321098765,5200009876543210,1200000,1995-08-15,Delhi,दिल्ली,priya.g@work.in,सक्रिय,Wipro,India,Indian PAN ABCDE1234F
+19,אברהם כהן,Avraham Cohen,123456782,+972-3-123-4567,IL620108000000099999999,4580123456789012,35000,1978-02-28,Tel Aviv,תל אביב,avraham@email.il,פעיל,Teva,Israel,Hebrew entry
+20,שרה לוי,Sarah Levy,987654321,+972 50 987 6543,IL620108000000088888888,4580987654321098,42000,1985-11-10,Jerusalem,ירושלים,sarah.l@company.il,פעיל,Check Point,Israel,Israeli ID
