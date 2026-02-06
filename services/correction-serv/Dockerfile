@@ -27,6 +27,14 @@ RUN apt-get update && apt-get install -y \
 # Python dependencies
 # -------------------------------
 COPY requirements.txt .
+
+# CRITICAL: Install CPU-only PyTorch FIRST (before requirements.txt)
+# This prevents downloading 1.5GB+ of NVIDIA CUDA drivers
+RUN pip install --no-cache-dir \
+    torch>=2.0.0 \
+    --index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # -------------------------------

@@ -3,7 +3,7 @@ import httpx
 from fastapi import HTTPException
 from backend.core.patterns import MOROCCAN_PATTERNS, ARABIC_PATTERNS
 
-async def sync_taxonomy_to_atlas(taxonomy_engine):
+async def sync_taxonomy_to_atlas():  # Fixed: removed unused 'taxonomy_engine' parameter
     """
     Sync FULL taxonomy to Apache Atlas with strict throttling to prevent VM overload.
     1. Technical Sync: EntityDefs & ClassificationDefs (Batch=3, Sleep=2s)

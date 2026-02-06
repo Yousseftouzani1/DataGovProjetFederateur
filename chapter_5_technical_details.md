@@ -16,9 +16,10 @@ Le tableau ci-dessous résume les outils et versions utilisés dans l'environnem
 | **Frontend** | React (Vite) | 19.2.0 | Interface utilisateur moderne et réactive |
 | **Base de Données** | MongoDB | Latest | Stockage NoSQL flexible pour les métadonnées et logs |
 | **Orchestration** | Apache Airflow | 2.7.1 | Gestion des pipelines de données (DAGs) |
-| **Conteneurisation** | Docker | 24.0+ | Isolation des services |
-| **Gouvernance** | Apache Atlas | 2.3.0 | Gestion des métadonnées et lignage |
-| **Sécurité** | Apache Ranger | 2.4.0 | Gestion des politiques d'accès |
+| **Conteneurisation** | Docker | 28.1.1 | Isolation des services |
+| **HDP Platform** | Hortonworks HDP | 3.0.1 | Distribution Hadoop complète |
+| **Gouvernance** | Apache Atlas | 1.0.0 | Gestion des métadonnées et lignage (HDP 3.0.1) |
+| **Sécurité** | Apache Ranger | 1.1.0 | Gestion des politiques d'accès (HDP 3.0.1) |
 
 ### 5.1.2 Structure du Projet
 L'architecture du projet suit une structure de **monorepo** modulaire, facilitant la gestion des 9 microservices et de l'infrastructure commune.

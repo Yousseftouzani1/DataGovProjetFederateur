@@ -4,6 +4,7 @@ pandas
 numpy
 scikit-learn==1.6.0
 transformers==4.38.2
+# NOTE: torch is installed separately in Dockerfile with CPU-only flag (line 15)
 datasets
 nltk>=3.8.1
 python-dotenv

@@ -13,7 +13,7 @@ class BertClassifierAdapter:
     def __init__(self, model_dir="saved_models/bert_classifier"):
         self.model = None
         self.tokenizer = None
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cpu"  # Force CPU-only (no NVIDIA/CUDA dependencies)
         
         if os.path.exists(model_dir):
             try:

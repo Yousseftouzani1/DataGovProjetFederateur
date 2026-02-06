@@ -1,7 +1,7 @@
 import requests
 import json
 
-RANGER_URL = "http://192.168.110.132:6080"
+RANGER_URL = "http://localhost:6080"
 RANGER_AUTH = ("admin", "hortonworks1")
 HEADERS = {"Content-Type": "application/json"}
 TAG_SERVICE = "data_gov_tags"

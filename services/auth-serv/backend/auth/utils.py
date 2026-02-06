@@ -1,8 +1,11 @@
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
+import os
 
-SECRET_KEY = "SUPER_SECRET_KEY_ABC123"
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable is required for security")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -10,7 +13,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 pwd_context = CryptContext(schemes=["bcrypt", "sha256_crypt"], deprecated="auto")
 
 def hash_password(password):
-    print("DEBUG → password received:", password, type(password))
     return pwd_context.hash(password)
 
 def verify_password(password, hashed):

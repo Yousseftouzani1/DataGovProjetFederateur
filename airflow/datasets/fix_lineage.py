@@ -1,10 +1,13 @@
 import requests
 import os
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configuration
-ATLAS_URL = "http://192.168.110.132:21000"
-ATLAS_AUTH = ("admin", "ensias2025")
+ATLAS_URL = os.getenv("ATLAS_URL", "http://192.168.110.133:21000")
+ATLAS_AUTH = (os.getenv("ATLAS_USER", "admin"), os.getenv("ATLAS_PASSWORD", "ensias2025"))
 ANNOTATION_SERVICE_URL = "http://annotation-service:8007"
 EXPORT_FILENAME = "certified_export_20260117_132628.csv" # Hardcoded based on previous step
 
