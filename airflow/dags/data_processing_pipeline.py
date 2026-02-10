@@ -77,18 +77,25 @@ def check_service_health(service_name: str, **context):
 
 
 def upload_dataset(file_path: str, **context):
-    """Upload dataset to cleaning service"""
+    """Upload dataset to cleaning service, or reuse existing dataset_id from dag_run conf"""
+    # If dataset_id is provided in dag_run conf, skip upload and reuse it
+    conf = context.get('dag_run', None)
+    if conf and hasattr(conf, 'conf') and conf.conf.get('dataset_id'):
+        dataset_id = conf.conf['dataset_id']
+        print(f"✅ Reusing existing dataset: {dataset_id}")
+        context['ti'].xcom_push(key='dataset_id', value=dataset_id)
+        return dataset_id
+
     url = f"{SERVICE_URLS['cleaning']}/upload"
-    
+
     with open(file_path, 'rb') as f:
         files = {'file': (file_path.split('/')[-1], f)}
         response = requests.post(url, files=files)
-    
+
     if response.status_code == 200:
         result = response.json()
         dataset_id = result['dataset_id']
         print(f"✅ Uploaded dataset: {dataset_id}")
-        # Push to XCom for downstream tasks
         context['ti'].xcom_push(key='dataset_id', value=dataset_id)
         return dataset_id
     else:
@@ -96,18 +103,25 @@ def upload_dataset(file_path: str, **context):
 
 
 def profile_data(**context):
-    """Profile the dataset"""
+    """Profile the dataset — returns HTML report from YData Profiling"""
     dataset_id = context['ti'].xcom_pull(key='dataset_id')
     url = f"{SERVICE_URLS['cleaning']}/profile/{dataset_id}"
-    
+
     response = requests.get(url)
     if response.status_code == 200:
-        profile = response.json()
-        print(f"✅ Profile complete: {profile['rows']} rows")
-        context['ti'].xcom_push(key='profile', value=profile)
-        return profile
+        # Profile endpoint returns HTML report, not JSON
+        try:
+            profile = response.json()
+            print(f"✅ Profile complete: {profile.get('rows', 'N/A')} rows")
+            context['ti'].xcom_push(key='profile', value=profile)
+            return profile
+        except Exception:
+            # HTML report returned — profiling succeeded
+            print(f"✅ Profile complete (HTML report, {len(response.text)} bytes)")
+            context['ti'].xcom_push(key='profile', value={"status": "completed", "report_size": len(response.text)})
+            return {"status": "completed"}
     else:
-        raise Exception(f"Profiling failed: {response.text}")
+        raise Exception(f"Profiling failed: {response.status_code}")
 
 
 def clean_data(**context):
@@ -117,15 +131,16 @@ def clean_data(**context):
         return {"status": "skipped"}
 
     dataset_id = context['ti'].xcom_pull(key='dataset_id')
-    
-    # Check specific flag
-    remove_dups = is_feature_enabled("remove_duplicates")
-    url = f"{SERVICE_URLS['cleaning']}/clean/{dataset_id}/auto?remove_duplicates={str(remove_dups).lower()}"
-    
-    response = requests.post(url)
+    url = f"{SERVICE_URLS['cleaning']}/clean/{dataset_id}"
+
+    response = requests.post(url, json={
+        "remove_duplicates": is_feature_enabled("remove_duplicates"),
+        "handle_missing": "mean",
+        "remove_outliers": True
+    })
     if response.status_code == 200:
         result = response.json()
-        print(f"✅ Cleaned: {result['rows_removed']} rows removed")
+        print(f"✅ Cleaned: rows_before={result.get('metrics', {}).get('rows_before', '?')}, rows_after={result.get('metrics', {}).get('rows_after', '?')}")
         return result
     else:
         raise Exception(f"Cleaning failed: {response.text}")
@@ -192,72 +207,90 @@ def detect_pii_presidio(**context):
 
 
 def classify_sensitivity(**context):
-    """Classify sensitivity using classification service"""
+    """Classify sensitivity using classification service (ensemble model)"""
     dataset_id = context['ti'].xcom_pull(key='dataset_id')
-    
-    # Get dataset preview
+
+    # Get dataset preview as columnar data for the classification API
     preview_url = f"{SERVICE_URLS['cleaning']}/datasets/{dataset_id}/preview?rows=100"
     preview_response = requests.get(preview_url)
-    
+
     if preview_response.status_code != 200:
         raise Exception("Cannot get dataset preview")
-    
-    data = preview_response.json()['preview']
-    
-    classifications = []
-    for row in data:
-        text = " ".join(str(v) for v in row.values() if v)
-        response = requests.post(
-            f"{SERVICE_URLS['classification']}/classify",
-            json={"text": text}
-        )
-        if response.status_code == 200:
-            classifications.append(response.json())
-    
-    print(f"✅ Classified {len(classifications)} rows")
-    context['ti'].xcom_push(key='classifications', value=classifications)
-    return classifications
+
+    rows = preview_response.json()['preview']
+    if not rows:
+        print("⚠️ No data to classify")
+        return []
+
+    # Convert row-oriented data to columnar format (Dict[str, List])
+    columns = {}
+    for row in rows:
+        for key, val in row.items():
+            columns.setdefault(key, []).append(val)
+
+    response = requests.post(
+        f"{SERVICE_URLS['classification']}/classify",
+        json={"dataset_id": dataset_id, "data_sample": columns}
+    )
+
+    if response.status_code == 200:
+        result = response.json()
+        classifications = result.get('classifications', {})
+        pii_count = sum(1 for v in classifications.values() if v.get('level', 0) >= 3)
+        print(f"✅ Classified {len(classifications)} columns ({pii_count} PII)")
+        context['ti'].xcom_push(key='classifications', value=result)
+        return result
+    else:
+        print(f"⚠️ Classification failed: {response.text}")
+        return {}
 
 
 def detect_inconsistencies(**context):
-    """Detect data inconsistencies"""
+    """Detect data inconsistencies row by row"""
     dataset_id = context['ti'].xcom_pull(key='dataset_id')
-    
-    # Register dataset with correction service
-    preview_url = f"{SERVICE_URLS['cleaning']}/datasets/{dataset_id}/preview?rows=1000"
+
+    # Get dataset preview
+    preview_url = f"{SERVICE_URLS['cleaning']}/datasets/{dataset_id}/preview?rows=100"
     preview_response = requests.get(preview_url)
     data = preview_response.json()['preview']
-    
-    requests.post(
-        f"{SERVICE_URLS['correction']}/datasets/{dataset_id}/register",
-        json={"records": data}
-    )
-    
-    # Detect inconsistencies
-    response = requests.post(f"{SERVICE_URLS['correction']}/detect/{dataset_id}")
-    
-    if response.status_code == 200:
-        result = response.json()
-        print(f"✅ Found {result['total_inconsistencies']} inconsistencies")
-        context['ti'].xcom_push(key='inconsistencies', value=result)
-        return result
-    else:
-        raise Exception(f"Detection failed: {response.text}")
+
+    total_issues = 0
+    all_inconsistencies = []
+    for row in data:
+        response = requests.post(
+            f"{SERVICE_URLS['correction']}/detect",
+            json={"row": {k: str(v) if v is not None else "" for k, v in row.items()}}
+        )
+        if response.status_code == 200:
+            result = response.json()
+            total_issues += result.get('count', 0)
+            all_inconsistencies.extend(result.get('inconsistencies', []))
+
+    print(f"✅ Found {total_issues} inconsistencies across {len(data)} rows")
+    context['ti'].xcom_push(key='inconsistencies', value=all_inconsistencies)
+    return {"total_inconsistencies": total_issues, "rows_checked": len(data)}
 
 
 def apply_corrections(**context):
-    """Apply automatic corrections"""
+    """Apply automatic corrections row by row"""
     dataset_id = context['ti'].xcom_pull(key='dataset_id')
-    
-    response = requests.post(f"{SERVICE_URLS['correction']}/correct/{dataset_id}/auto")
-    
-    if response.status_code == 200:
-        result = response.json()
-        print(f"✅ Applied {result['corrections_applied']} corrections")
-        return result
-    else:
-        print(f"⚠️ Corrections failed, continuing: {response.text}")
-        return None
+
+    preview_url = f"{SERVICE_URLS['cleaning']}/datasets/{dataset_id}/preview?rows=100"
+    preview_response = requests.get(preview_url)
+    data = preview_response.json()['preview']
+
+    corrections_applied = 0
+    for row in data:
+        response = requests.post(
+            f"{SERVICE_URLS['correction']}/correct",
+            json={"row": {k: str(v) if v is not None else "" for k, v in row.items()}}
+        )
+        if response.status_code == 200:
+            result = response.json()
+            corrections_applied += len(result.get('corrections', []))
+
+    print(f"✅ Applied {corrections_applied} corrections across {len(data)} rows")
+    return {"corrections_applied": corrections_applied, "rows_processed": len(data)}
 
 
 def evaluate_quality(**context):

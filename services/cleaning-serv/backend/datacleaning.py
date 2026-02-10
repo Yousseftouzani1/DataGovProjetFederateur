@@ -10,8 +10,14 @@ import io
 import os
 
 # =================== CONFIG MONGODB ===================
-client = MongoClient("mongodb://localhost:27017/")
-db = client['mydatabase']
+from dotenv import load_dotenv
+load_dotenv()
+MONGO_URL = os.getenv("MONGODB_URI")
+if not MONGO_URL:
+    raise RuntimeError("MONGODB_URI environment variable is required. Set it in .env file.")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "DataGovDB")
+client = MongoClient(MONGO_URL)
+db = client[DATABASE_NAME]
 fs = gridfs.GridFS(db)
 
 # =================== FASTAPI ===================

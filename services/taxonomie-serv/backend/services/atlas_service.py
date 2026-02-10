@@ -13,8 +13,8 @@ async def sync_taxonomy_to_atlas():  # Fixed: removed unused 'taxonomy_engine' p
         from atlas_client import AtlasClient
         atlas_base = AtlasClient()
         
-        if atlas_base.mock_mode:
-            return {"warning": "Atlas in MOCK mode", "mock_mode": True}
+        if not atlas_base.is_healthy():
+            raise HTTPException(status_code=503, detail="Atlas is not reachable. Check ATLAS_URL in .env")
 
         auth = (atlas_base.user, atlas_base.password)
         base_url = f"{atlas_base.base_api}/types/typedefs"

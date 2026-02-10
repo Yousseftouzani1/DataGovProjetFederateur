@@ -276,15 +276,18 @@ async def submit_task(task_id: str, request: SubmitAnnotationRequest):
 @app.get("/users/{user_id}/stats")
 async def get_user_stats(user_id: str):
     tasks = await task_queue.get_user_tasks(user_id, TaskStatus.COMPLETED)
+    active_tasks = await task_queue.get_user_tasks(user_id, TaskStatus.ASSIGNED)
+    in_progress_tasks = await task_queue.get_user_tasks(user_id, TaskStatus.IN_PROGRESS)
     count = len(tasks)
+    pending_count = len(active_tasks) + len(in_progress_tasks)
     # THROUGHPUT ALGORITHM 8: Tasks / Time
     # Assuming time_spent_seconds is available
     total_time_seconds = sum([t.time_spent_seconds for t in tasks if t.time_spent_seconds])
     throughput = (count / (total_time_seconds / 3600)) if total_time_seconds > 0 else 0
-    
+
     avg_time = np.mean([t.time_spent_seconds for t in tasks if t.time_spent_seconds]) if count > 0 else 0
     accuracy = 85.0 # Logic: Compare vs consensus in production
-    
+
     # KAPPA ALGORITHM 7 (cdc 6)
     labels = [1 if a.is_valid else 0 for t in tasks for a in t.annotations]
     if len(labels) < 2: kappa = 0.0
@@ -298,9 +301,10 @@ async def get_user_stats(user_id: str):
     # Normalized Speed (0-1), higher is faster. Assume 30s is "perfect" (1.0), 120s is "slow" (0.1)
     speed_normalized = max(0.1, min(1.0, 30 / avg_time)) if avg_time > 0 else 0.5
     quality_score = (0.5 * (accuracy/100)) + (0.3 * kappa) + (0.2 * speed_normalized)
-        
+
     return {
         "completed": count,
+        "pending": pending_count,
         "avg_time": round(float(avg_time), 1),
         "accuracy": accuracy,
         "kappa": round(float(kappa), 2),
@@ -332,7 +336,37 @@ EXPORT_DIR = "/opt/airflow/datasets/certified"
 @app.get("/exports")
 async def exports():
     if not os.path.exists(EXPORT_DIR): return []
-    return [{"filename": f, "size": os.path.getsize(os.path.join(EXPORT_DIR, f))} for f in os.listdir(EXPORT_DIR) if f.endswith(".csv")]
+    results = []
+    for f in os.listdir(EXPORT_DIR):
+        if f.endswith(".csv"):
+            fpath = os.path.join(EXPORT_DIR, f)
+            stat = os.stat(fpath)
+            results.append({
+                "filename": f,
+                "size": stat.st_size,
+                "size_kb": round(stat.st_size / 1024, 1),
+                "created_at": datetime.fromtimestamp(stat.st_ctime).isoformat(),
+                "type": "csv"
+            })
+    return results
+
+@app.get("/exports/download/{filename}")
+async def download_export(filename: str):
+    """Download an exported certified CSV file."""
+    from fastapi.responses import FileResponse
+    import re
+    # Sanitize filename to prevent path traversal
+    if not re.match(r'^[\w\-\.]+\.csv$', filename):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+    file_path = os.path.join(EXPORT_DIR, filename)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail=f"Export file '{filename}' not found")
+    return FileResponse(
+        path=file_path,
+        media_type="text/csv",
+        filename=filename,
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8007)

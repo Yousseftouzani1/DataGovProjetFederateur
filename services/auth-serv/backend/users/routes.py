@@ -75,12 +75,20 @@ async def reject_user(username: str):
 
 
 @router.post("/create-admin")
-async def create_admin_temp():
-    hashed = hash_password("Admin123")
+async def create_admin_temp(admin_password: str = None):
+    """Create initial admin - password MUST be provided as query param, never hardcoded."""
+    if not admin_password:
+        raise HTTPException(status_code=400, detail="admin_password query parameter is required")
+    if len(admin_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+    existing = await db["users"].find_one({"username": "admin"})
+    if existing:
+        raise HTTPException(status_code=409, detail="Admin user already exists")
+    hashed = hash_password(admin_password)
     await db["users"].insert_one({
         "username": "admin",
         "password": hashed,
         "role": "admin",
         "status": "active"
     })
-    return {"msg": "Admin created"}
+    return {"msg": "Admin created successfully"}

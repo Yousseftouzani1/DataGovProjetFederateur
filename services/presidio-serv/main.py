@@ -15,8 +15,11 @@ from pydantic import BaseModel, Field
 
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
-client = AsyncIOMotorClient(os.getenv("MONGODB_URI", "mongodb://datagov-mongo:27017"))
-db = client["DataGovDB"]
+_mongo_uri = os.getenv("MONGODB_URI")
+if not _mongo_uri:
+    raise RuntimeError("MONGODB_URI environment variable is required. Set it in .env file.")
+client = AsyncIOMotorClient(_mongo_uri)
+db = client[os.getenv("DATABASE_NAME", "DataGovDB")]
 
 # Presidio imports
 try:
@@ -146,8 +149,8 @@ class MoroccanPresidioEngine:
         try:
             from pymongo import MongoClient
             import os
-            client_sync = MongoClient(os.getenv("MONGODB_URI", "mongodb://datagov-mongo:27017"))
-            db_sync = client_sync["DataGovDB"]
+            client_sync = MongoClient(os.getenv("MONGODB_URI"))
+            db_sync = client_sync[os.getenv("DATABASE_NAME", "DataGovDB")]
             custom_recognizers = db_sync["presidio_recognizers"].find()
             
             for rec in custom_recognizers:

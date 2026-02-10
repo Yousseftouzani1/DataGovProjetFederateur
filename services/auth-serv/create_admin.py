@@ -1,8 +1,9 @@
 """
 Quick script to create an Admin user in MongoDB
-Run this once to create an admin account
+Run: python create_admin.py <password>
 """
 import asyncio
+import sys
 from motor.motor_asyncio import AsyncIOMotorClient
 from passlib.context import CryptContext
 import os
@@ -11,63 +12,60 @@ from dotenv import load_dotenv
 # Load .env from project root
 load_dotenv(dotenv_path="../../.env")
 
-# Use same hash as auth-serv (sha256_crypt, NOT bcrypt)
 pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
-    """Hash password using sha256_crypt (same as auth-serv)"""
     return pwd_context.hash(password)
 
 async def create_admin():
-    # Connect to MongoDB - use same variables as auth-serv
-    MONGO_URL = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
-    DATABASE_NAME = os.getenv("DATABASE_NAME", "datagov")
-    
+    if len(sys.argv) < 2:
+        print("Usage: python create_admin.py <admin_password>")
+        print("ERROR: Password must be provided as argument. Never hardcode passwords.")
+        sys.exit(1)
+
+    admin_password = sys.argv[1]
+    if len(admin_password) < 8:
+        print("ERROR: Password must be at least 8 characters.")
+        sys.exit(1)
+
+    MONGO_URL = os.getenv("MONGODB_URI")
+    if not MONGO_URL:
+        print("ERROR: MONGODB_URI not found in .env file.")
+        sys.exit(1)
+    DATABASE_NAME = os.getenv("DATABASE_NAME", "DataGovDB")
+
     print(f"Connecting to MongoDB...")
     print(f"   Database: {DATABASE_NAME}")
-    
+
     client = AsyncIOMotorClient(MONGO_URL)
     db = client[DATABASE_NAME]
-    
-    # Check if admin exists
+
     existing = await db["users"].find_one({"username": "admin"})
     if existing:
-        print("⚠️ Admin user already exists! Updating password...")
+        print("Admin user already exists! Updating password...")
         await db["users"].update_one(
             {"username": "admin"},
-            {"$set": {"password": hash_password("admin123"), "status": "active"}}
+            {"$set": {"password": hash_password(admin_password), "status": "active"}}
         )
-        print("✅ Admin password updated to: admin123")
+        print("Admin password updated.")
     else:
-        # Create admin user
         admin_user = {
             "username": "admin",
-            "password": hash_password("admin123"),
-            "role": "Admin",
+            "password": hash_password(admin_password),
+            "role": "admin",
             "status": "active",
             "email": "admin@datagov.ma"
         }
-        
-        result = await db["users"].insert_one(admin_user)
-        print(f"✅ Admin user created!")
-    
+        await db["users"].insert_one(admin_user)
+        print("Admin user created!")
+
     print(f"\n   Username: admin")
-    print(f"   Password: admin123")
     print(f"   Role: Admin")
-    
-    # Also approve josef if exists
-    result = await db["users"].update_one(
-        {"username": "josef"},
-        {"$set": {"status": "active"}}
-    )
-    if result.modified_count > 0:
-        print(f"\n✅ 'josef' user approved!")
-    
-    # List all users
-    print(f"\n📋 All users in database:")
+
+    print(f"\nAll users in database:")
     async for user in db["users"].find():
         print(f"   - {user['username']} ({user['role']}) - {user['status']}")
-    
+
     client.close()
 
 if __name__ == "__main__":

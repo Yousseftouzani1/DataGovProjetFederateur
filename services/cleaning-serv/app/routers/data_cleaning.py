@@ -53,8 +53,11 @@ UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/app/storage/uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 PRESIDIO_URL = os.getenv("PRESIDIO_URL", "http://presidio-service:8003")
+TAXONOMIE_URL = os.getenv("TAXONOMIE_URL", "http://taxonomie-service:8002")
 CLASSIFICATION_URL = os.getenv("CLASSIFICATION_URL", "http://classification-service:8005")
+CORRECTION_URL = os.getenv("CORRECTION_URL", "http://correction-service:8006")
 ANNOTATION_SERVICE_URL = os.getenv("ANNOTATION_SERVICE_URL", "http://annotation-service:8007")
+ETHIMASK_URL = os.getenv("ETHIMASK_URL", "http://ethimask-service:8009")
 
 # Ensure /app is in path for backend imports
 if '/app' not in sys.path:
@@ -138,28 +141,37 @@ async def upload_dataset(file: UploadFile = File(...)):
             print(f"❌ File Persistence Error: {fe}")
             raise HTTPException(500, f"Storage failure: {str(fe)}")
 
-        # --- REMEDIATION STEP 1: PII SCAN (Presidio) ---
+        # --- REMEDIATION STEP 1: PII SCAN (Presidio + Taxonomie) ---
         pii_tags = []
+        sample_df = df.head(15)
+        if len(df) > 20:
+            sample_df = pd.concat([sample_df, df.sample(5)])
+        sample_text = sample_df.to_string()
+
+        # 1a. Presidio scan
         try:
-            print("🕵️ Starting PII Scan...")
-            # INCREASED SAMPLING: Take 5 random rows + first 15 rows for better coverage
-            sample_df = df.head(15)
-            if len(df) > 20:
-                sample_df = pd.concat([sample_df, df.sample(5)])
-            
-            sample_text = sample_df.to_string()
             presidio_resp = requests.post(f"{PRESIDIO_URL}/analyze", json={
-                "text": sample_text,
-                "language": "fr",
-                "score_threshold": 0.3 # Lower threshold for better sensitivity
-            }, timeout=10) # Increased timeout
-            
+                "text": sample_text, "language": "fr", "score_threshold": 0.3
+            }, timeout=10)
             if presidio_resp.status_code == 200:
                 results = presidio_resp.json().get("detections", [])
                 pii_tags = list(set([d['entity_type'] for d in results]))
-                print(f"🕵️ Presidio Detected: {pii_tags}")
+                print(f"Presidio Detected: {pii_tags}")
         except Exception as e:
-            print(f"⚠️ Presidio Scan Failed: {e}")
+            print(f"Presidio Scan Failed: {e}")
+
+        # 1b. Taxonomie scan (Moroccan patterns - 47+ patterns)
+        try:
+            taxo_resp = requests.post(f"{TAXONOMIE_URL}/analyze", json={
+                "text": sample_text, "language": "fr", "confidence_threshold": 0.5
+            }, timeout=10)
+            if taxo_resp.status_code == 200:
+                taxo_data = taxo_resp.json()
+                taxo_tags = [d.get('entity_type', d.get('category', '')) for d in taxo_data.get("detections", [])]
+                pii_tags = list(set(pii_tags + [t for t in taxo_tags if t]))
+                print(f"Taxonomie Detected: {taxo_tags}")
+        except Exception as e:
+            print(f"Taxonomie Scan Failed (non-blocking): {e}")
 
         # --- REMEDIATION STEP 2: ATLAS REGISTRATION ---
         atlas_guid = "mock-guid-fallback"
@@ -383,21 +395,29 @@ async def list_datasets():
     if raw_datasets_col is not None:
         cursor = raw_datasets_col.find({}, {"_id": 0}).sort("created_at", -1)
         results = await cursor.to_list(length=100)
-        
-        # Initialize Atlas Client if needed for sync
-        atlas = AtlasClient() if AtlasClient else None
-        
+
+        # Check Atlas health once - skip all per-dataset calls if unreachable
+        atlas = None
+        try:
+            if AtlasClient:
+                _atlas = AtlasClient()
+                if _atlas.is_healthy():
+                    atlas = _atlas
+        except Exception:
+            pass
+
         for d in results:
-            # Live Sync with Atlas for Tags
             tags = d.get("pii_tags", [])
             guid = d.get("atlas_guid")
-            
+
             if atlas and guid and guid != "mock-guid-fallback":
-                atlas_tags = atlas.get_classifications(guid)
-                if atlas_tags:
-                    # Merge and unique
-                    tags = list(set(tags + atlas_tags))
-            
+                try:
+                    atlas_tags = atlas.get_classifications(guid)
+                    if atlas_tags:
+                        tags = list(set(tags + atlas_tags))
+                except Exception:
+                    atlas = None  # Stop trying Atlas for remaining datasets
+
             datasets_list.append({
                 "id": d.get("dataset_id", "unknown"),
                 "name": d.get("name", "Unnamed Dataset"),
@@ -414,14 +434,25 @@ async def list_datasets():
         return datasets_list
 
     # Fallback to cache
-    atlas = AtlasClient() if AtlasClient else None
+    if not atlas:
+        try:
+            if AtlasClient:
+                _atlas = AtlasClient()
+                if _atlas.is_healthy():
+                    atlas = _atlas
+        except Exception:
+            pass
+
     for k, v in DATASETS.items():
         tags = v.get("pii_tags", [])
         guid = v.get("atlas_guid")
         if atlas and guid and guid != "mock-guid-fallback":
-            atlas_tags = atlas.get_classifications(guid)
-            if atlas_tags:
-                tags = list(set(tags + atlas_tags))
+            try:
+                atlas_tags = atlas.get_classifications(guid)
+                if atlas_tags:
+                    tags = list(set(tags + atlas_tags))
+            except Exception:
+                atlas = None  # Stop trying Atlas for remaining datasets
                 
         datasets_list.append({
             "id": k,
@@ -615,7 +646,7 @@ async def trigger_airflow_pipeline(dataset_id: Optional[str] = None, payload: Op
                 sample_data = {"filename": dataset_name}
                 if payload.detections:
                     sample_data["preview"] = payload.detections[0].value
-                
+
                 requests.post(f"{ANNOTATION_SERVICE_URL}/tasks", json={
                     "dataset_id": effective_id,
                     "annotation_type": "pii_validation",
@@ -624,11 +655,50 @@ async def trigger_airflow_pipeline(dataset_id: Optional[str] = None, payload: Op
                     "row_indices": [0],
                     "data_samples": [sample_data]
                 }, timeout=5)
-            except: pass
+            except:
+                pass
+
+        # Forward to Classification Service (Tâche 5) - classify columns
+        try:
+            if effective_id in DATASETS:
+                df = DATASETS[effective_id]["df"]
+                data_sample = {}
+                for col in df.columns:
+                    vals = df[col].head(20).tolist()
+                    # Replace NaN/Inf with None for JSON compatibility
+                    import math
+                    data_sample[col] = [None if (isinstance(v, float) and (math.isnan(v) or math.isinf(v))) else v for v in vals]
+                requests.post(f"{CLASSIFICATION_URL}/classify", json={
+                    "dataset_id": effective_id,
+                    "data_sample": data_sample
+                }, timeout=15)
+                print(f"Classification triggered for {effective_id}")
+        except Exception as ce:
+            print(f"Classification call failed (non-blocking): {ce}")
+
+        # Forward to Correction Service (Tâche 6) - detect & queue corrections
+        try:
+            if effective_id in DATASETS:
+                df = DATASETS[effective_id]["df"]
+                sample_rows = df.head(10).to_dict(orient="records")
+                for row in sample_rows:
+                    try:
+                        # Convert all values to strings for safety
+                        clean_row = {k: str(v) if v is not None else "" for k, v in row.items()}
+                        requests.post(f"{CORRECTION_URL}/correct", json={
+                            "row": clean_row,
+                            "dataset_id": effective_id,
+                            "auto_apply": True
+                        }, timeout=10)
+                    except:
+                        pass
+                print(f"Correction detection triggered for {effective_id}")
+        except Exception as coe:
+            print(f"Correction call failed (non-blocking): {coe}")
 
     if effective_id in DATASETS:
         DATASETS[effective_id]["status"] = "processing_pipeline"
-    
+
     return {
         "success": airflow_success,
         "status": "triggered" if airflow_success else "failed",

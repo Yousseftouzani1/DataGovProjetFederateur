@@ -15,10 +15,17 @@ import os
 from typing import Optional, Dict, Any
 from enum import Enum
 
-# Configuration
-RANGER_URL = os.getenv("RANGER_URL", "http://100.91.176.196:6080")
+# Configuration - ALL values from .env, no hardcoded fallbacks
+from dotenv import load_dotenv
+load_dotenv()
+
+RANGER_URL = os.getenv("RANGER_URL")
+if not RANGER_URL:
+    raise RuntimeError("RANGER_URL environment variable is required. Set it in .env file.")
 RANGER_USER = os.getenv("RANGER_USER", "admin")
-RANGER_PASSWORD = os.getenv("RANGER_PASSWORD", "hortonworks1")
+RANGER_PASSWORD = os.getenv("RANGER_PASSWORD")
+if not RANGER_PASSWORD:
+    raise RuntimeError("RANGER_PASSWORD environment variable is required. Set it in .env file.")
 
 
 class AccessDecision(Enum):

@@ -191,9 +191,12 @@ async def update_user_status(username: str, status: str, payload: dict = Depends
 import requests as ranger_requests
 import os
 
-# Use environment variable or fallback to localhost, NEVER hardcode external IPs
+# Read Ranger config from environment - NO hardcoded credentials
+from dotenv import load_dotenv
+load_dotenv()
+
 RANGER_URL = os.getenv("RANGER_URL", "http://localhost:6080")
-RANGER_AUTH = ("admin", "hortonworks1")
+RANGER_AUTH = (os.getenv("RANGER_USER", "admin"), os.getenv("RANGER_PASSWORD", ""))
 
 @router.get("/ranger/check-access")
 async def check_ranger_access(

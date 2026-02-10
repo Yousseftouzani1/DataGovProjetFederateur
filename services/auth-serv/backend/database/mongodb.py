@@ -7,8 +7,10 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "../../../../.en
 
 # Load from environment variables
 # Uses MONGODB_URI from .env file
-MONGO_URL = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "datagov")
+MONGO_URL = os.getenv("MONGODB_URI")
+if not MONGO_URL:
+    raise RuntimeError("MONGODB_URI environment variable is required. Set it in .env file.")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "DataGovDB")
 
 try:
     client = AsyncIOMotorClient(MONGO_URL, serverSelectionTimeoutMS=5000)

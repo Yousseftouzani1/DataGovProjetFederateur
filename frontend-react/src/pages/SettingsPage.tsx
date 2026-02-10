@@ -48,11 +48,7 @@ const SettingsPage = () => {
         setIsSyncing(true);
         try {
             const resp = await apiClient.post('/taxonomie/sync-atlas');
-            if (resp.data.mock_mode) {
-                addToast('⚠️ Atlas is in MOCK mode. Patterns not synced to real cluster.', 'info');
-            } else {
-                addToast(`✅ Synced ${resp.data.synced} terms to Apache Atlas!`, 'success');
-            }
+            addToast(`Synced ${resp.data.synced_technical || 0} classifications & ${resp.data.synced_glossary || 0} glossary terms to Atlas!`, 'success');
         } catch (err) {
             console.error(err);
             addToast('❌ Failed to sync with Atlas. Check cluster connection.', 'error');
@@ -199,7 +195,7 @@ const SettingsPage = () => {
                         <RefreshCw size={18} className="mr-2" />
                         Sync Glossary to Atlas
                     </Button>
-                    <Button variant="ghost" onClick={() => window.open('http://100.91.176.196:21000', '_blank')}>
+                    <Button variant="ghost" onClick={() => window.open(import.meta.env.VITE_ATLAS_UI_URL || '/api/atlas-redirect', '_blank')}>
                         Open Atlas UI
                     </Button>
                 </div>

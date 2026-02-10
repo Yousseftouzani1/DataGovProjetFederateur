@@ -15,8 +15,11 @@ taxonomy_engine = TaxonomyEngine()
 
 import os
 from pymongo import MongoClient
-client = MongoClient(os.getenv("MONGODB_URI", "mongodb://datagov-mongo:27017"))
-db = client["DataGovDB"]
+_mongo_uri = os.getenv("MONGODB_URI")
+if not _mongo_uri:
+    raise RuntimeError("MONGODB_URI environment variable is required. Set it in .env file.")
+client = MongoClient(_mongo_uri)
+db = client[os.getenv("DATABASE_NAME", "DataGovDB")]
 
 @router.get("/")
 def root():
@@ -82,7 +85,7 @@ def get_patterns():
 @router.post("/sync-atlas")
 async def sync_atlas_endpoint():
     """Sync taxonomy to Apache Atlas"""
-    return await sync_taxonomy_to_atlas(taxonomy_engine)
+    return await sync_taxonomy_to_atlas()
 
 @router.get("/patterns/mongodb/status")
 def get_mongodb_status():

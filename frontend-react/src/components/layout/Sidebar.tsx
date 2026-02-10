@@ -61,11 +61,11 @@ const Sidebar = () => {
 
     const menuItems = [
         { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', path: '/', roles: ['admin', 'steward', 'annotator', 'labeler'] },
-        { id: 'datasets', icon: Database, label: 'Data Pipeline', path: '/datasets', roles: ['annotator'] }, // ONLY Annotator (per request)
-        { id: 'pii', icon: ShieldAlert, label: 'PII Detection', path: '/pii', roles: ['annotator'] }, // ONLY Annotator
-        { id: 'discovery', icon: FileSearch, label: 'Data Discovery', path: '/discovery', roles: ['steward'] }, // ONLY Steward
-        { id: 'quality', icon: CheckCircle2, label: 'Quality Hub', path: '/quality', roles: ['steward'] }, // ONLY Steward
-        { id: 'tasks', icon: ClipboardList, label: 'Task Queue', path: '/tasks', roles: ['annotator', 'labeler'] },
+        { id: 'datasets', icon: Database, label: 'Data Pipeline', path: '/datasets', roles: ['admin', 'steward', 'annotator'] },
+        { id: 'pii', icon: ShieldAlert, label: 'PII Detection', path: '/pii', roles: ['admin', 'steward', 'annotator'] },
+        { id: 'discovery', icon: FileSearch, label: 'Data Discovery', path: '/discovery', roles: ['admin', 'steward', 'annotator'] },
+        { id: 'quality', icon: CheckCircle2, label: 'Quality Hub', path: '/quality', roles: ['admin', 'steward'] },
+        { id: 'tasks', icon: ClipboardList, label: 'Task Queue', path: '/tasks', roles: ['admin', 'steward', 'annotator', 'labeler'] },
         { id: 'users', icon: Users, label: 'User Control', path: '/users', roles: ['admin'] },
         { id: 'audit', icon: History, label: 'Audit Logs', path: '/audit', roles: ['admin', 'steward'] },
         { id: 'settings', icon: Settings, label: 'Settings', path: '/settings', roles: ['admin'] },

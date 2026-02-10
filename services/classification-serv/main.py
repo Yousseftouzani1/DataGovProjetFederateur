@@ -21,7 +21,7 @@ app.add_middleware(
 )
 
 # Include Router
-app.include_router(classification.router, prefix="/api/v1")
+app.include_router(classification.router)
 
 @app.get("/health")
 async def health_check():

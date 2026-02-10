@@ -16,16 +16,19 @@ except ImportError:
 
 from ..ml_models.ensemble import EnsembleClassifier
 
-router = APIRouter(prefix="/classification", tags=["Classification (Tâche 5)"])
+router = APIRouter(tags=["Classification (Tâche 5)"])
 
 # Load model ONCE at startup
 classifier = EnsembleClassifier() 
 
 # Database Setup (US-CLASS-04 Persistence)
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://datagov-mongo:27017")
+MONGO_URI = os.getenv("MONGODB_URI")
+if not MONGO_URI:
+    raise RuntimeError("MONGODB_URI environment variable is required.")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "DataGovDB")
 try:
     mongo_client = MongoClient(MONGO_URI)
-    db = mongo_client["datagov_classification"]
+    db = mongo_client[DATABASE_NAME]
     history_col = db["classification_history"]
 except Exception as e:
     print(f"⚠️ Warning: MongoDB not connected: {e}")
@@ -60,35 +63,6 @@ async def classify_dataset(request: ClassificationRequest, background_tasks: Bac
         if atlas_client and request.dataset_id:
             background_tasks.add_task(tag_in_atlas, request.dataset_id, col_name, res['code'])
 
-async def tag_in_atlas(dataset_id: str, col_name: str, classification_code: str):
-    """
-    Push classification tag to Atlas entity.
-    """
-    if not atlas_client:
-        return
-
-    try:
-        # 1. Find the column entity GUID (or dataset GUID first)
-        # For simplicity in this demo, we assume dataset_id is the name
-        dataset_guid = atlas_client.get_entity_guid(dataset_id)
-        
-        if dataset_guid:
-            # 2. In a real real-world scenario, we'd tag the COLUMN entity.
-            # Here we might tag the DATASET with a detailed attribute or try to find the column.
-            # Let's use the 'register_pii_columns' helper which does exactly this.
-            
-            detection = {
-                "field": col_name,
-                "type": classification_code,
-                "confidence": 0.95 # Assumed from Ensemble
-            }
-            
-            atlas_client.register_pii_columns(dataset_guid, dataset_id, [detection])
-            print(f"✅ [Atlas] Tagged {col_name} as {classification_code} in {dataset_id}")
-            
-    except Exception as e:
-        print(f"⚠️ [Atlas] Failed to tag {col_name}: {e}")
-
     # Persistence for US-CLASS-04 (Visualization)
     if history_col is not None:
         doc = {
@@ -100,11 +74,31 @@ async def tag_in_atlas(dataset_id: str, col_name: str, classification_code: str)
             }
         }
         history_col.insert_one(doc)
-        
+
     return {
         "dataset_id": request.dataset_id,
         "classifications": results
     }
+
+async def tag_in_atlas(dataset_id: str, col_name: str, classification_code: str):
+    """
+    Push classification tag to Atlas entity.
+    """
+    if not atlas_client:
+        return
+
+    try:
+        dataset_guid = atlas_client.get_entity_guid(dataset_id)
+        if dataset_guid:
+            detection = {
+                "field": col_name,
+                "type": classification_code,
+                "confidence": 0.95
+            }
+            atlas_client.register_pii_columns(dataset_guid, dataset_id, [detection])
+            print(f"✅ [Atlas] Tagged {col_name} as {classification_code} in {dataset_id}")
+    except Exception as e:
+        print(f"⚠️ [Atlas] Failed to tag {col_name}: {e}")
 
 @router.get("/stats")
 async def get_classification_stats():

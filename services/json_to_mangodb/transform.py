@@ -1,11 +1,17 @@
 import json
+import os
 from pymongo import MongoClient
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --------------------------------
 # CONFIGURATION
 # --------------------------------
-MONGO_URI = "mongodb://localhost:27017"  # or Atlas URI
-DB_NAME = "taxonomy_db"
+MONGO_URI = os.getenv("MONGODB_URI")
+if not MONGO_URI:
+    raise RuntimeError("MONGODB_URI environment variable is required. Set it in .env file.")
+DB_NAME = os.getenv("DATABASE_NAME", "DataGovDB")
 COLLECTION_NAME = "banking_taxonomy"
 JSON_FILE_PATH = "taxonomie.json"   # your file name
 

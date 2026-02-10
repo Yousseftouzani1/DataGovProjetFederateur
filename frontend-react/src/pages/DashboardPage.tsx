@@ -122,6 +122,7 @@ const DashboardPage = () => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedService, setSelectedService] = useState<string | null>(null);
     const [showWelcome, setShowWelcome] = useState(true);
+    const [roleStats, setRoleStats] = useState<any>(null);
 
     const fetchData = async () => {
         setIsRefreshing(true);
@@ -148,6 +149,13 @@ const DashboardPage = () => {
                 { label: 'System Nodes', value: `${updatedServices.filter(s => s.status === 'Healthy').length}/9`, trend: 'ACTIVE', icon: Server, color: 'text-purple-500' },
             ]);
 
+            // Fetch role-specific stats
+            if (['annotator', 'labeler'].includes(userInfo.role) && userInfo.name) {
+                try {
+                    const annotStatsResp = await apiClient.get(`/annotation/users/${userInfo.name}/stats`);
+                    setRoleStats(annotStatsResp.data);
+                } catch { /* stats unavailable */ }
+            }
 
         } catch (err) {
             console.error('Failed to fetch dashboard data', err);
@@ -291,14 +299,18 @@ const DashboardPage = () => {
                                 <Activity className="text-brand-primary" size={20} />
                                 System Benchmarks
                             </h3>
-                            <span className="text-[10px] font-black text-brand-primary bg-brand-primary/10 px-2 py-1 rounded-lg">LIVE: 124 req/s</span>
+                            <span className="text-[10px] font-black text-brand-primary bg-brand-primary/10 px-2 py-1 rounded-lg">
+                                {services.filter(s => s.status === 'Healthy').length}/9 Nodes Online
+                            </span>
                         </div>
                         <div className="h-24 flex items-end gap-1 px-2">
-                            {[40, 60, 45, 90, 65, 80, 50, 70, 85, 100, 95, 110].map((h, i) => (
-                                <motion.div key={i} initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: i * 0.05 }} className="flex-1 bg-brand-primary/30 rounded-t-sm border-t border-brand-primary/50" />
+                            {services.map((s, i) => (
+                                <motion.div key={i} initial={{ height: 0 }} animate={{ height: s.status === 'Healthy' ? '100%' : '15%' }} transition={{ delay: i * 0.05 }} className={`flex-1 ${s.status === 'Healthy' ? 'bg-brand-primary/30 border-t border-brand-primary/50' : 'bg-red-500/30 border-t border-red-500/50'} rounded-t-sm`} />
                             ))}
                         </div>
-                        <p className="text-[10px] text-slate-500 mt-4 text-center font-bold uppercase tracking-widest">Throughput Stability: 99.98%</p>
+                        <p className="text-[10px] text-slate-500 mt-4 text-center font-bold uppercase tracking-widest">
+                            Avg Latency: {Math.round(services.filter(s => s.status === 'Healthy').reduce((sum, s) => sum + parseInt(s.latency) || 0, 0) / Math.max(services.filter(s => s.status === 'Healthy').length, 1))}ms
+                        </p>
                     </motion.div>
                 )}
 
@@ -309,14 +321,18 @@ const DashboardPage = () => {
                                 <Zap className="text-emerald-500" size={20} />
                                 Compliance Trend (ISO 25012)
                             </h3>
-                            <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg">+12% This Week</span>
+                            <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg">
+                                {stats.find(s => s.label === 'Quality Score')?.value || 'N/A'}
+                            </span>
                         </div>
                         <div className="h-24 flex items-end gap-1 px-2">
-                            {[30, 35, 45, 40, 55, 60, 65, 75, 70, 85, 88, 92].map((h, i) => (
-                                <motion.div key={i} initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: i * 0.05 }} className="flex-1 bg-emerald-500/30 rounded-t-sm border-t border-emerald-500/50" />
+                            {services.map((s, i) => (
+                                <motion.div key={i} initial={{ height: 0 }} animate={{ height: s.status === 'Healthy' ? '90%' : '20%' }} transition={{ delay: i * 0.05 }} className={`flex-1 ${s.status === 'Healthy' ? 'bg-emerald-500/30 border-t border-emerald-500/50' : 'bg-red-500/30 border-t border-red-500/50'} rounded-t-sm`} />
                             ))}
                         </div>
-                        <p className="text-[10px] text-slate-500 mt-4 text-center font-bold uppercase tracking-widest">Quality Assurance Drift: LOW</p>
+                        <p className="text-[10px] text-slate-500 mt-4 text-center font-bold uppercase tracking-widest">
+                            {services.filter(s => s.status === 'Healthy').length} of 9 Services Compliant
+                        </p>
                     </motion.div>
                 )}
 
@@ -325,34 +341,45 @@ const DashboardPage = () => {
                         <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center text-purple-400 mb-4 border border-purple-500/30">
                             <FileCheck size={32} />
                         </div>
-                        <h4 className="text-3xl font-bold text-white mb-1">κ = 0.88</h4>
+                        <h4 className="text-3xl font-bold text-white mb-1">κ = {roleStats?.kappa?.toFixed(2) ?? '—'}</h4>
                         <p className="text-slate-400 text-sm font-medium mb-4">Inter-Annotator Agreement</p>
-                        <div className="px-4 py-1.5 bg-purple-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest">
-                            High Consistency Match
+                        <div className={`px-4 py-1.5 text-white rounded-full text-[10px] font-black uppercase tracking-widest ${
+                            (roleStats?.kappa ?? 0) >= 0.75 ? 'bg-purple-500' :
+                            (roleStats?.kappa ?? 0) >= 0.4 ? 'bg-orange-500' : 'bg-slate-500'
+                        }`}>
+                            {(roleStats?.kappa ?? 0) >= 0.75 ? 'High Consistency' :
+                             (roleStats?.kappa ?? 0) >= 0.4 ? 'Moderate Agreement' :
+                             roleStats?.completed ? 'Low Agreement' : 'No Data Yet'}
                         </div>
                     </motion.div>
                 )}
 
-                {userInfo.role === 'labeler' && (
+                {userInfo.role === 'labeler' && (() => {
+                    const completed = roleStats?.completed || 0;
+                    const pending = roleStats?.pending || 0;
+                    const total = completed + pending;
+                    const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+                    return (
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass p-8 rounded-[2.5rem] border border-cyan-500/20 bg-gradient-to-br from-cyan-500/5 to-transparent">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                 <History className="text-cyan-400" size={20} />
-                                Daily Quota Progress
+                                Task Progress
                             </h3>
-                            <span className="text-[10px] font-black text-cyan-400 bg-cyan-400/10 px-2 py-1 rounded-lg">8/10 Tasks</span>
+                            <span className="text-[10px] font-black text-cyan-400 bg-cyan-400/10 px-2 py-1 rounded-lg">{completed}/{total} Tasks</span>
                         </div>
                         <div className="space-y-4">
                             <div className="h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 p-1">
-                                <motion.div initial={{ width: 0 }} animate={{ width: '80%' }} className="h-full bg-cyan-500 rounded-full" />
+                                <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} className="h-full bg-cyan-500 rounded-full" />
                             </div>
                             <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase">
-                                <span>80% Complete</span>
-                                <span>2 Remaining</span>
+                                <span>{pct}% Complete</span>
+                                <span>{pending} Remaining</span>
                             </div>
                         </div>
                     </motion.div>
-                )}
+                    );
+                })()}
 
                 {/* Shared Insight (Contextual PII Trends) */}
                 <div className="glass p-8 rounded-[2.5rem] border border-white/5 flex flex-col justify-between">

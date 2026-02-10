@@ -412,8 +412,10 @@ async def initialize_he_context():
     Mandatory Task for Admin to enable HE capabilities.
     """
     if not TENSEAL_AVAILABLE:
-        # Mock success if TenSEAL is missing to prevent UI errors in dev
-        return {"status": "mock_initialized", "scheme": "CKKS", "poly_modulus_degree": 8192}
+        raise HTTPException(
+            status_code=503,
+            detail="TenSEAL library is not installed. Install it with: pip install tenseal>=0.3.0"
+        )
 
     try:
         # Create a real TenSEAL context

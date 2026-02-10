@@ -195,7 +195,7 @@ const DataPipelinePage = () => {
             </header>
 
             {/* Upload Section */}
-            {userRole === 'annotator' ? (
+            {['admin', 'steward', 'annotator'].includes(userRole) ? (
                 <div
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
