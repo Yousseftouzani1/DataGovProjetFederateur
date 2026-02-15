@@ -72,7 +72,7 @@ async def sync_taxonomy_to_atlas():  # Fixed: removed unused 'taxonomy_engine' p
                         description=f"Automatically detected pattern for {et}"
                     )
                     term_count += 1
-                except:
+                except Exception:
                     pass
         else:
             term_count = 0

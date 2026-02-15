@@ -22,6 +22,7 @@ import { RoleThemeProvider } from './context/RoleThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { RangerProvider } from './context/RangerContext';
 import RoleGuard from './components/auth/RoleGuard';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import { useEffect } from 'react';
 import { updateFavicon } from './utils/dynamicFavicon';
@@ -34,6 +35,7 @@ function App() {
   }, [user?.role]);
 
   return (
+    <ErrorBoundary>
     <Router>
       <Routes>
         {/* Public Routes */}
@@ -55,7 +57,7 @@ function App() {
                         <Route
                           path="/pii"
                           element={
-                            <RoleGuard allowedRoles={['admin', 'steward', 'annotator']}>
+                            <RoleGuard allowedRoles={['admin', 'steward', 'annotator', 'analyst']}>
                               <PIIDetectionPage />
                             </RoleGuard>
                           }
@@ -63,7 +65,7 @@ function App() {
                         <Route
                           path="/quality"
                           element={
-                            <RoleGuard allowedRoles={['admin', 'steward']}>
+                            <RoleGuard allowedRoles={['admin', 'steward', 'analyst']}>
                               <QualityPage />
                             </RoleGuard>
                           }
@@ -71,7 +73,7 @@ function App() {
                         <Route
                           path="/datasets"
                           element={
-                            <RoleGuard allowedRoles={['admin', 'steward', 'annotator']}>
+                            <RoleGuard allowedRoles={['admin', 'steward', 'annotator', 'analyst']}>
                               <DataPipelinePage />
                             </RoleGuard>
                           }
@@ -96,7 +98,7 @@ function App() {
                         <Route
                           path="/discovery"
                           element={
-                            <RoleGuard allowedRoles={['admin', 'steward', 'annotator']}>
+                            <RoleGuard allowedRoles={['admin', 'steward', 'annotator', 'analyst']}>
                               <DiscoveryPage />
                             </RoleGuard>
                           }
@@ -123,6 +125,7 @@ function App() {
         />
       </Routes>
     </Router>
+    </ErrorBoundary>
   );
 }
 

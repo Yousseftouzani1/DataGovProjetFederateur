@@ -82,7 +82,7 @@ class ContextualMasker:
              scale = sensitivity / epsilon
              noise = np.random.laplace(0, scale)
              return round(val + noise, 2)
-        except:
+        except Exception:
              return value # Cannot noise non-numeric
 
     def _pseudonymize(self, value: str, entity_type: str) -> str:

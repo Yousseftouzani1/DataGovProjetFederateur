@@ -115,7 +115,7 @@ def get_mongodb_status():
         try:
             from mongodb_client import test_connection as tc
             test_connection = tc
-        except:
+        except Exception:
             pass
 
         if not test_connection():

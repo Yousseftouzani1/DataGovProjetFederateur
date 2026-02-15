@@ -19,13 +19,9 @@ from enum import Enum
 from dotenv import load_dotenv
 load_dotenv()
 
-RANGER_URL = os.getenv("RANGER_URL")
-if not RANGER_URL:
-    raise RuntimeError("RANGER_URL environment variable is required. Set it in .env file.")
+RANGER_URL = os.getenv("RANGER_URL", "")
 RANGER_USER = os.getenv("RANGER_USER", "admin")
-RANGER_PASSWORD = os.getenv("RANGER_PASSWORD")
-if not RANGER_PASSWORD:
-    raise RuntimeError("RANGER_PASSWORD environment variable is required. Set it in .env file.")
+RANGER_PASSWORD = os.getenv("RANGER_PASSWORD", "")
 
 
 class AccessDecision(Enum):
@@ -36,12 +32,15 @@ class AccessDecision(Enum):
 
 class RangerClient:
     """Client for Apache Ranger policy evaluation"""
-    
+
     def __init__(self, base_url: str = RANGER_URL, user: str = RANGER_USER, password: str = RANGER_PASSWORD):
         self.base_url = base_url
         self.auth = (user, password)
         self.tag_service = "data_gov_tags"
-    
+        self.available = bool(base_url and password)
+        if not self.available:
+            print("RangerClient: RANGER_URL or RANGER_PASSWORD not set - running in offline mode")
+
     def check_access(self, username: str, resource_tag: str = "PII") -> Dict[str, Any]:
         """
         Check if a user has access to a resource with a specific tag.
@@ -232,7 +231,10 @@ class RangerClient:
 
 
 # Singleton instance for easy import
-ranger_client = RangerClient()
+try:
+    ranger_client = RangerClient()
+except Exception:
+    ranger_client = None
 
 
 # Example usage:

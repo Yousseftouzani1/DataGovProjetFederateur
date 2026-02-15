@@ -86,6 +86,17 @@ const ROLE_CONFIG: Record<string, {
             { icon: Activity, title: 'Operational Status', desc: 'Health pulse of HBase, Solr, and Kafka', path: '/dashboard' },
         ]
     },
+    analyst: {
+        title: 'Data Analyst',
+        description: 'Primary Focus: Data analysis, reporting, and quality insights.',
+        color: 'from-indigo-400 to-blue-600',
+        image: '/role_analyst.png',
+        tasks: [
+            { icon: Search, title: 'Explore Datasets', desc: 'Browse and analyze available datasets', path: '/datasets' },
+            { icon: Zap, title: 'Quality Reports', desc: 'View ISO 25012 quality assessments', path: '/quality' },
+            { icon: Database, title: 'Data Discovery', desc: 'Search and discover data assets', path: '/discovery' },
+        ]
+    },
 };
 
 const DashboardPage = () => {

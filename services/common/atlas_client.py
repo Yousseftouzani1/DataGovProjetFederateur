@@ -8,22 +8,32 @@ load_dotenv()
 class AtlasClient:
     def __init__(self):
         self.atlas_url = os.getenv("ATLAS_URL")
+        self.available = False
         if not self.atlas_url:
-            raise RuntimeError("ATLAS_URL environment variable is required. Set it in .env file.")
+            print("AtlasClient: ATLAS_URL not set - running in offline mode")
+            self.base_api = None
+            return
         self.user = os.getenv("ATLAS_USER", "admin")
-        self.password = os.getenv("ATLAS_PASSWORD")
+        self.password = os.getenv("ATLAS_PASSWORD", "")
         if not self.password:
-            raise RuntimeError("ATLAS_PASSWORD environment variable is required. Set it in .env file.")
+            print("AtlasClient: ATLAS_PASSWORD not set - running in offline mode")
+            self.base_api = None
+            return
         self.base_api = f"{self.atlas_url}/api/atlas/v2"
+        self.available = True
 
     def is_healthy(self):
+        if not self.available:
+            return False
         try:
             resp = requests.get(f"{self.base_api}/types/typedefs", auth=(self.user, self.password), timeout=2)
             return resp.status_code == 200
-        except:
+        except Exception:
             return False
 
-    async def get_entity(self, guid):
+    def get_entity(self, guid):
+        if not self.available:
+            return None
         try:
             resp = requests.get(f"{self.base_api}/entity/guid/{guid}", auth=(self.user, self.password), timeout=5)
             return resp.json() if resp.status_code == 200 else None
@@ -32,6 +42,8 @@ class AtlasClient:
             return None
 
     def get_entity_guid(self, name: str):
+        if not self.available:
+            return None
         try:
             resp = requests.get(
                 f"{self.base_api}/search/basic?query={name}&typeName=DataSet",
@@ -204,7 +216,7 @@ class AtlasClient:
             print(f"Failed to add classification: {e}")
             return False
 
-    async def get_lineage(self, guid: str, direction: str = "BOTH", depth: int = 3):
+    def get_lineage(self, guid: str, direction: str = "BOTH", depth: int = 3):
         """Fetch real lineage from Atlas"""
         try:
             resp = requests.get(

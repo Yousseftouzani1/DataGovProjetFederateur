@@ -16,14 +16,25 @@ from datetime import datetime
 from typing import List, Dict, Optional, Any, Tuple
 from enum import Enum
 import requests
+import sys
 import uvicorn
 import numpy as np
-from fastapi import FastAPI, HTTPException, Body, Query, BackgroundTasks, Request
+from fastapi import FastAPI, HTTPException, Body, Query, BackgroundTasks, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from backend.database.mongodb import db
+
+# Shared auth middleware
+sys.path.append("/common")
+try:
+    from auth_middleware import get_current_user, require_role
+except ImportError:
+    async def get_current_user():
+        return {"sub": "anonymous", "role": "admin"}
+    def require_role(roles):
+        return get_current_user
 
 # ====================================================================
 # MODELS
@@ -203,6 +214,15 @@ class AssignmentManager:
 
 app = FastAPI(title="Annotation Service", version="2.5.0")
 
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    import time as _time
+    start = _time.perf_counter()
+    response = await call_next(request)
+    process_time = _time.perf_counter() - start
+    response.headers["X-Process-Time"] = f"{process_time:.4f}"
+    return response
+
 # CORS Security - Restricted origins
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:3000").split(",")
 app.add_middleware(
@@ -220,7 +240,7 @@ assignment_manager = AssignmentManager(task_queue)
 def health(): return {"status": "healthy"}
 
 @app.post("/tasks")
-async def create_tasks(request: CreateTaskRequest):
+async def create_tasks(request: CreateTaskRequest, user: dict = Depends(require_role(["admin", "steward"]))):
     created_tasks = []
     for i, idx in enumerate(request.row_indices or [0]):
         data_sample = (request.data_samples[i] if request.data_samples and i < len(request.data_samples) else {"sample": idx})
@@ -269,7 +289,7 @@ async def assign_manual(task_id: str, user_id: str):
     return {"status": "assigned"}
 
 @app.post("/tasks/{task_id}/submit")
-async def submit_task(task_id: str, request: SubmitAnnotationRequest):
+async def submit_task(task_id: str, request: SubmitAnnotationRequest, user: dict = Depends(get_current_user)):
     await task_queue.update_task(task_id, annotations=request.annotations, status=TaskStatus.COMPLETED, completed_at=datetime.now().isoformat(), time_spent_seconds=request.time_spent_seconds)
     return {"status": "submitted"}
 

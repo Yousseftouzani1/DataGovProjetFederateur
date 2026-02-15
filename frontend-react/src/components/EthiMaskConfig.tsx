@@ -3,6 +3,7 @@ import { Sliders, Save, RefreshCw, AlertCircle, Lock } from 'lucide-react';
 import { Button } from './ui/Button';
 import apiClient from '../services/api';
 import { useToast } from '../context/ToastContext';
+import { useAuthStore } from '../store/authStore';
 
 interface Config {
   sensitivity_weight: number;
@@ -15,6 +16,7 @@ interface Config {
 
 const EthiMaskConfig: React.FC = () => {
   const { addToast } = useToast();
+  const user = useAuthStore((state) => state.user);
   const [config, setConfig] = useState<Config>({
     sensitivity_weight: 0.35,
     role_weight: -0.30,
@@ -163,8 +165,8 @@ const EthiMaskConfig: React.FC = () => {
         </p>
       </div>
 
-      {/* Homomorphic Encryption (HE) - Restricted to Admin (per request) */}
-      {apiClient.defaults.headers.common['X-User-Role'] === 'admin' && (
+      {/* Homomorphic Encryption (HE) - Restricted to Admin */}
+      {user?.role === 'admin' && (
         <div className="glass p-6 rounded-3xl border border-white/5 space-y-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-500/20 rounded-xl text-purple-400">

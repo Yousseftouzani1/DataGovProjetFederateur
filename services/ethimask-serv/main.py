@@ -16,13 +16,24 @@ from datetime import datetime
 from typing import List, Dict, Optional, Any, Tuple
 from enum import Enum
 
+import sys
 import uvicorn
 import numpy as np
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from backend.database.mongodb import db
+
+# Shared auth middleware
+sys.path.append("/common")
+try:
+    from auth_middleware import get_current_user, require_role
+except ImportError:
+    async def get_current_user():
+        return {"sub": "anonymous", "role": "admin"}
+    def require_role(roles):
+        return get_current_user
 from backend.score_calculator import MaskingPerceptron, UserRole, MaskingLevel
 from backend.masking_techniques import ContextualMasker, MaskingTechnique
 
@@ -113,8 +124,9 @@ class ConfigManager:
                 {"$set": {"weights": new_weights, "bias": config.bias, "alpha": config.alpha}},
                 upsert=True
             )
-        # Update in-memory perceptron
-        perceptron.update_weights(new_weights, config.bias)
+        # Pad with default history weights [Hc, Hf, Hv] so perceptron gets the 7 it expects
+        full_weights = new_weights + [0.1, -0.1, -0.2]
+        perceptron.update_weights(full_weights, config.bias)
 
 # ====================================================================
 # POLICY MANAGER (MONGO PERSISTED)
@@ -175,11 +187,15 @@ app = FastAPI(
 )
 
 @app.middleware("http")
-async def set_root_path(request: Request, call_next):
+async def add_process_time_header(request: Request, call_next):
+    import time as _time
+    start = _time.perf_counter()
     root_path = request.headers.get("x-forwarded-prefix")
     if root_path:
         request.scope["root_path"] = root_path
     response = await call_next(request)
+    process_time = _time.perf_counter() - start
+    response.headers["X-Process-Time"] = f"{process_time:.4f}"
     return response
 
 # CORS Security - Restricted origins
@@ -202,7 +218,11 @@ config_manager = ConfigManager()
 async def startup_event():
     # Load config from DB on startup
     config = await config_manager.get_config()
-    perceptron.update_weights(config["weights"], config["bias"])
+    weights = config["weights"]
+    # Pad to 7 weights if only 4 stored (add default history weights)
+    if len(weights) == 4:
+        weights = weights + [0.1, -0.1, -0.2]
+    perceptron.update_weights(weights, config["bias"])
 
 @app.get("/")
 async def root():
@@ -301,14 +321,13 @@ async def get_config():
         "role_weight": config["weights"][1],
         "context_weight": config["weights"][2],
         "purpose_weight": config["weights"][3],
-        "purpose_weight": config["weights"][3],
         "bias": config["bias"],
         "alpha": config["alpha"]
     }
 
 @app.post("/config")
-async def update_config(config: ConfigUpdate):
-    """Update perceptron weights and bias"""
+async def update_config(config: ConfigUpdate, user: dict = Depends(require_role(["admin"]))):
+    """Update perceptron weights and bias (admin only)"""
     await config_manager.update_config(config)
     return {"status": "configuration saved", "new_config": config}
 

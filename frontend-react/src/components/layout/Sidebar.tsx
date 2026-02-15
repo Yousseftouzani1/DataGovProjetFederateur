@@ -60,11 +60,11 @@ const Sidebar = () => {
     const role = user?.role || 'labeler';
 
     const menuItems = [
-        { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', path: '/', roles: ['admin', 'steward', 'annotator', 'labeler'] },
-        { id: 'datasets', icon: Database, label: 'Data Pipeline', path: '/datasets', roles: ['admin', 'steward', 'annotator'] },
-        { id: 'pii', icon: ShieldAlert, label: 'PII Detection', path: '/pii', roles: ['admin', 'steward', 'annotator'] },
-        { id: 'discovery', icon: FileSearch, label: 'Data Discovery', path: '/discovery', roles: ['admin', 'steward', 'annotator'] },
-        { id: 'quality', icon: CheckCircle2, label: 'Quality Hub', path: '/quality', roles: ['admin', 'steward'] },
+        { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', path: '/', roles: ['admin', 'steward', 'annotator', 'labeler', 'analyst'] },
+        { id: 'datasets', icon: Database, label: 'Data Pipeline', path: '/datasets', roles: ['admin', 'steward', 'annotator', 'analyst'] },
+        { id: 'pii', icon: ShieldAlert, label: 'PII Detection', path: '/pii', roles: ['admin', 'steward', 'annotator', 'analyst'] },
+        { id: 'discovery', icon: FileSearch, label: 'Data Discovery', path: '/discovery', roles: ['admin', 'steward', 'annotator', 'analyst'] },
+        { id: 'quality', icon: CheckCircle2, label: 'Quality Hub', path: '/quality', roles: ['admin', 'steward', 'analyst'] },
         { id: 'tasks', icon: ClipboardList, label: 'Task Queue', path: '/tasks', roles: ['admin', 'steward', 'annotator', 'labeler'] },
         { id: 'users', icon: Users, label: 'User Control', path: '/users', roles: ['admin'] },
         { id: 'audit', icon: History, label: 'Audit Logs', path: '/audit', roles: ['admin', 'steward'] },
@@ -82,7 +82,8 @@ const Sidebar = () => {
                 <div className={`transition-colors duration-500 ${role === 'admin' ? 'text-red-500' :
                     role === 'steward' ? 'text-emerald-500' :
                         role === 'annotator' ? 'text-purple-500' :
-                            role === 'labeler' ? 'text-cyan-500' : 'text-brand-primary'
+                            role === 'labeler' ? 'text-cyan-500' :
+                                role === 'analyst' ? 'text-indigo-500' : 'text-brand-primary'
                     }`}>
                     <DynamicLogo role={role} size={40} />
                 </div>

@@ -10,3 +10,4 @@ nltk>=3.8.1
 python-dotenv
 requests
 pymongo
+motor

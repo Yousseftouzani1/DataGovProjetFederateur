@@ -471,7 +471,7 @@ const DataPipelinePage = () => {
                                 </div>
                             ) : (
                                 <div className="mb-6 animate-in fade-in slide-in-from-right-4">
-                                    <LineageVisualizer />
+                                    <LineageVisualizer datasetId={selectedDataset?._id || selectedDataset?.id} />
                                 </div>
                             )}
 

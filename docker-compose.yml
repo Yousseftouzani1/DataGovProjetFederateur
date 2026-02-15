@@ -1,14 +1,12 @@
-version: "3.9"
-
 # ============================================
 # DataGov - Complete Microservices Stack
-# Updated with Persistence & Orchestration
+# With HDP Integration (Atlas + Ranger)
 # ============================================
 
 services:
   # INFRASTRUCTURE: Database (MongoDB)
   mongo:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: datagov-mongo
     ports:
       - "27017:27017"
@@ -17,6 +15,11 @@ services:
     networks:
       - datagov-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # INFRASTRUCTURE: Orchestration (Airflow)
   airflow:
@@ -30,7 +33,7 @@ services:
       - _AIRFLOW_DB_UPGRADE=True
       - _AIRFLOW_WWW_USER_CREATE=True
       - _AIRFLOW_WWW_USER_USERNAME=admin
-      - _AIRFLOW_WWW_USER_PASSWORD=admin
+      - _AIRFLOW_WWW_USER_PASSWORD=${AIRFLOW_PASSWORD:-admin}
       - AIRFLOW__API__AUTH_BACKENDS=airflow.api.auth.backend.basic_auth
     ports:
       - "8081:8080"
@@ -39,6 +42,64 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/datasets:/opt/airflow/datasets
     command: standalone
+    networks:
+      - datagov-network
+    restart: unless-stopped
+
+  # INFRASTRUCTURE: Apache Atlas (Metadata Governance)
+  apache-atlas:
+    image: sburn/apache-atlas
+    container_name: apache-atlas
+    ports:
+      - "21000:21000"
+    volumes:
+      - atlas_data:/apache-atlas/data
+    networks:
+      - datagov-network
+    restart: unless-stopped
+    mem_limit: 3g
+    environment:
+      - ATLAS_SERVER_HEAP=-Xms1024m -Xmx2048m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:21000/api/atlas/v2/types/typedefs"]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 180s
+
+  # INFRASTRUCTURE: Apache Ranger Database (PostgreSQL)
+  ranger-postgres:
+    image: postgres:15-alpine
+    container_name: ranger-postgres
+    environment:
+      POSTGRES_DB: ranger
+      POSTGRES_USER: rangeradmin
+      POSTGRES_PASSWORD: rangerR0cks!
+    volumes:
+      - ranger_pg_data:/var/lib/postgresql/data
+    networks:
+      - datagov-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rangeradmin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # INFRASTRUCTURE: Apache Ranger Admin (Authorization)
+  ranger-admin:
+    image: odpi/apache-ranger-admin:latest
+    container_name: ranger-admin
+    environment:
+      - PGHOST=ranger-postgres
+      - PGUSER=rangeradmin
+      - PGPASSWORD=rangerR0cks!
+      - RANGER_PASSWORD=rangerR0cks!
+    ports:
+      - "6080:6080"
+    depends_on:
+      ranger-postgres:
+        condition: service_healthy
     networks:
       - datagov-network
     restart: unless-stopped
@@ -56,6 +117,11 @@ services:
     networks:
       - datagov-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # SERVICE 2: Taxonomie PII/SPI (Port 8002)
   taxonomie-service:
@@ -73,6 +139,11 @@ services:
       - ./services/taxonomie-serv/backend:/app/backend
       - ./services/common:/common
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # SERVICE 3: Presidio Detection (Port 8003)
   presidio-service:
@@ -90,6 +161,11 @@ services:
       - ./services/presidio-serv:/app
       - ./services/common:/common
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # SERVICE 4: Data Cleaning (Port 8004)
   cleaning-service:
@@ -110,6 +186,11 @@ services:
       - ./ranger_integration:/app/ranger_integration
       - ./airflow/datasets:/opt/airflow/datasets # Shared volume for exports
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # SERVICE 5: ML Classification (Port 8005)
   classification-service:
@@ -126,8 +207,9 @@ services:
     volumes:
       - ./services/common:/common
     restart: unless-stopped
+    mem_limit: 2g
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8005/health" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -147,6 +229,12 @@ services:
     volumes:
       - ./services/common:/common
     restart: unless-stopped
+    mem_limit: 2g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # SERVICE 7: Annotation (Port 8007)
   annotation-service:
@@ -164,6 +252,11 @@ services:
       - ./services/common:/common
       - ./airflow/datasets:/opt/airflow/datasets:ro
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # SERVICE 8: Quality ISO 25012 (Port 8008)
   quality-service:
@@ -182,6 +275,11 @@ services:
     volumes:
       - ./services/common:/common
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # SERVICE 9: EthiMask (Port 8009)
   ethimask-service:
@@ -199,6 +297,11 @@ services:
     networks:
       - datagov-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8009/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # MODERN FRONTEND: DataGov (Port 3000)
   datagov-modern:
@@ -212,7 +315,7 @@ services:
 
   # NGINX GATEWAY (Port 8000)
   nginx-gateway:
-    image: nginx:latest
+    image: nginx:1.25-alpine
     container_name: nginx-gateway
     ports:
       - "8000:8000"
@@ -235,3 +338,5 @@ networks:
 
 volumes:
   mongo_data:
+  atlas_data:
+  ranger_pg_data:

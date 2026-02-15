@@ -145,19 +145,22 @@ class MoroccanPresidioEngine:
             self.anonymizer = None
 
     def _load_custom_recognizers(self, registry):
-        """Load custom patterns from MongoDB and register them"""
+        """Load custom patterns from MongoDB synchronously at init time.
+        Uses the same connection string but via sync pymongo since this runs
+        during __init__ (not in an async context). The connection is closed
+        immediately after loading."""
         try:
-            from pymongo import MongoClient
-            import os
-            client_sync = MongoClient(os.getenv("MONGODB_URI"))
-            db_sync = client_sync[os.getenv("DATABASE_NAME", "DataGovDB")]
-            custom_recognizers = db_sync["presidio_recognizers"].find()
-            
+            from pymongo import MongoClient as SyncMongoClient
+            sync_client = SyncMongoClient(os.getenv("MONGODB_URI"), serverSelectionTimeoutMS=5000)
+            db_sync = sync_client[os.getenv("DATABASE_NAME", "DataGovDB")]
+            custom_recognizers = list(db_sync["presidio_recognizers"].find())
+            sync_client.close()
+
             for rec in custom_recognizers:
                 entity = rec.get("entity_type")
                 pattern_str = rec.get("regex")
                 lang = rec.get("language", "fr")
-                
+
                 if entity and pattern_str:
                     pattern = Pattern(name=f"{entity}_pattern", regex=pattern_str, score=0.85)
                     recognizer = PatternRecognizer(
@@ -166,10 +169,9 @@ class MoroccanPresidioEngine:
                         supported_language=lang
                     )
                     registry.add_recognizer(recognizer)
-                    print(f"   🔓 Registered custom recognizer: {entity} ({lang})")
-            client_sync.close()
+                    print(f"   Registered custom recognizer: {entity} ({lang})")
         except Exception as e:
-            print(f"   ⚠️ Could not load custom recognizers from DB: {e}")
+            print(f"   Could not load custom recognizers from DB: {e}")
     
     def analyze(self, text: str, language: str = "fr", 
                 entities: Optional[List[str]] = None,
@@ -255,11 +257,15 @@ app = FastAPI(
 )
 
 @app.middleware("http")
-async def set_root_path(request: Request, call_next):
+async def add_process_time_header(request: Request, call_next):
+    import time as _time
+    start = _time.perf_counter()
     root_path = request.headers.get("x-forwarded-prefix")
     if root_path:
         request.scope["root_path"] = root_path
     response = await call_next(request)
+    process_time = _time.perf_counter() - start
+    response.headers["X-Process-Time"] = f"{process_time:.4f}"
     return response
 
 # CORS Security - Restricted origins

@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import List, Dict, Any
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import sys
 
@@ -19,23 +19,26 @@ from ..ml_models.ensemble import EnsembleClassifier
 router = APIRouter(tags=["Classification (Tâche 5)"])
 
 # Load model ONCE at startup
-classifier = EnsembleClassifier() 
+classifier = EnsembleClassifier()
 
-# Database Setup (US-CLASS-04 Persistence)
+# Database Setup (US-CLASS-04 Persistence) - Async Motor client
 MONGO_URI = os.getenv("MONGODB_URI")
 if not MONGO_URI:
     raise RuntimeError("MONGODB_URI environment variable is required.")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "DataGovDB")
 try:
-    mongo_client = MongoClient(MONGO_URI)
+    mongo_client = AsyncIOMotorClient(MONGO_URI)
     db = mongo_client[DATABASE_NAME]
     history_col = db["classification_history"]
 except Exception as e:
-    print(f"⚠️ Warning: MongoDB not connected: {e}")
+    print(f"Warning: MongoDB not connected: {e}")
     history_col = None
 
 # Atlas Setup (US-CLASS-05)
-atlas_client = AtlasClient() if AtlasClient else None
+try:
+    atlas_client = AtlasClient() if AtlasClient else None
+except Exception:
+    atlas_client = None
 
 class ClassificationRequest(BaseModel):
     dataset_id: str
@@ -73,16 +76,17 @@ async def classify_dataset(request: ClassificationRequest, background_tasks: Bac
                 "pii_cols": sum(1 for r in results.values() if r['level'] >= 3)
             }
         }
-        history_col.insert_one(doc)
+        await history_col.insert_one(doc)
 
     return {
         "dataset_id": request.dataset_id,
         "classifications": results
     }
 
-async def tag_in_atlas(dataset_id: str, col_name: str, classification_code: str):
+def tag_in_atlas(dataset_id: str, col_name: str, classification_code: str):
     """
     Push classification tag to Atlas entity.
+    Runs in thread pool via BackgroundTasks (must be sync, not async).
     """
     if not atlas_client:
         return
@@ -96,9 +100,9 @@ async def tag_in_atlas(dataset_id: str, col_name: str, classification_code: str)
                 "confidence": 0.95
             }
             atlas_client.register_pii_columns(dataset_guid, dataset_id, [detection])
-            print(f"✅ [Atlas] Tagged {col_name} as {classification_code} in {dataset_id}")
+            print(f"[Atlas] Tagged {col_name} as {classification_code} in {dataset_id}")
     except Exception as e:
-        print(f"⚠️ [Atlas] Failed to tag {col_name}: {e}")
+        print(f"[Atlas] Failed to tag {col_name}: {e}")
 
 @router.get("/stats")
 async def get_classification_stats():
@@ -106,8 +110,8 @@ async def get_classification_stats():
     US-CLASS-04: Get classification statistics for visualization.
     """
     if history_col is None:
-        return {"error": "Database not connected"}
-        
+        raise HTTPException(status_code=503, detail="Database not connected")
+
     # Aggregate total classes
     pipeline = [
         {"$project": {"classifications": {"$objectToArray": "$classifications"}}},
@@ -117,13 +121,13 @@ async def get_classification_stats():
             "count": {"$sum": 1}
         }}
     ]
-    
-    stats = list(history_col.aggregate(pipeline))
+
+    stats = await history_col.aggregate(pipeline).to_list(length=100)
     formatted = {item["_id"]: item["count"] for item in stats}
-    
+
     return {
         "global_distribution": formatted,
-        "total_datasets": history_col.count_documents({})
+        "total_datasets": await history_col.count_documents({})
     }
 
 @router.get("/config")

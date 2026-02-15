@@ -65,7 +65,7 @@ def load_patterns_from_mongodb():
                     'description': cp.get('description', p_id)
                 }
             print(f"✅ Merged custom patterns from MongoDB")
-        except:
+        except Exception:
             pass
             
         return patterns
@@ -89,5 +89,5 @@ def get_pattern_count():
                 for cat in moroccan_tax.get('categories', [])
             )
         return 0
-    except:
+    except Exception:
         return 0

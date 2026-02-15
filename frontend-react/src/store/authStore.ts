@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 
 interface User {
     username: string;
-    role: 'admin' | 'steward' | 'annotator' | 'labeler';
+    role: 'admin' | 'steward' | 'annotator' | 'labeler' | 'analyst';
 }
 
 interface AuthState {

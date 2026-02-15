@@ -1,9 +1,15 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 from backend.auth.routes import router as auth_router
 from backend.users.routes import router as user_router
 from backend.airflow_routes import router as airflow_router
+
+# Rate limiter - keyed by client IP
+limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
     title="Auth Service",
@@ -26,13 +32,20 @@ app = FastAPI(
     },
 )
 
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 
 @app.middleware("http")
-async def set_root_path(request: Request, call_next):
+async def add_process_time_header(request: Request, call_next):
+    import time as _time
+    start = _time.perf_counter()
     root_path = request.headers.get("x-forwarded-prefix")
     if root_path:
         request.scope["root_path"] = root_path
     response = await call_next(request)
+    process_time = _time.perf_counter() - start
+    response.headers["X-Process-Time"] = f"{process_time:.4f}"
     return response
 
 # CORS Security - Restricted origins
@@ -63,7 +76,7 @@ async def test_db():
         collections = await db.list_collection_names()
         return {"status": "connected", "collections": collections}
     except Exception as e:
-        return {"status": "error", "detail": str(e)}
+        raise HTTPException(status_code=503, detail=f"Database connection error: {str(e)}")
 
 # Routers
 app.include_router(auth_router)

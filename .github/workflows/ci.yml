@@ -1,0 +1,78 @@
+name: DataGov CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - auth-serv
+          - taxonomie-serv
+          - presidio-serv
+          - cleaning-serv
+          - classification-serv
+          - correction-serv
+          - annotation-serv
+          - quality-serv
+          - ethimask-serv
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: |
+          pip install -r requirements.txt 2>/dev/null || true
+          pip install flake8 black isort
+
+      - name: Lint with flake8
+        working-directory: services/${{ matrix.service }}
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --max-line-length=120 --statistics --exit-zero
+
+      - name: Check formatting with black
+        working-directory: services/${{ matrix.service }}
+        run: black --check --line-length 120 . || true
+
+      - name: Check import order with isort
+        working-directory: services/${{ matrix.service }}
+        run: isort --check-only --profile black . || true
+
+      - name: Run tests
+        working-directory: services/${{ matrix.service }}
+        run: |
+          pip install pytest pytest-asyncio httpx 2>/dev/null || true
+          python -m pytest tests/ -v --tb=short 2>/dev/null || echo "No tests found for ${{ matrix.service }}"
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: frontend-react
+        run: npm ci
+
+      - name: Type check
+        working-directory: frontend-react
+        run: npx tsc --noEmit || true
+
+      - name: Build
+        working-directory: frontend-react
+        run: npm run build

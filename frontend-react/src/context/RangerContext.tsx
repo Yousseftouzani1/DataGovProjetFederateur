@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
-import axios from 'axios';
+import apiClient from '../services/api';
 
 interface RangerPermissions {
     username: string;
@@ -50,7 +50,7 @@ export const RangerProvider = ({ children }: RangerProviderProps) => {
                 const username = user.username;
                 const role = user.role || 'unknown';
 
-                const response = await axios.get('/api/cleaning/permissions', {
+                const response = await apiClient.get('/cleaning/permissions', {
                     params: { username, role }
                 });
 

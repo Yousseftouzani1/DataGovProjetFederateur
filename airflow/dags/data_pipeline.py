@@ -8,7 +8,7 @@ from datetime import timedelta
 
 # Service URLs (Docker Network)
 CLEANING_SERVICE_URL = "http://cleaning-service:8004"
-TAXONOMY_SERVICE_URL = "http://taxonomie-service:8002"
+PRESIDIO_SERVICE_URL = "http://presidio-service:8003"
 CLASSIFICATION_SERVICE_URL = "http://classification-service:8005"
 QUALITY_SERVICE_URL = "http://quality-service:8008"
 ETHIMASK_SERVICE_URL = "http://ethimask-service:8009"
@@ -34,83 +34,114 @@ dag = DAG(
 )
 
 def ingest_and_clean(**context):
-    """Call cleaning service to profile and clean data"""
+    """Step 1: Trigger cleaning on the uploaded dataset"""
     conf = context['dag_run'].conf
     dataset_id = conf.get('dataset_id')
-    
+
     if not dataset_id:
         raise ValueError("No dataset_id provided in DAG run configuration")
-    
+
     print(f"Starting pipeline for dataset: {dataset_id}")
-    
-    # 1. Profile
-    resp = requests.post(f"{CLEANING_SERVICE_URL}/profile", json={"dataset_id": dataset_id})
-    resp.raise_for_status()
-    profile = resp.json()
-    print(f"Profile generated: {profile['summary']}")
-    
-    # 2. Clean
-    resp = requests.post(f"{CLEANING_SERVICE_URL}/clean", json={"dataset_id": dataset_id, "auto_clean": True})
+
+    # Trigger auto-clean on the dataset (uses actual endpoint)
+    resp = requests.post(
+        f"{CLEANING_SERVICE_URL}/clean/{dataset_id}",
+        json={"auto_clean": True},
+        timeout=120
+    )
     resp.raise_for_status()
     clean_result = resp.json()
-    print(f"Cleaning complete: {clean_result}")
-    
+    print(f"Cleaning complete: {json.dumps(clean_result, indent=2)}")
+
     return dataset_id
 
-def analyze_pii(**context):
-    """Call taxonomy service to detect PII"""
+def detect_pii(**context):
+    """Step 2: Fetch dataset data and run PII detection via Presidio"""
     dataset_id = context['task_instance'].xcom_pull(task_ids='ingest_and_clean')
-    
-    # Get data sample (or full data logic) - simplified here to generic analysis trigger
-    # In real flow, we'd pass data. For now, assuming services share DB/access
-    resp = requests.post(f"{TAXONOMY_SERVICE_URL}/analyze-dataset/{dataset_id}") 
-    # Note: Accessing by ID implies shared storage or service-to-service fetch.
-    # Current microservices might need data payload if not sharing DB directly.
-    # For this POC, we'll assume the /clean calls updated the shared state or we send specific column data.
-    
-    # Re-logic: Taxonomie-serv expects text. 
-    # Let's pivot: We will trigger a "Correction" scan which includes pattern detection
-    
-    resp = requests.post(f"{CORRECTION_SERVICE_URL}/detect/{dataset_id}")
+
+    # Fetch dataset JSON from cleaning service
+    resp = requests.get(
+        f"{CLEANING_SERVICE_URL}/dataset/{dataset_id}/json",
+        timeout=30
+    )
+    resp.raise_for_status()
+    dataset = resp.json()
+    rows = dataset.get("data", [])
+
+    if not rows:
+        print("No data rows found, skipping PII detection")
+        return dataset_id
+
+    # Concatenate first 10 rows into a text block for Presidio analysis
+    sample_text = "\n".join(
+        " | ".join(str(v) for v in row.values())
+        for row in rows[:10]
+    )
+
+    resp = requests.post(
+        f"{PRESIDIO_SERVICE_URL}/analyze",
+        json={"text": sample_text, "language": "fr", "score_threshold": 0.4},
+        timeout=60
+    )
     resp.raise_for_status()
     detections = resp.json()
-    print(f"Inconsistencies/PII candidates detected: {detections['total_inconsistencies']}")
-    
+    print(f"PII detections: {detections.get('count', 0)} entities found")
+
     return dataset_id
 
 def classify_sensitivity(**context):
-    """Call classification service"""
-    dataset_id = context['task_instance'].xcom_pull(task_ids='analyze_pii')
-    
-    # Trigger classification on dataset
-    # Need to simulate or implement bulk scan in classification-serv.
-    # Existing endpoint is /classify (single text).
-    # We will simulate iterating or use a bulk endpoint if we made one.
-    # For POC, let's call a 'mock' generic logger or assume we process top rows.
-    
-    print(f"Classifying dataset {dataset_id} sensitivity...")
-    # Real impl would iterate rows.
-    
+    """Step 3: Classify column sensitivity using ensemble ML"""
+    dataset_id = context['task_instance'].xcom_pull(task_ids='detect_pii')
+
+    # Fetch dataset columns and sample values
+    resp = requests.get(
+        f"{CLEANING_SERVICE_URL}/dataset/{dataset_id}/json",
+        timeout=30
+    )
+    resp.raise_for_status()
+    dataset = resp.json()
+    rows = dataset.get("data", [])
+
+    if not rows:
+        print("No data rows, skipping classification")
+        return dataset_id
+
+    # Build data_sample: {col_name: [list of values]}
+    columns = list(rows[0].keys())
+    data_sample = {col: [row.get(col) for row in rows] for col in columns}
+
+    resp = requests.post(
+        f"{CLASSIFICATION_SERVICE_URL}/classify",
+        json={"dataset_id": dataset_id, "data_sample": data_sample},
+        timeout=120
+    )
+    resp.raise_for_status()
+    result = resp.json()
+    print(f"Classification complete: {len(result.get('classifications', {}))} columns classified")
+
     return dataset_id
 
 def evaluate_quality(**context):
-    """Call quality service"""
+    """Step 4: Run ISO 25012 quality evaluation"""
     dataset_id = context['task_instance'].xcom_pull(task_ids='classify_sensitivity')
-    
-    resp = requests.post(f"{QUALITY_SERVICE_URL}/evaluate/{dataset_id}")
+
+    resp = requests.post(
+        f"{QUALITY_SERVICE_URL}/evaluate/{dataset_id}",
+        timeout=60
+    )
     resp.raise_for_status()
     report = resp.json()
-    print(f"Quality Grade: {report['grade']} ({report['global_score']}%)")
-    
+    print(f"Quality Grade: {report.get('grade', 'N/A')} ({report.get('global_score', 0)}%)")
+
     return dataset_id
 
 def apply_masking(**context):
-    """Call ethimask service"""
+    """Step 5: Log masking audit (actual masking happens on-demand per role)"""
     dataset_id = context['task_instance'].xcom_pull(task_ids='evaluate_quality')
-    
-    print(f"Applying masking policies for dataset {dataset_id}")
-    # Simulating masking trigger
-    
+
+    print(f"Pipeline complete for dataset {dataset_id}. "
+          f"Masking will be applied on-demand based on user role via EthiMask.")
+
     return dataset_id
 
 # Tasks
@@ -124,8 +155,8 @@ t1 = PythonOperator(
 )
 
 t2 = PythonOperator(
-    task_id='analyze_pii',
-    python_callable=analyze_pii,
+    task_id='detect_pii',
+    python_callable=detect_pii,
     provide_context=True,
     dag=dag
 )

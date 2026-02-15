@@ -30,6 +30,18 @@ const SignupPage = () => {
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (formData.password.length < 8) {
+            setError('Password must be at least 8 characters');
+            return;
+        }
+        if (!/[A-Z]/.test(formData.password)) {
+            setError('Password must contain at least one uppercase letter');
+            return;
+        }
+        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            setError('Please enter a valid email address');
+            return;
+        }
         setIsLoading(true);
         setError('');
         setSuccess('');
@@ -172,6 +184,7 @@ const SignupPage = () => {
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
                         </div>
+                        <p className="text-[10px] text-slate-500 ml-1">Min 8 characters, at least one uppercase letter</p>
                     </div>
 
                     <div className="space-y-3">

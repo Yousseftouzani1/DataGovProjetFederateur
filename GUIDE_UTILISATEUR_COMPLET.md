@@ -20,9 +20,10 @@
 7. [Guide Role : Annotateur (Annotator)](#7-guide-role--annotateur-annotator)
 8. [Guide Role : Labeler](#8-guide-role--labeler)
 9. [Matrice d'Acces Detaillee](#9-matrice-dacces-detaillee)
-10. [Workflows Complets](#10-workflows-complets)
+10. [Parcours Complet Clic-par-Clic pour Chaque Role](#10-parcours-complet-clic-par-clic-pour-chaque-role)
 11. [Navigation et Interface Commune](#11-navigation-et-interface-commune)
 12. [FAQ et Depannage](#12-faq-et-depannage)
+13. [Integration Apache Atlas, Apache Ranger et Apache Airflow](#13-integration-apache-atlas-apache-ranger-et-apache-airflow)
 
 ---
 
@@ -110,11 +111,11 @@ Quand vous ouvrez `http://localhost:3000` sans etre connecte, vous arrivez sur l
 | Utilisateur | Mot de passe | Role |
 |-------------|-------------|------|
 | admin | admin123 | Administrateur |
-| steward | steward123 | Data Steward |
-| annotator | annotator123 | Annotateur |
-| labeler | labeler123 | Labeler |
+| steward_user | Steward123 | Data Steward |
+| annotator_user | Annotator123 | Annotateur |
+| labeler_user | Labeler123 | Labeler |
 
-*(Note : ces comptes doivent etre crees au prealable via l'API ou l'interface d'inscription)*
+*(Note : ces comptes sont crees automatiquement au demarrage via le script `restore_all_users.py`)*
 
 ### 3.2 Page d'Inscription (Signup)
 
@@ -189,19 +190,20 @@ Le logo dans la barre laterale et le favicon du navigateur changent egalement se
 - Description de DataGov et ses fonctionnalites cles (PII Detection, ISO 25012, RBAC, Secure Data Pipeline)
 
 #### Panneau "System Benchmarks" (exclusif Admin)
-- Graphique a barres animees montrant le debit du systeme
-- Indicateur "LIVE: 124 req/s"
-- Stabilite du debit : 99.98%
+- Graphique a barres animees montrant l'etat de sante de chaque service (9 barres)
+- Barre verte = service Healthy, barre rouge = service Offline
+- Indicateur en haut a droite : "X/9 Nodes Online"
+- Latence moyenne affichee en bas (calculee en temps reel a partir des health checks)
 
 #### Panneau "Global PII Distribution"
 - Tags des types PII detectes : CIN, PHONE, IBAN, EMAIL
 - Nombre de noeuds collaboratifs actifs
 
-#### Statistiques Globales (4 cartes)
-- **Total Records** : Nombre total d'enregistrements dans le systeme
-- **Total Datasets** : Nombre de jeux de donnees uploades
-- **Quality Score** : Score moyen de qualite ISO 25012
-- **System Nodes** : Nombre de services actifs (ex: 7/9 Nodes Active)
+#### Statistiques Globales (4 cartes, donnees temps reel)
+- **Total Records** : Nombre total d'enregistrements (depuis l'API `/cleaning/stats`)
+- **Total Datasets** : Nombre de jeux de donnees uploades (depuis l'API `/cleaning/stats`)
+- **Quality Score** : Score moyen de qualite ISO 25012 (depuis l'API `/quality/stats`)
+- **System Nodes** : Nombre de services Healthy / 9 total (depuis les health checks)
 
 #### Section "Governance Operations" (Admin + Steward)
 - Bouton "Sync Taxonomy to Atlas" : Synchronise les definitions de taxonomie PII/SPI avec Apache Atlas
@@ -361,20 +363,25 @@ Colonnes :
 8. **Interface Theme** (Tous les roles)
    - Personnalisation de l'esthetique et du branding
 
-#### Section Synchronisation Atlas
-- En bas de la page, section "Governance Sync Required"
-- Bouton "Sync Glossary to Atlas" : Synchronise les taxonomies PII/SPI avec Apache Atlas
-- Bouton "Open Atlas UI" : Ouvre l'interface Apache Atlas dans un nouvel onglet
-- Description : "Synchronize local taxonomy definitions with the Apache Atlas governance cluster"
+#### Section Synchronisation Atlas (en bas de la page)
+- Grande carte avec icone Settings animee et titre "Governance Sync Required"
+- Description : "Synchronize local taxonomy definitions with the Apache Atlas governance cluster. Required when updating PI/SPI patterns."
+- **Bouton "Sync Glossary to Atlas"** : Cliquer pour synchroniser les 47 classifications + 47 termes de glossaire PII/SPI vers **Apache Atlas**. Une notification toast confirme : "Synced 47 classifications & 47 glossary terms to Atlas!"
+- **Bouton "Open Atlas UI"** : Ouvre l'interface web **Apache Atlas** (http://IP_VM:21000) dans un nouvel onglet du navigateur. Vous pouvez y voir les entites cataloguees, le glossaire, et les lignages de donnees
 
 ### 5.5 Menu Lateral Admin
 
-L'administrateur voit les elements suivants dans le menu lateral :
+L'administrateur voit **tous** les elements suivants dans le menu lateral :
 1. **Dashboard** (icone tableau de bord)
-2. **User Control** (icone utilisateurs)
-3. **Audit Logs** (icone historique)
-4. **Settings** (icone engrenage)
-5. **Logout** (icone deconnexion, en rouge)
+2. **Data Pipeline** (icone base de donnees)
+3. **PII Detection** (icone bouclier alerte)
+4. **Data Discovery** (icone recherche fichier)
+5. **Quality Hub** (icone coche cercle)
+6. **Task Queue** (icone presse-papiers)
+7. **User Control** (icone utilisateurs)
+8. **Audit Logs** (icone historique)
+9. **Settings** (icone engrenage)
+10. **Logout** (icone deconnexion, en rouge)
 
 ---
 
@@ -395,9 +402,9 @@ L'administrateur voit les elements suivants dans le menu lateral :
   - "Forensic Review" --> redirige vers /audit
 
 #### Panneau "Compliance Trend (ISO 25012)" (exclusif Steward)
-- Graphique a barres animees montrant la tendance de conformite
-- Indicateur "+12% This Week"
-- Derive d'assurance qualite : LOW
+- Graphique a barres animees montrant l'etat de sante de chaque service (9 barres vertes/rouges)
+- Badge en haut a droite affichant le Quality Score reel (depuis l'API `/quality/stats`)
+- Indicateur en bas : "X of 9 Services Compliant"
 
 #### Section "Governance Operations" (Admin + Steward)
 - Bouton "Sync Taxonomy to Atlas"
@@ -409,7 +416,7 @@ L'administrateur voit les elements suivants dans le menu lateral :
 ### 6.2 Data Discovery
 
 **Acces** : Menu lateral --> "Data Discovery" ou `/discovery`
-**Restriction** : Steward uniquement dans le menu (Admin et Annotator y ont aussi acces via la route)
+**Restriction** : Admin, Steward et Annotator (visible dans le menu pour les trois roles)
 
 **Ce que vous voyez :**
 
@@ -508,10 +515,13 @@ Identique a la section 5.3 (voir le guide Admin). Le Steward a acces a toutes le
 
 Le Data Steward voit les elements suivants dans le menu lateral :
 1. **Dashboard** (icone tableau de bord)
-2. **Data Discovery** (icone recherche fichier)
-3. **Quality Hub** (icone coche)
-4. **Audit Logs** (icone historique)
-5. **Logout** (icone deconnexion, en rouge)
+2. **Data Pipeline** (icone base de donnees)
+3. **PII Detection** (icone bouclier alerte)
+4. **Data Discovery** (icone recherche fichier)
+5. **Quality Hub** (icone coche cercle)
+6. **Task Queue** (icone presse-papiers)
+7. **Audit Logs** (icone historique)
+8. **Logout** (icone deconnexion, en rouge)
 
 ---
 
@@ -531,16 +541,20 @@ Le Data Steward voit les elements suivants dans le menu lateral :
   - "Validate Detections" --> redirige vers /tasks
 
 #### Panneau "Inter-Annotator Agreement" (exclusif Annotator)
-- Valeur kappa affichee en grand : kappa = 0.88
+- Valeur kappa affichee en grand (donnee temps reel depuis l'API `/annotation/users/{username}/stats`)
 - Label "Inter-Annotator Agreement"
-- Badge "High Consistency Match"
+- Badge dynamique selon la valeur kappa :
+  - kappa >= 0.75 : "High Consistency" (violet)
+  - kappa >= 0.40 : "Moderate Agreement" (orange)
+  - kappa < 0.40 : "Low Agreement" (gris)
+  - Pas de donnees : "No Data Yet" (gris)
 
 *(Les autres sections sont identiques : statistiques, cluster, hierarchie des roles)*
 
 ### 7.2 Pipeline de Donnees (Data Pipeline / Ingestion Engine)
 
 **Acces** : Menu lateral --> "Data Pipeline" ou `/datasets`
-**Restriction** : Annotator uniquement pour l'upload (les autres roles voient un message "Restricted Access")
+**Restriction** : Admin, Steward et Annotator voient cette page dans le menu. Seul l'Annotator peut uploader des fichiers (les autres roles voient un message "Restricted Access" sur la zone d'upload)
 
 **Ce que vous voyez :**
 
@@ -548,28 +562,33 @@ Le Data Steward voit les elements suivants dans le menu lateral :
 - Titre "Ingestion Engine"
 - Description "Securely upload and register datasets into the DataGov ecosystem"
 
-#### Zone d'Upload (Annotator uniquement)
+#### Zone d'Upload (Admin, Steward, Annotator)
+- Visible pour les roles Admin, Steward et Annotator
 - Zone de glisser-deposer (Drag & Drop) avec :
-  - Icone upload
+  - Icone upload animee (rebondit lors du survol)
   - Texte "Drag & Drop or Click to Ingest"
   - Formats supportes : CSV, JSON, Excel (Max 500MB)
   - Bouton "Browse Secondary Storage"
 
 **Comment uploader un dataset :**
-1. **Methode 1 - Glisser-Deposer** : Glissez un fichier CSV, JSON ou Excel sur la zone
-2. **Methode 2 - Clic** : Cliquez sur la zone pour ouvrir le selecteur de fichiers
-3. Un apercu du fichier s'affiche avec son nom et sa taille
+1. **Methode 1 - Glisser-Deposer** : Glissez un fichier CSV, JSON ou Excel sur la zone (la bordure devient bleue)
+2. **Methode 2 - Clic** : Cliquez n'importe ou dans la zone pour ouvrir le selecteur de fichiers
+3. Un apercu du fichier s'affiche avec son nom et sa taille en MB
 4. Cliquez sur "Begin High-Speed Ingestion"
-5. Une barre de progression s'affiche :
-   - "Streaming to Cluster" pendant l'upload
-   - "Indexing Taxonomy" pendant le traitement
+5. Une barre de progression s'affiche avec pourcentage :
+   - "Streaming to Cluster" pendant l'upload reseau
+   - "Indexing Taxonomy" pendant le traitement serveur
 6. Succes : Message "Ingestion Complete" avec :
-   - Notification "Dataset registered in Apache Atlas"
-   - Notification "Airflow DAG Started: cleaning_pipeline_v1"
-   - Bouton "Upload Another" pour continuer
-   - Bouton "Scan for PII" pour aller a la detection PII
+   - **Notification toast** (en bas a droite) : "Dataset registered in Apache Atlas (ID: xxxxxxxx...)" -- Cela confirme que le dataset a ete catalogue dans **Apache Atlas**
+   - **Notification toast** : "Airflow DAG Started: cleaning_pipeline_v1" -- Cela confirme que le pipeline **Apache Airflow** a ete declenche automatiquement
+   - Bouton "Upload Another" pour continuer avec un autre fichier
+   - Bouton "Scan for PII" pour aller directement a la page PII Detection
 
-Si un autre role que Annotator accede a cette page, il voit un panneau rouge "Restricted Access" avec le message "Only the Data Annotator role is authorized to ingest raw datasets."
+**Important** : Apres l'upload, le systeme declenche automatiquement :
+- L'enregistrement du dataset dans **Apache Atlas** (catalogage metadata)
+- Le pipeline **Apache Airflow** (16 taches : nettoyage → profilage → classification → detection PII → corrections → qualite → masquage)
+
+Si le role **Labeler** accede a cette page, il voit un panneau rouge "Restricted Access" avec le message "Only the Data Annotator role is authorized to ingest raw datasets."
 
 #### Repository Log (Tableau des Datasets)
 - Accessible a tous les roles qui arrivent sur cette page
@@ -668,7 +687,7 @@ Si un autre role que Annotator accede a cette page, il voit un panneau rouge "Re
 ### 7.4 File d'Attente des Taches (Task Queue)
 
 **Acces** : Menu lateral --> "Task Queue" ou `/tasks`
-**Restriction** : Annotator et Labeler
+**Restriction** : Admin, Steward, Annotator et Labeler (tous les roles)
 
 **Ce que vous voyez :**
 
@@ -750,8 +769,9 @@ L'annotateur voit les elements suivants dans le menu lateral :
 1. **Dashboard** (icone tableau de bord)
 2. **Data Pipeline** (icone base de donnees)
 3. **PII Detection** (icone bouclier alerte)
-4. **Task Queue** (icone presse-papiers)
-5. **Logout** (icone deconnexion, en rouge)
+4. **Data Discovery** (icone recherche fichier)
+5. **Task Queue** (icone presse-papiers)
+6. **Logout** (icone deconnexion, en rouge)
 
 ---
 
@@ -769,11 +789,12 @@ L'annotateur voit les elements suivants dans le menu lateral :
 - 1 bouton d'action rapide :
   - "My Tasks" --> redirige vers /tasks
 
-#### Panneau "Daily Quota Progress" (exclusif Labeler)
-- Titre "Daily Quota Progress"
-- Badge "8/10 Tasks"
-- Barre de progression (ex: 80% Complete)
-- Indicateur "2 Remaining"
+#### Panneau "Task Progress" (exclusif Labeler)
+- Titre "Task Progress"
+- Badge affichant le ratio taches completees/total (donnees temps reel depuis l'API `/annotation/users/{username}/stats`)
+- Barre de progression animee (pourcentage calcule automatiquement)
+- Indicateur "X Remaining" en bas a droite
+- Les valeurs `completed` et `pending` proviennent de l'API en temps reel
 
 *(Les autres sections sont identiques : statistiques, cluster, hierarchie des roles)*
 
@@ -814,26 +835,25 @@ Le Labeler voit les elements suivants dans le menu lateral :
 | Landing Page | `/` | Oui (public) | Oui (public) | Oui (public) | Oui (public) |
 | Login | `/login` | Oui | Oui | Oui | Oui |
 | Signup | `/signup` | Oui | Oui | Oui | Oui |
-| Dashboard | `/dashboard` | Oui | Oui | Oui | Oui |
-| Data Pipeline | `/datasets` | Oui (route) | Oui (route) | Oui (menu) | Non |
-| PII Detection | `/pii` | Oui (route) | Oui (route) | Oui (menu) | Non |
-| Data Discovery | `/discovery` | Oui (route) | Oui (menu) | Oui (route) | Non |
-| Quality Hub | `/quality` | Oui (route) | Oui (menu) | Non | Non |
-| Task Queue | `/tasks` | Oui (route) | Oui (route) | Oui (menu) | Oui (menu) |
+| Dashboard | `/dashboard` | Oui (menu) | Oui (menu) | Oui (menu) | Oui (menu) |
+| Data Pipeline | `/datasets` | Oui (menu) | Oui (menu) | Oui (menu) | Non |
+| PII Detection | `/pii` | Oui (menu) | Oui (menu) | Oui (menu) | Non |
+| Data Discovery | `/discovery` | Oui (menu) | Oui (menu) | Oui (menu) | Non |
+| Quality Hub | `/quality` | Oui (menu) | Oui (menu) | Non | Non |
+| Task Queue | `/tasks` | Oui (menu) | Oui (menu) | Oui (menu) | Oui (menu) |
 | User Control | `/users` | Oui (menu) | Non | Non | Non |
 | Audit Logs | `/audit` | Oui (menu) | Oui (menu) | Non | Non |
 | Settings | `/settings` | Oui (menu) | Non | Non | Non |
 
 **Legende :**
 - "Oui (menu)" = Visible dans le menu lateral ET accessible
-- "Oui (route)" = Accessible via URL mais PAS dans le menu lateral
-- "Non" = Redirige vers /dashboard si tente
+- "Non" = Non visible dans le menu et redirige vers /dashboard si tente via URL
 
 ### 9.2 Acces aux Fonctionnalites
 
 | Fonctionnalite | Admin | Steward | Annotator | Labeler |
 |----------------|-------|---------|-----------|---------|
-| Upload de datasets | Non | Non | Oui | Non |
+| Upload de datasets | Oui | Oui | Oui | Non |
 | Suppression de datasets | Oui | Oui | Non | Non |
 | Voir apercu donnees brutes | Oui | Oui | Non | Non |
 | Voir valeurs PII detectees | Oui | Oui | Non | Non |
@@ -856,60 +876,255 @@ Le Labeler voit les elements suivants dans le menu lateral :
 
 ---
 
-## 10. Workflows Complets
+## 10. Parcours Complet Clic-par-Clic pour Chaque Role
 
-### 10.1 Workflow Principal : De l'Ingestion a la Gouvernance
-
-Ce workflow illustre le parcours complet d'un dataset depuis l'upload jusqu'a la gouvernance :
+### 10.1 Parcours ADMIN : Du Login a la Gouvernance
 
 ```
-1. ANNOTATEUR : Upload du Dataset
-   /datasets --> Glisser-deposer un fichier CSV
-   --> Le systeme declenche automatiquement le pipeline Airflow
-   --> Le dataset est enregistre dans Apache Atlas
+ETAPE 1 : Connexion
+   → Ouvrir http://localhost:3000
+   → Vous voyez la Landing Page "DataSentinel" avec carousel de technologies
+   → Cliquer "Login" en haut a droite
+   → Entrer : admin / admin123
+   → Cliquer "Sign In"
+   → Vous etes redirige vers le Dashboard
 
-2. ANNOTATEUR : Detection PII
-   /pii --> Selectionner le dataset dans "Volume Scan"
-   --> Cliquer "Full Volume Audit"
-   --> Examiner les detections (CIN, Phone, IBAN, etc.)
-   --> Cliquer "Submit to Processing"
-   --> Des taches sont creees pour validation humaine
+ETAPE 2 : Dashboard Admin
+   → Vous voyez le Hero "Welcome back, admin" avec badge rouge "Administrator"
+   → 3 boutons d'action rapide : "User Management", "System Settings", "Operational Status"
+   → En dessous : section "DataGov - Data Governance Platform" avec description
+   → PANNEAU EXCLUSIF ADMIN : "System Benchmarks" avec 9 barres (1 par service)
+      - Barres vertes = services Healthy
+      - Barres rouges = services Offline
+      - Badge "X/9 Nodes Online" en haut a droite
+      - "Avg Latency: XXms" en bas
+   → PANNEAU "Global PII Distribution" : tags CIN, PHONE, IBAN, EMAIL
+   → 4 cartes statistiques : Total Records, Total Datasets, Quality Score, System Nodes
+   → SECTION "Governance Operations" (visible ADMIN + STEWARD seulement) :
+      - Bouton vert "Sync Taxonomy to Atlas" → CLIQUER ICI pour synchroniser avec ATLAS
+      - Bouton "View Audit Logs" → va a /audit
+      - Bouton "Data Discovery" → va a /discovery
+   → Grille "Node Cluster" : 9 services cliquables
+      - CLIQUER sur un service → Modal avec nom, port, description, bouton "API Docs"
+      - Le bouton "API Docs" ouvre la documentation Swagger FastAPI du service
+   → Section "Role Hierarchy" : liste des 4 roles, badge "YOU" sur Admin
 
-3. ANNOTATEUR / LABELER : Validation des Taches
-   /tasks --> Voir les taches creees
-   --> Cliquer "Claim" pour revendiquer une tache
-   --> Ouvrir les details (icone oeil)
-   --> Examiner les detections et les donnees
-   --> Valider (coche verte) ou Rejeter (X rouge)
-   --> L'annotateur peut aussi editer les donnees si necessaire
+ETAPE 3 : Menu lateral Admin (9 pages accessibles)
+   → Dashboard | Data Pipeline | PII Detection | Data Discovery
+   → Quality Hub | Task Queue | User Control | Audit Logs | Settings
 
-4. ANNOTATEUR : Corrections T5
-   /tasks --> Onglet "Corrections (T5)"
-   --> Examiner les suggestions du modele T5
-   --> Accepter ou rejeter chaque correction
+ETAPE 4 : User Control (/users) - Gestion des utilisateurs
+   → Cliquer "User Control" dans le menu lateral
+   → Vous voyez le tableau de tous les utilisateurs
+   → Compteurs en haut : Total, Active (vert), Pending (orange)
+   → Pour un utilisateur "pending" : survoler la ligne → boutons apparaissent
+      - Coche verte → approuver (statut passe a "active")
+      - X rouge → rejeter (statut passe a "rejected")
 
-5. STEWARD : Evaluation Qualite
-   /quality --> Selectionner le dataset
-   --> Cliquer "Trigger Audit"
-   --> Examiner le rapport ISO 25012
-   --> Exporter en PDF si necessaire
+ETAPE 5 : Data Pipeline (/datasets) - Upload et catalogue
+   → Cliquer "Data Pipeline" dans le menu lateral
+   → Zone d'upload Drag & Drop visible (Admin PEUT uploader)
+   → Glisser un fichier CSV → apercu avec nom + taille
+   → Cliquer "Begin High-Speed Ingestion"
+   → Barre de progression → "Streaming to Cluster" → "Indexing Taxonomy"
+   → SUCCES → 2 notifications toast :
+      - "Dataset registered in Apache Atlas (ID: xxx...)" ← ATLAS
+      - "Airflow DAG Started: cleaning_pipeline_v1" ← AIRFLOW
+   → Tableau "Repository Log" : liste des datasets avec nom, ID, date, statut
+   → CLIQUER sur un dataset → Modal avec :
+      - 3 cartes info (Status, Type, Date)
+      - Onglet "Data Preview" : tableau des 5 premieres lignes (Admin PEUT voir)
+      - Onglet "Lineage Trace" : graphe du lignage depuis ATLAS
+      - Boutons : "Scan for PII", "Quality Audit", "Lineage Graph"
+   → Icone poubelle rouge pour supprimer un dataset (Admin PEUT supprimer)
+   → Section "Exports Hub" en bas : fichiers CSV exportes telechargeables
 
-6. STEWARD : Data Discovery & Catalogage
-   /discovery --> Rechercher le dataset dans le catalogue
-   --> Verifier la classification, les tags PII, le domaine
-   --> Verifier le GUID Atlas
+ETAPE 6 : PII Detection (/pii)
+   → Cliquer "PII Detection" dans le menu lateral
+   → 2 onglets : "Text Inspector" (texte libre) ou "Volume Scan" (dataset)
+   → Pour "Volume Scan" : selectionner un dataset dans la liste deroulante
+   → Cliquer "Full Volume Audit"
+   → RESULTATS (colonne droite) :
+      - Chaque detection affiche : type, confiance (%), valeur
+      - Admin VOIT les valeurs reelles (CIN, phone, etc.)
+      - Bouton oeil pour basculer affichage des valeurs
+   → 4 cartes stats : Total Detections, Critical Risk, Entity Types, Avg Confidence
+   → Boutons : "Export Report (CSV)", "Submit to Processing", "PURGE AUDIT BUFFER"
+   → CLIQUER sur une detection → Modal "Forensic Detail" avec :
+      - Badge de risque (Critical/High/Medium/Low)
+      - Valeur detectee (visible pour Admin)
+      - Barre de confiance + position dans le texte
+      - Description de l'entite (contexte marocain)
 
-7. ADMIN / STEWARD : Synchronisation Atlas
-   Dashboard ou /settings --> Cliquer "Sync Taxonomy to Atlas"
-   --> Les definitions PII/SPI sont synchronisees avec Apache Atlas
+ETAPE 7 : Quality Hub (/quality)
+   → Cliquer "Quality Hub" dans le menu lateral
+   → Selectionner un dataset dans la liste deroulante
+   → Cliquer "Trigger Audit"
+   → Rapport ISO 25012 avec : grade (A-F), graphique radial, 6 dimensions
+   → Bouton export PDF
 
-8. ADMIN / STEWARD : Audit
-   /audit --> Consulter les journaux d'audit
-   --> Verifier les operations effectuees
-   --> Exporter le rapport forensique en PDF
+ETAPE 8 : Settings (/settings) - Configuration et ATLAS
+   → Cliquer "Settings" dans le menu lateral
+   → 8 cartes de configuration (toutes visibles pour Admin)
+   → CLIQUER "Governance Policy" → Modal EthiMask :
+      - 6 curseurs de poids du perceptron (ws, wr, wc, wp, b, alpha)
+      - Equation : Score T' = sigma(somme w_i * x_i + b)
+      - Bouton "Normalize" pour normaliser les poids
+      - Bouton "Commit Weight Configuration" pour sauvegarder
+      - Section Homomorphic Encryption avec "Initialize Context"
+   → CLIQUER "Neural Roadmap V1" → Modal avec plan migration Transformer
+   → EN BAS DE PAGE : "Governance Sync Required"
+      - Bouton "Sync Glossary to Atlas" → SYNCHRONISE AVEC ATLAS
+      - Bouton "Open Atlas UI" → OUVRE L'INTERFACE ATLAS dans un nouvel onglet
 ```
 
-### 10.2 Workflow d'Approbation des Utilisateurs
+### 10.2 Parcours STEWARD : Qualite et Conformite
+
+```
+ETAPE 1 : Connexion
+   → Ouvrir http://localhost:3000/login
+   → Entrer : steward_user / Steward123
+   → Cliquer "Sign In" → Dashboard
+
+ETAPE 2 : Dashboard Steward
+   → Hero "Welcome back, steward_user" avec badge vert "Data Steward"
+   → 3 boutons d'action rapide :
+      - "Sync Taxonomy" → synchronise avec ATLAS (cliquer = appel API)
+      - "Quality Audit" → va a /quality
+      - "Forensic Review" → va a /audit
+   → PANNEAU EXCLUSIF STEWARD : "Compliance Trend (ISO 25012)"
+      - 9 barres vertes/rouges (etat des services)
+      - Badge Quality Score reel (ex: "78%") depuis l'API
+      - "X of 9 Services Compliant" en bas
+   → SECTION "Governance Operations" :
+      - Bouton "Sync Taxonomy to Atlas" → CLIQUER = synchronisation ATLAS
+      - Bouton "View Audit Logs" → /audit
+      - Bouton "Data Discovery" → /discovery
+
+ETAPE 3 : Menu lateral Steward (7 pages)
+   → Dashboard | Data Pipeline | PII Detection | Data Discovery
+   → Quality Hub | Task Queue | Audit Logs
+
+ETAPE 4 : Quality Hub (/quality) - Evaluation ISO 25012
+   → Selectionner un dataset
+   → Cliquer "Trigger Audit" → rapport genere en 2-3 secondes
+   → PANNEAU GAUCHE "Core Compliance" : grade (A-F) + graphique radial
+   → PANNEAU DROIT "Global Score Index" : barres par dimension
+      - Completeness, Accuracy, Consistency, Validity, Uniqueness, Timeliness
+   → Section recommandations avec actions specifiques
+   → Bouton export PDF (icone fleche vers le bas)
+
+ETAPE 5 : Data Discovery (/discovery) - Catalogue ATLAS
+   → Filtres a gauche : Data Domain, PII Entities, Classification
+   → Barre de recherche "Search for datasets..."
+   → Liste des datasets avec : nom, classification, domaine, tags PII
+   → GUID Atlas affiche pour chaque dataset (lien externe)
+   → Bouton "Open Atlas UI" en haut → OUVRE ATLAS
+
+ETAPE 6 : Audit Logs (/audit) - Journaux forensiques
+   → Onglet "General Ledger" : tous les logs systeme
+   → Onglet "Masking Forensics" : logs de masquage EthiMask
+   → Filtres : par role, type d'entite, date, mot-cle
+   → CLIQUER sur un log → Modal "Forensic Detail Record"
+   → Bouton "Export forensic PDF" → telecharge un PDF formate
+   → Bouton "Retrain Pattern" → relance l'entrainement EthiMask
+```
+
+### 10.3 Parcours ANNOTATEUR : Ingestion et Validation
+
+```
+ETAPE 1 : Connexion
+   → Ouvrir http://localhost:3000/login
+   → Entrer : annotator_user / Annotator123
+   → Cliquer "Sign In" → Dashboard
+
+ETAPE 2 : Dashboard Annotateur
+   → Hero avec badge violet "Data Annotator"
+   → 2 boutons : "Upload Dataset" (→ /datasets), "Validate Detections" (→ /tasks)
+   → PANNEAU EXCLUSIF : "Inter-Annotator Agreement"
+      - Valeur kappa en grand (ex: "kappa = 0.85") depuis l'API en temps reel
+      - Badge dynamique : "High Consistency" (violet), "Moderate Agreement" (orange),
+        "Low Agreement" (gris), ou "No Data Yet"
+
+ETAPE 3 : Menu lateral Annotateur (5 pages)
+   → Dashboard | Data Pipeline | PII Detection | Data Discovery | Task Queue
+
+ETAPE 4 : Data Pipeline (/datasets) - Upload de fichiers
+   → Zone d'upload Drag & Drop visible (Annotator PEUT uploader)
+   → Glisser un CSV → "Begin High-Speed Ingestion"
+   → Notifications toast ATLAS + AIRFLOW apres succes
+   → Tableau des datasets : cliquer pour voir details
+      - Onglet "Data Preview" : CADENAS ROUGE "Access Restricted" (Annotator ne peut PAS voir les donnees brutes)
+      - Onglet "Lineage Trace" : accessible
+   → PAS d'icone poubelle (Annotator ne peut PAS supprimer)
+
+ETAPE 5 : PII Detection (/pii) - Scanner les donnees
+   → Meme interface que Admin/Steward MAIS :
+      - Valeurs PII affichees comme "[REDACTED_1]", "[REDACTED_2]", etc.
+      - Mention "Values Restricted" a cote du titre "Audit Results"
+      - PAS de bouton oeil pour basculer l'affichage
+   → CLIQUER sur une detection → Modal sans la valeur reelle :
+      "[RESTRICTED - Admin/Steward access required]"
+   → Peut exporter CSV (valeurs redactees) et "Submit to Processing"
+
+ETAPE 6 : Task Queue (/tasks) - Valider les detections
+   → En-tete : stats "X Resolved" + "X Active" depuis l'API
+   → Onglet "Active Tasks" : liste des taches avec priorite (couleur bordure)
+   → CLIQUER "Claim" sur une tache pending → elle vous est assignee
+   → CLIQUER icone oeil → Modal "Task Analysis" avec :
+      - Section "DETECTED ISSUES" (depliable)
+      - Section "Row Content" avec les donnees
+      - Bouton "Edit Data" → VISIBLE pour Annotator (peut corriger les donnees)
+      - Bouton "Save & Validate" apres edition
+   → CLIQUER coche verte → "Confirm Valid PII"
+   → CLIQUER X rouge → "Reject (Not PII)"
+   → Onglet "Corrections (T5)" : suggestions du modele T5 avec Accept/Reject
+   → Onglet "Export History" : fichiers exportes telechargeables
+```
+
+### 10.4 Parcours LABELER : Etiquetage a Volume Eleve
+
+```
+ETAPE 1 : Connexion
+   → Ouvrir http://localhost:3000/login
+   → Entrer : labeler_user / Labeler123
+   → Cliquer "Sign In" → Dashboard
+
+ETAPE 2 : Dashboard Labeler
+   → Hero avec badge cyan "Data Labeler"
+   → 1 bouton d'action : "My Tasks" (→ /tasks)
+   → PANNEAU EXCLUSIF : "Task Progress"
+      - Badge "X/Y Tasks" (donnees temps reel depuis l'API)
+      - Barre de progression animee (pourcentage)
+      - "X% Complete" a gauche, "Y Remaining" a droite
+
+ETAPE 3 : Menu lateral Labeler (2 pages seulement)
+   → Dashboard | Task Queue
+
+ETAPE 4 : Task Queue (/tasks) - Seule page de travail
+   → Meme interface que Annotator MAIS :
+      - PAS de bouton "Edit Data" dans le modal (lecture seule)
+      - Peut uniquement : Claim, Valider (coche verte), Rejeter (X rouge)
+      - Peut consulter les donnees mais PAS les modifier
+   → Workflow :
+      1. Voir les taches "pending"
+      2. Cliquer "Claim" pour revendiquer
+      3. Cliquer icone oeil pour examiner
+      4. Lire les donnees (PAS d'edition)
+      5. Valider ou Rejeter
+      6. La tache disparait et les stats se mettent a jour
+
+PAGES NON ACCESSIBLES AU LABELER :
+   → /datasets → redirige vers /dashboard
+   → /pii → redirige vers /dashboard
+   → /quality → redirige vers /dashboard
+   → /discovery → redirige vers /dashboard
+   → /users → redirige vers /dashboard
+   → /audit → redirige vers /dashboard
+   → /settings → redirige vers /dashboard
+```
+
+### 10.5 Workflow d'Approbation des Utilisateurs
 
 ```
 1. NOUVEL UTILISATEUR : Inscription
@@ -930,7 +1145,7 @@ Ce workflow illustre le parcours complet d'un dataset depuis l'upload jusqu'a la
    --> Acces au Dashboard selon le role assigne
 ```
 
-### 10.3 Workflow de Masquage Ethique (EthiMask)
+### 10.6 Workflow de Masquage Ethique (EthiMask)
 
 ```
 1. ADMIN : Configurer les Poids du Perceptron
@@ -1050,6 +1265,96 @@ Plusieurs pages utilisent des modales (fenetres superposees) :
 - Le theme de couleur change automatiquement selon votre role
 - Admin = Rouge/Orange, Steward = Vert, Annotator = Violet, Labeler = Cyan
 - Si la couleur est incorrecte, deconnectez-vous et reconnectez-vous
+
+---
+
+## 13. Integration Apache Atlas, Apache Ranger et Apache Airflow
+
+Cette section explique en detail **ou** et **comment** vous interagissez avec Atlas, Ranger et Airflow dans l'interface.
+
+### 13.1 Apache Atlas (Catalogage et Gouvernance des Metadonnees)
+
+**Qu'est-ce qu'Atlas dans DataGov ?**
+Apache Atlas est le catalogue de metadonnees. Il stocke les definitions de taxonomie PII/SPI (47 classifications + 47 termes de glossaire) et enregistre chaque dataset uploade avec son lignage.
+
+**Ou vous voyez Atlas dans l'interface :**
+
+| Endroit | Page | Roles | Ce qui se passe quand vous cliquez |
+|---------|------|-------|-------------------------------------|
+| **Bouton "Sync Taxonomy to Atlas"** | Dashboard (section Governance Operations) | Admin, Steward | Envoie les 47 classifications PII/SPI marocaines vers Atlas. Notification toast verte "Taxonomy successfully synced to Atlas!" |
+| **Bouton "Sync Glossary to Atlas"** | Settings (en bas de page) | Admin | Meme action que ci-dessus. Notification avec le nombre exact : "Synced 47 classifications & 47 glossary terms to Atlas!" |
+| **Bouton "Open Atlas UI"** | Settings (en bas de page) | Admin | Ouvre l'interface web Apache Atlas dans un nouvel onglet (http://IP_VM:21000) |
+| **Bouton "Open Atlas UI"** | Data Discovery (en-tete) | Admin, Steward, Annotator | Ouvre Atlas UI dans un nouvel onglet |
+| **Notification "Dataset registered in Apache Atlas"** | Data Pipeline (apres upload) | Admin, Steward, Annotator | Toast automatique confirmant que le dataset a ete catalogue dans Atlas |
+| **GUID Atlas** | Data Discovery (liste des datasets) | Admin, Steward, Annotator | Chaque dataset affiche son identifiant unique Atlas (GUID) avec icone lien externe |
+| **Onglet "Lineage Trace"** | Data Pipeline (modal dataset) | Admin, Steward | Visualisation du lignage des donnees provenant d'Atlas (graphe de noeuds et aretes) |
+
+**Processus detaille de synchronisation Atlas :**
+1. Allez au Dashboard ou a la page Settings
+2. Cliquez "Sync Taxonomy to Atlas" ou "Sync Glossary to Atlas"
+3. Une notification bleue "Syncing Taxonomy with Apache Atlas..." apparait
+4. Attendez 5-15 secondes (la synchronisation contacte le serveur Atlas)
+5. Notification verte : "Taxonomy successfully synced to Atlas!" avec le nombre de termes synchronises
+6. Si Atlas n'est pas accessible : notification rouge "Failed to sync with Atlas. Check logs."
+
+### 13.2 Apache Ranger (Controle d'Acces et Politiques de Securite)
+
+**Qu'est-ce que Ranger dans DataGov ?**
+Apache Ranger gere les politiques d'acces granulaires. Il determine quelles donnees chaque role peut voir et modifier, avec evaluation en temps reel (ALLOWED / DENIED / MASKED).
+
+**Ou vous voyez Ranger dans l'interface :**
+
+| Endroit | Page | Roles | Ce que vous voyez |
+|---------|------|-------|-------------------|
+| **"Access Indicator" dans l'en-tete** | Toutes les pages (Shell) | Tous | Un badge colore a cote du statut systeme qui affiche votre niveau d'acces Ranger. Exemple : "FULL ACCESS" pour admin, "READ-ONLY" pour labeler |
+| **RangerProvider (contexte global)** | Toutes les pages | Tous | Au chargement de l'application, le systeme interroge Ranger pour determiner vos droits. Cela influence ce que vous pouvez voir et faire |
+| **Valeurs PII masquees** | PII Detection (resultats) | Annotator, Labeler | Si Ranger determine que votre role ne peut pas voir les valeurs PII, elles s'affichent comme "[REDACTED]" au lieu de la valeur reelle |
+| **"Access Restricted" dans Data Preview** | Data Pipeline (modal dataset) | Annotator | L'onglet Data Preview affiche un cadenas rouge "Access Restricted - Only Admin and Steward can view raw data" |
+
+**Comment fonctionne Ranger en pratique :**
+- **Admin** : Voit TOUT (valeurs PII, donnees brutes, logs complets)
+- **Steward** : Voit TOUT (meme niveau que admin pour les donnees)
+- **Annotator** : Valeurs PII masquees ("[REDACTED]"), pas d'acces a l'apercu des donnees brutes
+- **Labeler** : Acces le plus restreint, pas d'edition, valeurs masquees
+
+### 13.3 Apache Airflow (Orchestration du Pipeline de Donnees)
+
+**Qu'est-ce qu'Airflow dans DataGov ?**
+Apache Airflow orchestre le pipeline complet de traitement des donnees. Quand un dataset est uploade, Airflow declenche automatiquement 16 taches sequentielles.
+
+**Ou vous voyez Airflow dans l'interface :**
+
+| Endroit | Page | Roles | Ce que vous voyez |
+|---------|------|-------|-------------------|
+| **Notification "Airflow DAG Started"** | Data Pipeline (apres upload) | Admin, Steward, Annotator | Toast vert "Airflow DAG Started: cleaning_pipeline_v1" - confirme que le pipeline Airflow a demarre |
+| **Interface Airflow (externe)** | `http://localhost:8081` | Admin (acces direct) | Interface web Airflow avec le DAG `data_processing_pipeline` et ses 16 taches |
+
+**Les 16 taches Airflow (dans l'ordre d'execution) :**
+```
+1. start                    → Point d'entree
+2. check_services_health    → Verification de sante de tous les services
+3. upload_dataset           → Enregistrement du dataset
+4. profile_data             → Profilage statistique (YData Profiling)
+5. clean_data               → Nettoyage (doublons, valeurs manquantes, outliers)
+6. detect_pii_taxonomie     → Detection PII via Taxonomie marocaine (47 patterns)
+7. detect_pii_presidio      → Detection PII via Microsoft Presidio
+8. classify_sensitivity     → Classification de sensibilite (BERT + RF + Rules)
+9. detect_inconsistencies   → Detection d'incoherences par ligne
+10. apply_corrections       → Corrections automatiques par T5
+11. evaluate_quality        → Evaluation ISO 25012 (6 dimensions)
+12. create_annotation_tasks → Creation des taches de validation humaine
+13. apply_masking           → Masquage ethique EthiMask
+14. store_results           → Stockage des resultats dans MongoDB
+15. export_certified        → Export du "Golden Record" (fichier CSV certifie)
+16. end                     → Fin du pipeline
+```
+
+**Pour acceder a l'interface Airflow :**
+1. Ouvrez `http://localhost:8081` dans votre navigateur
+2. Identifiants : `admin` / mot de passe configure dans Docker
+3. Vous verrez le DAG `data_processing_pipeline`
+4. Cliquez sur le DAG pour voir le graphe des taches
+5. Cliquez sur une tache pour voir ses logs d'execution
 
 ---
 

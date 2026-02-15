@@ -371,8 +371,6 @@ async def download_dataset(dataset_id: str):
 
 
 @router.get("/metrics/{dataset_id}")
-
-@router.get("/metrics/{dataset_id}")
 async def get_metrics(dataset_id: str):
     """
     US-CLEAN-05: Metadata View
@@ -655,7 +653,7 @@ async def trigger_airflow_pipeline(dataset_id: Optional[str] = None, payload: Op
                     "row_indices": [0],
                     "data_samples": [sample_data]
                 }, timeout=5)
-            except:
+            except Exception:
                 pass
 
         # Forward to Classification Service (Tâche 5) - classify columns
@@ -690,7 +688,7 @@ async def trigger_airflow_pipeline(dataset_id: Optional[str] = None, payload: Op
                             "dataset_id": effective_id,
                             "auto_apply": True
                         }, timeout=10)
-                    except:
+                    except Exception:
                         pass
                 print(f"Correction detection triggered for {effective_id}")
         except Exception as coe:

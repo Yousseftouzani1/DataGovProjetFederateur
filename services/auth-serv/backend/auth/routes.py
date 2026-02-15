@@ -1,10 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException, Header, Request
 from fastapi.security import OAuth2PasswordRequestForm
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from backend.database.mongodb import db
 from backend.auth.utils import verify_password, create_token, decode_token
 
 router = APIRouter(tags=["Authentication"])
+
+limiter = Limiter(key_func=get_remote_address)
 
 
 @router.get("/health")
@@ -14,7 +18,8 @@ async def health():
 
 # LOGIN ROUTE -----------------------------------------
 @router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+@limiter.limit("5/minute")
+async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     from datetime import datetime
     
     print(f"🔐 Login attempt: username='{form_data.username}'")
@@ -139,6 +144,7 @@ async def get_all_users(payload: dict = Depends(require_role(["admin"]))):
             "steward": sum(1 for u in users if u.get("role", "").lower() == "steward"),
             "annotator": sum(1 for u in users if u.get("role", "").lower() == "annotator"),
             "labeler": sum(1 for u in users if u.get("role", "").lower() == "labeler"),
+            "analyst": sum(1 for u in users if u.get("role", "").lower() == "analyst"),
             "pending": sum(1 for u in users if u.get("status") == "pending")
         }
         
@@ -151,7 +157,7 @@ async def get_all_users(payload: dict = Depends(require_role(["admin"]))):
 @router.put("/users/{username}/role")
 async def update_user_role(username: str, new_role: str, payload: dict = Depends(require_role(["admin"]))):
     """Update user role - Admin only"""
-    valid_roles = ["admin", "steward", "annotator", "labeler"]
+    valid_roles = ["admin", "steward", "annotator", "labeler", "analyst"]
     if new_role not in valid_roles:
         raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {valid_roles}")
     
@@ -264,7 +270,7 @@ async def check_ranger_access(
             
     except Exception as e:
         # Fallback: Role-based logic
-        role_permissions = {"admin": True, "steward": True, "annotator": True, "labeler": False}
+        role_permissions = {"admin": True, "steward": True, "annotator": True, "analyst": True, "labeler": False}
         return {
             "allowed": role_permissions.get(role.lower(), False),
             "resource": resource,
@@ -340,5 +346,5 @@ async def get_audit_stats(payload: dict = Depends(require_role(["admin", "stewar
             "total_events": sum(r["count"] for r in results)
         }
     except Exception as e:
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=f"Audit stats error: {str(e)}")
 

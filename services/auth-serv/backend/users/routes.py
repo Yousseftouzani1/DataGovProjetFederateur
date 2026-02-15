@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from backend.database.mongodb import db
-from backend.users.models import User, VALID_ROLES
+from backend.users.models import User, VALID_ROLES, AdminCreate
 from backend.auth.utils import hash_password
 from backend.auth.routes import require_role
 
@@ -75,16 +75,12 @@ async def reject_user(username: str):
 
 
 @router.post("/create-admin")
-async def create_admin_temp(admin_password: str = None):
-    """Create initial admin - password MUST be provided as query param, never hardcoded."""
-    if not admin_password:
-        raise HTTPException(status_code=400, detail="admin_password query parameter is required")
-    if len(admin_password) < 8:
-        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+async def create_admin_temp(body: AdminCreate):
+    """Create initial admin - password provided in request body (never in URL)."""
     existing = await db["users"].find_one({"username": "admin"})
     if existing:
         raise HTTPException(status_code=409, detail="Admin user already exists")
-    hashed = hash_password(admin_password)
+    hashed = hash_password(body.admin_password)
     await db["users"].insert_one({
         "username": "admin",
         "password": hashed,

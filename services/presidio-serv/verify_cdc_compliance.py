@@ -66,7 +66,7 @@ def run_compliance_check():
     try:
         requests.get(f"{SERVICE_URL}/health")
         print(f"✅ Service UP: {SERVICE_URL}")
-    except:
+    except Exception:
         print("❌ Service DOWN")
         return
 

@@ -30,7 +30,7 @@ class TaxonomyEngine:
         
         try:
             mongodb_patterns = load_patterns_from_mongodb()
-        except:
+        except Exception:
             mongodb_patterns = None
         
         # Helper to manage patterns state

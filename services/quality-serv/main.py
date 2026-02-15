@@ -14,15 +14,27 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Any
 from enum import Enum
 
+import sys
 import uvicorn
 import pandas as pd
 import numpy as np
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from backend.database.mongodb import db
+
+# Shared auth middleware
+sys.path.append("/common")
+try:
+    from auth_middleware import get_current_user, require_role
+except ImportError:
+    # Fallback for local development without Docker volume mount
+    async def get_current_user():
+        return {"sub": "anonymous", "role": "admin"}
+    def require_role(roles):
+        return get_current_user
 
 # Optional: PDF generation
 try:
@@ -153,9 +165,8 @@ class QualityDimensions:
                     sample_rows = self.df.loc[sample_indices].to_dict(orient='records')
                 else:
                     sample_rows = []
-            except:
+            except Exception:
                 sample_rows = []
-                pass
         
         score = 100.0
         if total_checks > 0:
@@ -187,7 +198,7 @@ class QualityDimensions:
                             # Get original rows for these indices
                             rows = self.df.loc[outdated_indices].to_dict(orient='records')
                             outdated_samples.extend(rows)
-                except:
+                except Exception:
                     continue
         
         # Limit samples to 5 overall
@@ -325,11 +336,15 @@ app = FastAPI(
 )
 
 @app.middleware("http")
-async def set_root_path(request: Request, call_next):
+async def add_process_time_header(request: Request, call_next):
+    import time as _time
+    start = _time.perf_counter()
     root_path = request.headers.get("x-forwarded-prefix")
     if root_path:
         request.scope["root_path"] = root_path
     response = await call_next(request)
+    process_time = _time.perf_counter() - start
+    response.headers["X-Process-Time"] = f"{process_time:.4f}"
     return response
 
 # CORS Security - Restricted origins
@@ -386,23 +401,24 @@ async def get_stats():
         return {"error": str(e), "average_score": 0, "total_evaluations": 0}
 
 @app.post("/evaluate/{dataset_id}", response_model=QualityReport)
-async def evaluate_quality(dataset_id: str, config: EvaluationConfig = None):
+async def evaluate_quality(dataset_id: str, config: EvaluationConfig = None, user: dict = Depends(get_current_user)):
     """Evaluate dataset quality against ISO 25012 dimensions"""
-    import requests as req
+    import httpx
     import traceback
     import os
-    
+
     # Use Environment Variable for URL (Docker vs Localhost)
     CLEANING_URL = os.getenv("CLEANING_SERVICE_URL", "http://localhost:8004")
-    
-    print(f"🔍 Evaluating dataset {dataset_id}")
-    
+
+    print(f"Evaluating dataset {dataset_id}")
+
     try:
         # Auto-fetch from cleaning-service if not in cache
         if dataset_id not in datasets_store:
             try:
                 # Try to fetch dataset from cleaning-service (Corrected Endpoint)
-                resp = req.get(f"{CLEANING_URL}/dataset/{dataset_id}/json", timeout=10)
+                async with httpx.AsyncClient() as client:
+                    resp = await client.get(f"{CLEANING_URL}/dataset/{dataset_id}/json", timeout=10)
                 if resp.status_code == 200:
                     data = resp.json()
                     df = pd.DataFrame(data.get("data", []))

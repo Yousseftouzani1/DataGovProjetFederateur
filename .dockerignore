@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+*.md
+nul
+.env.production
+migrate_atlas_to_local.py
+datasets/
+*.csv
+node_modules
+.vscode

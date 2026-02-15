@@ -16,11 +16,15 @@ app = FastAPI(
 )
 
 @app.middleware("http")
-async def set_root_path(request: Request, call_next):
+async def add_process_time_header(request: Request, call_next):
+    import time as _time
+    start = _time.perf_counter()
     root_path = request.headers.get("x-forwarded-prefix")
     if root_path:
         request.scope["root_path"] = root_path
     response = await call_next(request)
+    process_time = _time.perf_counter() - start
+    response.headers["X-Process-Time"] = f"{process_time:.4f}"
     return response
 
 # CORS Security - Restricted origins
